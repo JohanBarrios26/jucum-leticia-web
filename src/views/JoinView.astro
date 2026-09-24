@@ -85,6 +85,16 @@ const eventName = { pray: 'cta_pray_click', serve: 'cta_serve_click', come: 'cta
                 {ui.join.cta} <span class="btn__arrow" aria-hidden="true">→</span>
               </a>
             )}
+
+            <a class="link-arrow join-path__form" href={`${routes.contact[locale]}?motivo=${p.key}`}>
+              {ui.join.formLink} <span aria-hidden="true">→</span>
+            </a>
+
+            {p.key === 'support' && (
+              <a class="link-arrow join-path__people" href={routes.people[locale]}>
+                {ui.people.supportMissionary} <span aria-hidden="true">→</span>
+              </a>
+            )}
           </section>
         ))
       }
@@ -261,6 +271,12 @@ const eventName = { pray: 'cta_pray_click', serve: 'cta_serve_click', come: 'cta
   .join-path__row dd {
     margin: 0;
     color: var(--color-text-muted);
+  }
+
+  .join-path__people,
+  .join-path__form {
+    justify-self: start;
+    color: var(--color-green);
   }
 
   .join-path__cta {

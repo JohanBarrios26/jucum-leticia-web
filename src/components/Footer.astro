@@ -57,6 +57,7 @@ const socials = (Object.keys(socialNames) as (keyof SocialLinks)[])
         <h2 class="footer-col__title" id="footer-join-title">{ui.footer.participate}</h2>
         <ul role="list">
           {joinPaths.map((path) => <li><a href={joinPathUrl(path, locale)}>{ui.joinPaths[path]}</a></li>)}
+          <li><a href={routes.people[locale]}>{ui.people.supportMissionary}</a></li>
         </ul>
       </nav>
 

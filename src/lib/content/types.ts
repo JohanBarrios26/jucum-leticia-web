@@ -343,8 +343,19 @@ export interface About {
 
 /* ----------------------------------------------------------------- Personas */
 
+/** Apoyo personal a un misionero (nunca datos bancarios en el sitio). */
+export interface PersonSupportRaw {
+  enabled: boolean;
+  /** Enlace seguro de donación personal; si falta, se usa WhatsApp de JUCUM. */
+  link: Maybe<string>;
+  text: Maybe<Localized>;
+}
+
 export interface PersonRaw {
+  slug: string;
   name: string;
+  country: Maybe<Localized>;
+  support: PersonSupportRaw;
   photo: Maybe<ImageRawRef>;
   role: Maybe<Localized>;
   ministrySlug: Maybe<string>;
@@ -357,7 +368,10 @@ export interface PersonRaw {
 }
 
 export interface Person {
+  slug: string;
   name: string;
+  country: Maybe<string>;
+  support: { enabled: boolean; link: Maybe<string>; text: Maybe<string> };
   photo: Maybe<ImageRef>;
   role: Maybe<string>;
   ministrySlug: Maybe<string>;
@@ -371,6 +385,7 @@ export interface Person {
 
 export interface PageTextsRaw {
   ministriesIntro: Maybe<Localized>;
+  peopleIntro: Maybe<Localized>;
   schoolsIntro: Maybe<Localized>;
   joinIntro: Maybe<Localized>;
   contactIntro: Maybe<Localized>;

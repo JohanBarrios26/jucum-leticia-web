@@ -23,12 +23,14 @@ interface Props {
   image?: Maybe<ImageRef>;
   motif?: Maybe<MotifName>;
   back?: { href: string; label: string };
+  /** Título más pequeño, para frases largas (ej. página de agradecimiento). */
+  compact?: boolean;
 }
 
-const { title, eyebrow, lead, image, motif, back } = Astro.props;
+const { title, eyebrow, lead, image, motif, back, compact = false } = Astro.props;
 ---
 
-<section class:list={['page-hero', 'on-photo', { 'page-hero--image': image, 'page-hero--motif': motif }]}>
+<section class:list={['page-hero', 'on-photo', { 'page-hero--image': image, 'page-hero--motif': motif, 'page-hero--compact': compact }]}>
   {
     image && (
       <div class="page-hero__media">
@@ -145,6 +147,10 @@ const { title, eyebrow, lead, image, motif, back } = Astro.props;
     font-size: var(--text-display);
     line-height: 0.88;
     animation: hero-rise 1000ms var(--ease) both;
+  }
+
+  .page-hero--compact .page-hero__title {
+    font-size: var(--text-h1);
   }
 
   .page-hero__lead {

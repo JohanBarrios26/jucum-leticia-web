@@ -1,0 +1,33 @@
+---
+/**
+ * VISTA: GRACIAS (/contacto/gracias/)
+ * ----------------------------------------------------------------------------
+ * Aquí llega quien envía el formulario SIN JavaScript (Web3Forms redirige a
+ * esta página). No se indexa en Google ni aparece en el sitemap.
+ */
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHero from '@/components/PageHero.astro';
+import { contactThanks, routes, type Locale } from '@/i18n/routes';
+import { t } from '@/i18n/ui';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const ui = t(locale);
+---
+
+<BaseLayout locale={locale} alternates={contactThanks} title={ui.form.title} noindex headerOverlay>
+  <PageHero title={ui.form.success} eyebrow={ui.nav.contact} motif="wave" compact>
+    <a class="btn btn--primary thanks__back" href={routes.home[locale]}>
+      {ui.notFound.back} <span class="btn__arrow" aria-hidden="true">→</span>
+    </a>
+  </PageHero>
+</BaseLayout>
+
+<style>
+  .thanks__back {
+    margin-top: var(--space-6);
+  }
+</style>

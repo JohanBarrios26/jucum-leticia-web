@@ -1,0 +1,334 @@
+---
+/**
+ * FORMULARIO DE CONTACTO (especificación §16)
+ * ----------------------------------------------------------------------------
+ * Envía los mensajes con Web3Forms (https://web3forms.com): un servicio que
+ * reenvía el formulario al correo de JUCUM. En el sitio solo aparece una
+ * CLAVE pública; el correo de destino nunca se expone.
+ *
+ * Campos: nombre*, correo*, teléfono, país, ciudad, motivo*, mensaje*.
+ * El motivo llega preseleccionado si la URL trae ?motivo=come (desde "Sé parte").
+ *
+ * Protección contra spam (sin captcha molesto):
+ *   1. Campo trampa invisible ("botcheck"): los bots lo llenan, las personas no.
+ *   2. Tiempo mínimo: un envío en menos de 3 segundos se descarta en silencio.
+ *   3. El filtro propio de Web3Forms.
+ *
+ * Con JavaScript: se envía sin recargar y se muestra el resultado aquí mismo.
+ * Sin JavaScript: el formulario se envía normal y Web3Forms redirige a la
+ * página /contacto/gracias/.
+ *
+ * Sin clave configurada (PUBLIC_WEB3FORMS_KEY), muestra un aviso en su lugar.
+ */
+import { contactThanks, type Locale } from '@/i18n/routes';
+import { t } from '@/i18n/ui';
+import { web3formsKey } from '@/lib/config';
+
+interface Props {
+  locale: Locale;
+  /** Nombre de la organización, para el remitente del correo. */
+  organizationName: string;
+}
+
+const { locale, organizationName } = Astro.props;
+const ui = t(locale).form;
+const interests = Object.entries(ui.interests) as [keyof typeof ui.interests, string][];
+const redirect = new URL(contactThanks[locale], Astro.site ?? Astro.url).href;
+---
+
+{
+  web3formsKey ? (
+    <form
+      class="contact-form"
+      action="https://api.web3forms.com/submit"
+      method="POST"
+      novalidate
+      data-contact-form
+      data-msg-sending={ui.sending}
+      data-msg-success={ui.success}
+      data-msg-error={ui.error}
+      data-msg-invalid={ui.invalid}
+      data-submit-label={ui.submit}
+    >
+      <h2 class="contact-form__title">{ui.title}</h2>
+
+      <!-- Datos técnicos para Web3Forms (no se ven) -->
+      <input type="hidden" name="access_key" value={web3formsKey} />
+      <input type="hidden" name="subject" value={`${ui.subject} · ${organizationName}`} data-subject-base={ui.subject} />
+      <input type="hidden" name="from_name" value={organizationName} />
+      <input type="hidden" name="redirect" value={redirect} />
+      <input type="hidden" name="idioma" value={locale} />
+      <!-- Campo trampa: invisible para personas; si se llena, es un bot. -->
+      <input type="checkbox" name="botcheck" class="contact-form__trap" tabindex="-1" autocomplete="off" aria-hidden="true" />
+
+      <div class="contact-form__grid">
+        <div class="field">
+          <label for="cf-name">{ui.name} <span aria-hidden="true">*</span></label>
+          <input id="cf-name" name="name" type="text" autocomplete="name" required maxlength="120" />
+        </div>
+
+        <div class="field">
+          <label for="cf-email">{ui.email} <span aria-hidden="true">*</span></label>
+          <input id="cf-email" name="email" type="email" autocomplete="email" required maxlength="160" />
+        </div>
+
+        <div class="field">
+          <label for="cf-phone">
+            {ui.phone} <span class="field__optional">({ui.optional})</span>
+          </label>
+          <input id="cf-phone" name="phone" type="tel" autocomplete="tel" maxlength="40" />
+        </div>
+
+        <div class="field">
+          <label for="cf-interest">{ui.interest} <span aria-hidden="true">*</span></label>
+          <select id="cf-interest" name="interest" required data-interest>
+            <option value="">{ui.interestPlaceholder}</option>
+            {interests.map(([key, label]) => (
+              <option value={label} data-key={key}>
+                {label}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="cf-country">
+            {ui.country} <span class="field__optional">({ui.optional})</span>
+          </label>
+          <input id="cf-country" name="country" type="text" autocomplete="country-name" maxlength="80" />
+        </div>
+
+        <div class="field">
+          <label for="cf-city">
+            {ui.city} <span class="field__optional">({ui.optional})</span>
+          </label>
+          <input id="cf-city" name="city" type="text" autocomplete="address-level2" maxlength="80" />
+        </div>
+
+        <div class="field field--full">
+          <label for="cf-message">{ui.message} <span aria-hidden="true">*</span></label>
+          <textarea id="cf-message" name="message" rows="6" required maxlength="4000"></textarea>
+        </div>
+      </div>
+
+      <p class="contact-form__privacy">{ui.privacy}</p>
+
+      <button type="submit" class="btn btn--primary contact-form__submit">
+        <span data-submit-text>{ui.submit}</span> <span class="btn__arrow" aria-hidden="true">→</span>
+      </button>
+
+      <!-- Resultado del envío, anunciado a lectores de pantalla. -->
+      <p class="contact-form__status" role="status" aria-live="polite" data-form-status />
+    </form>
+  ) : (
+    <div class="contact-form contact-form--off">
+      <h2 class="contact-form__title">{ui.title}</h2>
+      <p>{ui.unavailable}</p>
+    </div>
+  )
+}
+
+<script>
+  /*
+   * Envío sin recargar la página + validación con mensajes claros.
+   */
+  const form = document.querySelector<HTMLFormElement>('[data-contact-form]');
+
+  if (form) {
+    const loadedAt = Date.now();
+    const status = form.querySelector<HTMLElement>('[data-form-status]')!;
+    const submitText = form.querySelector<HTMLElement>('[data-submit-text]')!;
+    const button = form.querySelector<HTMLButtonElement>('button[type="submit"]')!;
+    const interest = form.querySelector<HTMLSelectElement>('[data-interest]')!;
+    const subject = form.querySelector<HTMLInputElement>('input[name="subject"]')!;
+
+    // ?motivo=come → preselecciona "Quiero venir".
+    const motivo = new URLSearchParams(location.search).get('motivo');
+    if (motivo) {
+      const option = interest.querySelector<HTMLOptionElement>(`option[data-key="${CSS.escape(motivo)}"]`);
+      if (option) option.selected = true;
+    }
+
+    const setStatus = (text: string, kind: 'ok' | 'error' | 'info') => {
+      status.textContent = text;
+      status.dataset.kind = kind;
+    };
+
+    // Marca/desmarca campos inválidos al salir de ellos.
+    form.querySelectorAll<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>('input, textarea, select').forEach((field) => {
+      field.addEventListener('blur', () => field.toggleAttribute('data-invalid', !field.checkValidity()));
+      field.addEventListener('input', () => {
+        if (field.hasAttribute('data-invalid') && field.checkValidity()) field.removeAttribute('data-invalid');
+      });
+    });
+
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+
+      if (!form.checkValidity()) {
+        form.querySelectorAll<HTMLInputElement>(':invalid').forEach((f) => f.setAttribute('data-invalid', ''));
+        form.querySelector<HTMLElement>(':invalid')?.focus();
+        setStatus(form.dataset.msgInvalid ?? '', 'error');
+        return;
+      }
+
+      const data = Object.fromEntries(new FormData(form).entries());
+
+      // Trampas anti-spam: se finge éxito para no darle pistas al bot.
+      if (data.botcheck || Date.now() - loadedAt < 3000) {
+        form.reset();
+        setStatus(form.dataset.msgSuccess ?? '', 'ok');
+        return;
+      }
+
+      // El asunto del correo incluye el motivo, para organizarlos fácil en Gmail.
+      data.subject = `${subject.dataset.subjectBase} · ${data.interest}`;
+      delete data.redirect;
+
+      button.disabled = true;
+      submitText.textContent = form.dataset.msgSending ?? '';
+      setStatus('', 'info');
+
+      try {
+        const response = await fetch('https://api.web3forms.com/submit', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+          body: JSON.stringify(data),
+        });
+        const result = await response.json();
+        if (!response.ok || !result.success) throw new Error(result.message);
+
+        form.reset();
+        setStatus(form.dataset.msgSuccess ?? '', 'ok');
+        window.dispatchEvent(new CustomEvent('analytics', { detail: { name: 'contact_form_submit', data: { interest: String(data.interest) } } }));
+      } catch {
+        setStatus(form.dataset.msgError ?? '', 'error');
+      } finally {
+        button.disabled = false;
+        submitText.textContent = form.dataset.submitLabel ?? '';
+      }
+    });
+  }
+</script>
+
+<style>
+  .contact-form {
+    display: grid;
+    gap: var(--space-5);
+    padding: clamp(1.5rem, 1rem + 2.5vw, 3rem);
+    border-radius: var(--radius-lg);
+    background: var(--color-white);
+    box-shadow: var(--shadow);
+  }
+
+  .contact-form__title {
+    font-size: var(--text-h3);
+  }
+
+  .contact-form__grid {
+    display: grid;
+    gap: var(--space-4) var(--space-5);
+  }
+
+  @media (min-width: 40rem) {
+    .contact-form__grid {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .field--full {
+      grid-column: 1 / -1;
+    }
+  }
+
+  .field {
+    display: grid;
+    gap: var(--space-2);
+  }
+
+  .field label {
+    font-size: var(--text-sm);
+    font-weight: 600;
+  }
+
+  .field__optional {
+    color: var(--color-text-muted);
+    font-weight: 400;
+  }
+
+  .field input,
+  .field select,
+  .field textarea {
+    width: 100%;
+    min-height: 3rem;
+    padding: var(--space-3) var(--space-4);
+    border: 1.5px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    background: var(--color-cloud);
+    font-size: var(--text-base);
+    transition:
+      border-color var(--duration) var(--ease),
+      background-color var(--duration) var(--ease);
+  }
+
+  .field textarea {
+    resize: vertical;
+  }
+
+  .field input:focus,
+  .field select:focus,
+  .field textarea:focus {
+    border-color: var(--color-green);
+    background: var(--color-white);
+    outline: 3px solid rgb(0 173 239 / 0.35);
+    outline-offset: 0;
+  }
+
+  .field [data-invalid] {
+    border-color: #b3261e;
+    background: #fdf2f1;
+  }
+
+  .contact-form__trap {
+    position: absolute;
+    left: -9999px;
+    opacity: 0;
+  }
+
+  .contact-form__privacy {
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+  }
+
+  .contact-form__submit {
+    justify-self: start;
+  }
+
+  .contact-form__submit:disabled {
+    opacity: 0.6;
+    cursor: progress;
+  }
+
+  .contact-form__status:empty {
+    display: none;
+  }
+
+  .contact-form__status {
+    padding: var(--space-4);
+    border-radius: var(--radius-sm);
+    font-weight: 600;
+  }
+
+  .contact-form__status[data-kind='ok'] {
+    background: #e7f4ee;
+    color: var(--color-green);
+  }
+
+  .contact-form__status[data-kind='error'] {
+    background: #fdf2f1;
+    color: #b3261e;
+  }
+
+  .contact-form--off p {
+    color: var(--color-text-muted);
+  }
+</style>

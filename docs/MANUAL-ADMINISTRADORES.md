@@ -92,8 +92,18 @@ En un ministerio o escuela, pestaña **Bloques especiales**:
 5. Marca **"Autorizado para publicar"** solo si quienes grabaron y la comunidad dieron permiso. **Publicar.**
 
 ### Agregar una persona del equipo
-**Personas** → botón **+**. Nombre, foto, rol, ministerio, desde cuándo sirve, frase, historia y petición de oración.
+**Personas** → botón **+**. Nombre (el **identificador** se genera con **Generar**), foto, país, rol, ministerio, desde cuándo sirve, frase, historia y petición de oración.
 Marca **"Autorizó publicar su nombre, foto e historia"** solo con permiso. **Publicar.**
+Cada persona tiene su propia página en **/personas/** con los botones **"Orar por…"** y, si se activa, **"Apoyar a…"**.
+
+### Activar el apoyo personal a un misionero
+Abre la persona → pestaña **Apoyo**:
+1. Activa **"Mostrar botón Apoyar"** (solo si la persona recibe apoyo y lo autoriza).
+2. Si tiene una página segura de donación propia (plataforma de JUCUM, PayPal…), pega el enlace. Si no, el botón abrirá WhatsApp de JUCUM con el mensaje "Quiero apoyar a [nombre]".
+3. Opcional: escribe **para qué es el apoyo** (ej. transporte por el río, materiales).
+4. **Publicar.**
+
+> ⚠️ Nunca escribas números de cuenta bancaria en el panel. El sitio solo enlaza a páginas de donación seguras o a una conversación por WhatsApp.
 
 ### Publicar una historia o foto de personas
 Por respeto y por ley, **solo publica con autorización**:
@@ -102,14 +112,21 @@ Por respeto y por ley, **solo publica con autorización**:
 
 ---
 
-## 5. Cosas que no se pueden hacer (a propósito)
+## 5. Mensajes del formulario de contacto
+
+Los mensajes que las personas envían desde **/contacto/** llegan por correo a **ywamleticia@gmail.com** con el asunto "Nuevo mensaje desde el sitio web · [motivo]" (ej. "Quiero venir").
+Para responder, simplemente responde ese correo: la respuesta le llega a la persona que escribió.
+
+---
+
+## 6. Cosas que no se pueden hacer (a propósito)
 
 - **Configuración del sitio**, **Página de inicio** y los **4 caminos** no se pueden borrar ni duplicar, solo editar. Así se evitan accidentes.
 - Los campos marcados como obligatorios no dejan publicar si están vacíos. El panel te muestra en rojo qué falta.
 
 ---
 
-## 6. ¿Algo no se ve en el sitio?
+## 7. ¿Algo no se ve en el sitio?
 
 1. ¿Presionaste **Publicar**? (Si el botón sigue verde, falta publicar).
 2. ¿Esperaste 3 minutos y recargaste la página?

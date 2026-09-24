@@ -27,6 +27,7 @@ import type {
   MinistryRaw,
   PageTexts,
   Person,
+  PersonRaw,
   School,
   SchoolRaw,
   SiteSettings,
@@ -76,6 +77,15 @@ function resolveImageMaybe(image: Maybe<ImageRawRef>, locale: Locale): Maybe<Ima
 /** "+57 311 533 2741" → "tel:+573115332741" */
 function telHref(number: string): string {
   return `tel:${number.replace(/[^\d+]/g, '')}`;
+}
+
+/**
+ * URL de la imagen para compartir en redes (1200×630, recortada) a partir de
+ * una foto del panel. Las imágenes locales no aplican (devuelve undefined).
+ */
+export function ogImageUrl(image: Maybe<ImageRef> | undefined): string | undefined {
+  if (!image || typeof image.src !== 'string') return undefined;
+  return `${image.src}?w=1200&h=630&fit=crop&auto=format&q=75`;
 }
 
 /** Enlace de WhatsApp con mensaje opcional ya escrito. */
@@ -346,8 +356,25 @@ export async function getAbout(locale: Locale): Promise<About> {
 export async function getPeople(locale: Locale, ministrySlug?: string): Promise<Person[]> {
   return (await source()).people
     .filter((p) => p.authorized && (!ministrySlug || p.ministrySlug === ministrySlug))
-    .map((p) => ({
+    .map((p) => resolvePerson(p, locale));
+}
+
+/** Slugs de las personas publicadas (para generar sus páginas). */
+export async function getPersonSlugs(): Promise<string[]> {
+  return (await source()).people.filter((p) => p.authorized).map((p) => p.slug);
+}
+
+export async function getPerson(slug: string, locale: Locale): Promise<Maybe<Person>> {
+  const p = (await source()).people.find((x) => x.slug === slug && x.authorized);
+  return p ? resolvePerson(p, locale) : null;
+}
+
+function resolvePerson(p: PersonRaw, locale: Locale): Person {
+  return {
+      slug: p.slug,
       name: p.name,
+      country: localizeMaybe(p.country, locale),
+      support: { enabled: p.support.enabled, link: p.support.link, text: localizeMaybe(p.support.text, locale) },
       photo: resolveImageMaybe(p.photo, locale),
       role: localizeMaybe(p.role, locale),
       ministrySlug: p.ministrySlug,
@@ -355,7 +382,7 @@ export async function getPeople(locale: Locale, ministrySlug?: string): Promise<
       quote: localizeMaybe(p.quote, locale),
       bio: localizeMaybe(p.bio, locale),
       prayerRequest: localizeMaybe(p.prayerRequest, locale),
-    }));
+  };
 }
 
 /* ------------------------------------------------------- Textos de las páginas */
@@ -364,6 +391,7 @@ export async function getPageTexts(locale: Locale): Promise<PageTexts> {
   const t = (await source()).pageTexts;
   return {
     ministriesIntro: localizeMaybe(t.ministriesIntro, locale),
+    peopleIntro: localizeMaybe(t.peopleIntro, locale),
     schoolsIntro: localizeMaybe(t.schoolsIntro, locale),
     joinIntro: localizeMaybe(t.joinIntro, locale),
     contactIntro: localizeMaybe(t.contactIntro, locale),

@@ -42,7 +42,7 @@ const pad = (n: number) => String(n).padStart(2, '0');
         {
           schools.map((s, i) => (
             <li data-reveal>
-              <a class="school-card" href={schoolAlternates(s.slug)[locale]} data-event="program_view">
+              <a class="school-card" href={schoolAlternates(s.slug)[locale]} data-event="program_card_click">
                 <div class="school-card__media">
                   {s.image ? (
                     <SmartImage image={s.image} decorative sizes="(min-width: 64rem) 40vw, 100vw" widths={[480, 768, 1080]} />

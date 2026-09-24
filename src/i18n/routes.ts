@@ -27,6 +27,7 @@ export const routes = {
   ministries: { es: '/ministerios/', en: '/en/ministries/' },
   schools: { es: '/escuelas/', en: '/en/schools/' },
   join: { es: '/se-parte/', en: '/en/get-involved/' },
+  people: { es: '/personas/', en: '/en/people/' },
   contact: { es: '/contacto/', en: '/en/contact/' },
 } satisfies Record<string, Alternates>;
 
@@ -43,10 +44,18 @@ export function ministryAlternates(slug: string): Alternates {
   return { es: `${routes.ministries.es}${slug}/`, en: `${routes.ministries.en}${slug}/` };
 }
 
+/** URLs de la página de una persona del equipo en ambos idiomas. */
+export function personAlternates(slug: string): Alternates {
+  return { es: `${routes.people.es}${slug}/`, en: `${routes.people.en}${slug}/` };
+}
+
 /** URLs de la página de una escuela en ambos idiomas. */
 export function schoolAlternates(slug: string): Alternates {
   return { es: `${routes.schools.es}${slug}/`, en: `${routes.schools.en}${slug}/` };
 }
+
+/** Página de agradecimiento tras enviar el formulario (no va en el menú ni en Google). */
+export const contactThanks: Alternates = { es: '/contacto/gracias/', en: '/en/contact/thanks/' };
 
 /* ---------------------------------------------- Los 4 caminos para participar */
 

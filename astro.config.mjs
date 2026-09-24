@@ -32,5 +32,6 @@ export default defineConfig({
       prefixDefaultLocale: false,
     },
   },
-  integrations: [sitemap()],
+  // El sitemap excluye las páginas de agradecimiento del formulario.
+  integrations: [sitemap({ filter: (page) => !/\/(gracias|thanks)\/$/.test(page) })],
 });

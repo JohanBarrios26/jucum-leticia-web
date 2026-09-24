@@ -24,6 +24,9 @@
 | **Bilingüe con URLs traducidas** | `/quienes-somos/` ↔ `/en/about/`, con `hreflang`, canónicas y selector de idioma que lleva a la página equivalente. |
 | **Animaciones sin librerías** | CSS *scroll-driven animations*, `IntersectionObserver` y unos pocos scripts pequeños. Cero dependencias de animación. |
 | **Imágenes optimizadas** | El CDN de Sanity entrega AVIF/WebP en el tamaño justo; el sitio publicado pesa ~1 MB. |
+| **Formulario sin servidor** | Web3Forms envía los mensajes al correo de JUCUM sin exponerlo; anti-spam con campo trampa y tiempo mínimo; funciona también sin JavaScript. |
+| **Analítica sin cookies** | Umami: mide visitas y los eventos de la especificación (WhatsApp, "Quiero ser parte", formulario, vistas de ministerios…) sin banner de cookies. |
+| **SEO** | Títulos y descripciones por página, `hreflang`, Open Graph con la foto de cada página, datos estructurados (ONG y migas de pan), sitemap y robots. |
 | **Accesibilidad desde el inicio** | Navegación por teclado, foco visible, textos alternativos, contraste revisado y respeto por "reducir movimiento". |
 
 ## Detalles de diseño
@@ -35,6 +38,7 @@
 - **Escuelas** como lista editorial, con una foto que sigue al cursor.
 - **OBT** (traducción bíblica oral) con una onda de audio animada.
 - **Cuatro caminos para participar** en paneles que se expanden.
+- **Nuestro equipo:** perfil de cada misionero con su historia, petición de oración y botones **"Orar por…"** y **"Apoyar a…"** (enlace de donación personal o WhatsApp; nunca datos bancarios).
 - **Un detalle propio por ministerio y escuela:** un motivo SVG animado (río, puente, onda de audio, pulso…) y bloques especiales editables. Entre ellos, **audios de la Palabra en lenguas del Amazonas** (OBT), con un reproductor propio que no descarga nada hasta que se presiona reproducir.
 
 Paleta *Amazon Night · Amazon Green · River Blue · Sand · Cloud*; tipografías **Bebas Neue** e **Inter**, alojadas en el propio sitio.
@@ -110,7 +114,7 @@ Guía para quienes editan el contenido: [docs/MANUAL-ADMINISTRADORES.md](docs/MA
 - [x] **Fase 2:** página de inicio completa y plantillas de ministerio y escuela
 - [x] **Fase 3:** panel de administración (Sanity) para el equipo de JUCUM
 - [x] **Fase 4:** páginas Quiénes somos, Ministerios, Escuelas, Sé parte y Contacto, y detalle diferencial por ministerio/escuela
-- [ ] **Fase 5:** formulario de contacto, analítica y SEO final
+- [x] **Fase 5:** formulario de contacto, analítica, SEO final y página "Nuestro equipo" con apoyo personal
 - [ ] **Fase 6:** pruebas de accesibilidad y rendimiento, y publicación
 
 ---

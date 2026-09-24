@@ -40,7 +40,7 @@ const pad = (n: number) => String(n).padStart(2, '0');
       {
         schools.map((s, i) => (
           <li data-reveal style={`--reveal-delay: ${i * 90}ms`}>
-            <a class="school-row" href={schoolAlternates(s.slug)[locale]} data-school-row={i} data-event="program_view">
+            <a class="school-row" href={schoolAlternates(s.slug)[locale]} data-school-row={i} data-event="program_card_click">
               <span class="school-row__num">{pad(i + 1)}</span>
               <span class="school-row__thumb" aria-hidden="true">
                 {s.image ? <SmartImage image={s.image} decorative sizes="6rem" widths={[240]} /> : <ImagePlaceholder />}

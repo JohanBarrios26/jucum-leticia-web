@@ -20,7 +20,7 @@ import SmartImage from '@/components/ui/SmartImage.astro';
 import PendingContent from '@/components/PendingContent.astro';
 import { routes, schoolAlternates, type Locale } from '@/i18n/routes';
 import { t } from '@/i18n/ui';
-import { whatsappUrl, type School } from '@/lib/content';
+import { ogImageUrl, whatsappUrl, type School } from '@/lib/content';
 
 interface Props {
   locale: Locale;
@@ -47,6 +47,14 @@ const facts = [
   alternates={schoolAlternates(school.slug)}
   title={school.fullName ? `${school.name} · ${school.fullName}` : school.name}
   description={school.description ?? school.fullName ?? undefined}
+  ogImage={ogImageUrl(school.image)}
+  breadcrumbs={[
+    { name: ui.nav.home, url: routes.home[locale] },
+    { name: ui.nav.schools, url: routes.schools[locale] },
+    { name: school.name, url: schoolAlternates(school.slug)[locale] },
+  ]}
+  pageEvent="program_view"
+  pageItem={school.slug}
   headerOverlay
 >
   <PageHero

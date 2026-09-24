@@ -1,0 +1,19 @@
+---
+/**
+ * Página dinámica: genera un perfil por cada persona publicada (una por slug).
+ * El diseño está en src/views/PersonView.astro (compartido con el otro idioma).
+ */
+import PersonView from '@/views/PersonView.astro';
+import { getPerson, getPersonSlugs } from '@/lib/content';
+
+export async function getStaticPaths() {
+  const slugs = await getPersonSlugs();
+  return slugs.map((slug) => ({ params: { slug } }));
+}
+
+const person = await getPerson(Astro.params.slug!, 'es');
+// getStaticPaths solo genera slugs existentes, así que esto no debería ocurrir.
+if (!person) throw new Error(`Contenido no encontrado: ${Astro.params.slug}`);
+---
+
+<PersonView locale="es" person={person} />

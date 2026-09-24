@@ -71,7 +71,9 @@ const query = `{
   },
   "about": *[_id == "about"][0]{..., image${photo}, history[]{..., image${photo}}},
   "pageTexts": *[_id == "pageTexts"][0],
-  "people": *[_type == "person"] | order(orderRank){..., photo${photo}, "ministrySlug": ministry->slug.current},
+  "people": *[_type == "person"] | order(orderRank){
+    ..., "slug": slug.current, photo${photo}, "ministrySlug": ministry->slug.current
+  },
   "joinPaths": *[_type == "joinPath"],
   "gallery": *[_type == "galleryItem"] | order(orderRank){..., image${photo}},
   "stories": *[_type == "story"] | order(orderRank){
@@ -219,7 +221,14 @@ function toAbout(d: Doc | null): AboutRaw {
 
 function toPerson(d: Doc): PersonRaw {
   return {
+    slug: d.slug,
     name: d.name,
+    country: lx(d.country),
+    support: {
+      enabled: d.support?.enabled === true,
+      link: d.support?.link ?? null,
+      text: lx(d.support?.text),
+    },
     photo: toImage(d.photo),
     role: lx(d.role),
     ministrySlug: d.ministrySlug ?? null,
@@ -352,11 +361,12 @@ export function fetchCmsContent(): Promise<CmsContent> {
     about: toAbout(r.about),
     pageTexts: {
       ministriesIntro: lx(r.pageTexts?.ministriesIntro),
+      peopleIntro: lx(r.pageTexts?.peopleIntro),
       schoolsIntro: lx(r.pageTexts?.schoolsIntro),
       joinIntro: lx(r.pageTexts?.joinIntro),
       contactIntro: lx(r.pageTexts?.contactIntro),
     },
-    people: (r.people ?? []).filter((x: Doc) => x.name).map(toPerson),
+    people: (r.people ?? []).filter((x: Doc) => x.name && x.slug).map(toPerson),
     home: toHome(r.home),
     ministries: (r.ministries ?? []).map(toMinistry),
     schools: (r.schools ?? []).map(toSchool),

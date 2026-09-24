@@ -1,0 +1,88 @@
+---
+/**
+ * VISTA: NUESTRO EQUIPO (/personas/)
+ * ----------------------------------------------------------------------------
+ * Todas las personas que sirven en JUCUM Leticia y autorizaron publicar sus
+ * datos, en el orden del panel. Cada tarjeta lleva a su perfil, donde se puede
+ * orar por ella y apoyarla personalmente.
+ */
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHero from '@/components/PageHero.astro';
+import PendingContent from '@/components/PendingContent.astro';
+import PersonCard from '@/components/PersonCard.astro';
+import ImagePlaceholder from '@/components/ui/ImagePlaceholder.astro';
+import { routes, type Locale } from '@/i18n/routes';
+import { t } from '@/i18n/ui';
+import { showPending } from '@/lib/config';
+import { getPageTexts, getPeople, getSiteSettings } from '@/lib/content';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const ui = t(locale);
+const [people, texts, settings] = await Promise.all([getPeople(locale), getPageTexts(locale), getSiteSettings(locale)]);
+---
+
+<BaseLayout
+  locale={locale}
+  alternates={routes.people}
+  title={ui.nav.people}
+  description={texts.peopleIntro ?? undefined}
+  headerOverlay
+>
+  <PageHero title={ui.nav.people} eyebrow={settings.organizationName} lead={texts.peopleIntro} motif="crown" />
+
+  <section class="section" aria-labelledby="people-title">
+    <div class="container">
+      <h2 class="visually-hidden" id="people-title">{ui.nav.people}</h2>
+      {
+        people.length > 0 ? (
+          <ul role="list" class="people-grid">
+            {people.map((p, i) => (
+              <li data-reveal style={`--reveal-delay: ${(i % 4) * 80}ms`}>
+                <PersonCard locale={locale} person={p} />
+              </li>
+            ))}
+          </ul>
+        ) : (
+          showPending && (
+            <>
+              <p class="people-pending">
+                {ui.people.pendingTeam} <PendingContent locale={locale} />
+              </p>
+              <ul role="list" class="people-grid" aria-hidden="true">
+                {[1, 2, 3, 4].map(() => (
+                  <li class="people-ghost">
+                    <ImagePlaceholder />
+                  </li>
+                ))}
+              </ul>
+            </>
+          )
+        )
+      }
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .people-grid {
+    display: grid;
+    gap: var(--space-7) var(--space-5);
+    grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+  }
+
+  .people-pending {
+    margin-bottom: var(--space-6);
+    color: var(--color-text-muted);
+  }
+
+  .people-ghost {
+    aspect-ratio: 4 / 5;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    opacity: 0.6;
+  }
+</style>

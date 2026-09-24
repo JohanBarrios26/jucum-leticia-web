@@ -15,7 +15,7 @@ import ImagePlaceholder from '@/components/ui/ImagePlaceholder.astro';
 import { routes, type Locale } from '@/i18n/routes';
 import { t } from '@/i18n/ui';
 import { showPending } from '@/lib/config';
-import { getAbout, getPeople, getSiteSettings } from '@/lib/content';
+import { getAbout, getPeople, getSiteSettings, ogImageUrl } from '@/lib/content';
 
 interface Props {
   locale: Locale;
@@ -34,7 +34,14 @@ const historyBlock = {
 };
 ---
 
-<BaseLayout locale={locale} alternates={routes.about} title={ui.nav.about} description={about.intro} headerOverlay>
+<BaseLayout
+  locale={locale}
+  alternates={routes.about}
+  title={ui.nav.about}
+  description={about.intro}
+  ogImage={ogImageUrl(about.image)}
+  headerOverlay
+>
   <PageHero title={ui.nav.about} eyebrow={settings.organizationName} image={about.image} />
 
   <!-- Introducción -->
@@ -108,6 +115,7 @@ const historyBlock = {
         <p class="eyebrow eyebrow--line">{ui.about.team}</p>
         <h2 id="team-title">{ui.about.teamTitle}</h2>
         {about.teamIntro && <p class="lead team-intro">{about.teamIntro}</p>}
+        <a class="link-arrow team-link" href={routes.people[locale]}>{ui.people.allTeam} <span aria-hidden="true">→</span></a>
       </div>
       {
         people.length > 0 ? (
@@ -201,6 +209,10 @@ const historyBlock = {
 
   .values p {
     color: var(--color-text-muted);
+  }
+
+  .team-link {
+    color: var(--color-green);
   }
 
   .team-intro {

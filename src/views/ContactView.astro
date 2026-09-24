@@ -2,16 +2,15 @@
 /**
  * VISTA: CONTACTO (especificación §16)
  * ----------------------------------------------------------------------------
- * Portada + canales directos (WhatsApp, correo, teléfonos: el mismo bloque del
- * inicio) + ubicación y redes sociales.
- *
- * El formulario de contacto se agrega en la fase 5 (necesita un servicio de
- * envío de correos y protección contra spam).
+ * Portada + formulario de contacto (ContactForm.astro) + canales directos
+ * (WhatsApp, correo, teléfonos) + ubicación y redes sociales.
+ * Si se llega con ?motivo=come, el formulario trae el motivo preseleccionado.
  */
 import BaseLayout from '@/layouts/BaseLayout.astro';
+import ContactChannels from '@/components/ContactChannels.astro';
+import ContactForm from '@/components/ContactForm.astro';
 import PageHero from '@/components/PageHero.astro';
 import PendingContent from '@/components/PendingContent.astro';
-import HomeContact from '@/components/home/HomeContact.astro';
 import { routes, type Locale } from '@/i18n/routes';
 import { t } from '@/i18n/ui';
 import { getPageTexts, getSiteSettings, type SocialLinks } from '@/lib/content';
@@ -42,52 +41,71 @@ const socials = (Object.keys(socialNames) as (keyof SocialLinks)[])
   description={texts.contactIntro ?? undefined}
   headerOverlay
 >
-  <PageHero title={ui.nav.contact} eyebrow={settings.organizationName} lead={texts.contactIntro} motif="river" />
+  <PageHero title={ui.home.contactTitle} eyebrow={ui.nav.contact} lead={texts.contactIntro} motif="river" />
 
-  <HomeContact locale={locale} settings={settings} />
+  <section class="section">
+    <div class="container contact-layout">
+      <div class="contact-layout__form" data-reveal>
+        <ContactForm locale={locale} organizationName={settings.organizationName} />
+      </div>
 
-  <section class="section surface-sand" aria-label={`${ui.contact.location} · ${ui.footer.social}`}>
-    <div class="container contact-extra">
-      <div data-reveal>
-        <h2 class="eyebrow eyebrow--line contact-extra__label">{ui.contact.location}</h2>
-        {settings.location ? <p class="contact-extra__value">{settings.location}</p> : <PendingContent locale={locale} />}
-      </div>
-      <div data-reveal style="--reveal-delay: 100ms">
-        <h2 class="eyebrow eyebrow--line contact-extra__label">{ui.footer.social}</h2>
-        {
-          socials.length > 0 ? (
-            <ul role="list" class="contact-extra__social">
-              {socials.map((s) => (
-                <li>
-                  <a href={s.href} target="_blank" rel="noopener" data-event="social_click">
-                    {s.name} ↗
-                  </a>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <PendingContent locale={locale} />
-          )
-        }
-      </div>
+      <aside class="contact-layout__aside" aria-label={ui.home.contactEyebrow}>
+        <ContactChannels locale={locale} settings={settings} />
+
+        <div class="contact-extra">
+          <h2 class="eyebrow eyebrow--line contact-extra__label">{ui.contact.location}</h2>
+          {settings.location ? <p class="contact-extra__value">{settings.location}</p> : <PendingContent locale={locale} />}
+        </div>
+
+        <div class="contact-extra">
+          <h2 class="eyebrow eyebrow--line contact-extra__label">{ui.footer.social}</h2>
+          {
+            socials.length > 0 ? (
+              <ul role="list" class="contact-extra__social">
+                {socials.map((s) => (
+                  <li>
+                    <a href={s.href} target="_blank" rel="noopener" data-event="social_click">
+                      {s.name} ↗
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <PendingContent locale={locale} />
+            )
+          }
+        </div>
+      </aside>
     </div>
   </section>
 </BaseLayout>
 
 <style>
-  .contact-extra {
+  .contact-layout {
+    display: grid;
+    gap: var(--space-8);
+    align-items: start;
+  }
+
+  @media (min-width: 64rem) {
+    .contact-layout {
+      grid-template-columns: 1.4fr 1fr;
+    }
+
+    .contact-layout__aside {
+      position: sticky;
+      top: calc(var(--header-height) + var(--space-5));
+    }
+  }
+
+  .contact-layout__aside {
     display: grid;
     gap: var(--space-7);
   }
 
-  @media (min-width: 48rem) {
-    .contact-extra {
-      grid-template-columns: 1fr 1fr;
-    }
-  }
-
   .contact-extra__label {
-    margin-bottom: var(--space-4);
+    display: flex;
+    margin-bottom: var(--space-3);
     color: var(--color-green);
     font-family: var(--font-body);
     font-size: var(--text-xs);
@@ -96,19 +114,19 @@ const socials = (Object.keys(socialNames) as (keyof SocialLinks)[])
 
   .contact-extra__value {
     font-family: var(--font-display);
-    font-size: var(--text-h3);
+    font-size: var(--text-2xl);
     text-transform: uppercase;
   }
 
   .contact-extra__social {
     display: flex;
     flex-wrap: wrap;
-    gap: var(--space-3);
+    gap: var(--space-4);
   }
 
   .contact-extra__social a {
     font-family: var(--font-display);
-    font-size: var(--text-h3);
+    font-size: var(--text-2xl);
     color: var(--color-night);
     text-decoration: none;
   }

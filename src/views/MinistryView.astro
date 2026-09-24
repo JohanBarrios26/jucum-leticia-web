@@ -19,7 +19,7 @@ import PersonCard from '@/components/PersonCard.astro';
 import FeatureBlocks from '@/components/features/FeatureBlocks.astro';
 import { ministryAlternates, routes, type Locale } from '@/i18n/routes';
 import { t } from '@/i18n/ui';
-import { getMinistries, getPeople, getSiteSettings, whatsappUrl, type Ministry } from '@/lib/content';
+import { getMinistries, getPeople, getSiteSettings, ogImageUrl, whatsappUrl, type Ministry } from '@/lib/content';
 
 interface Props {
   locale: Locale;
@@ -44,6 +44,14 @@ const contactHref = settings.whatsapp
   alternates={ministryAlternates(ministry.slug)}
   title={ministry.name}
   description={ministry.shortDescription ?? undefined}
+  ogImage={ogImageUrl(ministry.image)}
+  breadcrumbs={[
+    { name: ui.nav.home, url: routes.home[locale] },
+    { name: ui.nav.ministries, url: routes.ministries[locale] },
+    { name: ministry.name, url: ministryAlternates(ministry.slug)[locale] },
+  ]}
+  pageEvent="ministry_view"
+  pageItem={ministry.slug}
   headerOverlay
 >
   <PageHero

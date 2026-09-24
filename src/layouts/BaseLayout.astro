@@ -11,7 +11,11 @@
  *   </BaseLayout>
  *
  * SEO (especificación §25): título, descripción, URL canónica, versiones en
- * otros idiomas (hreflang) e imagen para redes sociales (Open Graph).
+ * otros idiomas (hreflang), imagen para redes sociales (Open Graph) y datos
+ * estructurados para Google (JSON-LD: organización y ruta de navegación).
+ *
+ * Analítica (especificación §33): si hay PUBLIC_UMAMI_WEBSITE_ID se carga
+ * Umami (sin cookies) y src/scripts/analytics.ts registra los eventos.
  */
 import '@fontsource/bebas-neue';
 import '@fontsource-variable/inter';
@@ -21,7 +25,8 @@ import Header from '@/components/Header.astro';
 import Footer from '@/components/Footer.astro';
 import { defaultLocale, locales, type Alternates, type Locale } from '@/i18n/routes';
 import { t } from '@/i18n/ui';
-import { getSiteSettings } from '@/lib/content';
+import { umamiWebsiteId } from '@/lib/config';
+import { getHome, getSiteSettings, ogImageUrl } from '@/lib/content';
 
 interface Props {
   locale: Locale;
@@ -32,12 +37,19 @@ interface Props {
   /** Título completo sin agregados (lo usa la página de inicio). */
   fullTitle?: string;
   description?: string;
-  /** Imagen al compartir en redes (ruta dentro de /public o URL). */
+  /** Imagen al compartir en redes (URL). Por defecto: la foto de portada del inicio. */
   ogImage?: string;
   /** true = pedir a Google que no indexe esta página (ej. 404). */
   noindex?: boolean;
   /** Encabezado transparente sobre una foto a pantalla completa (inicio). */
   headerOverlay?: boolean;
+  /** Ruta de navegación para Google, ej. [{ name: 'Ministerios', url: '/ministerios/' }, …]. */
+  breadcrumbs?: { name: string; url: string }[];
+  /** Incluir los datos de la organización para Google (solo en el inicio). */
+  organizationSchema?: boolean;
+  /** Evento de analítica al abrir la página (ej. 'ministry_view') y su elemento. */
+  pageEvent?: string;
+  pageItem?: string;
 }
 
 const {
@@ -46,12 +58,16 @@ const {
   title,
   fullTitle,
   description,
-  ogImage = '/brand/logo-original.png',
+  ogImage,
   noindex = false,
   headerOverlay = false,
+  breadcrumbs,
+  organizationSchema = false,
+  pageEvent,
+  pageItem,
 } = Astro.props;
 
-const settings = await getSiteSettings(locale);
+const [settings, home] = await Promise.all([getSiteSettings(locale), getHome(locale)]);
 const ui = t(locale);
 
 const pageTitle = fullTitle ?? (title ? `${title} | ${settings.organizationName}` : settings.organizationName);
@@ -59,8 +75,39 @@ const metaDescription = description ?? settings.shortDescription;
 // `site` viene de astro.config.mjs (dominio final del sitio).
 const site = Astro.site ?? Astro.url;
 const canonical = new URL(alternates[locale], site).href;
-const ogImageUrl = new URL(ogImage, site).href;
+const ogImageFinal = ogImage ?? ogImageUrl(home.hero.image) ?? new URL('/brand/logo-original.png', site).href;
 const ogLocale = { es: 'es_CO', en: 'en_US' } satisfies Record<Locale, string>;
+
+// ---- Datos estructurados (JSON-LD) para Google ----
+const jsonLd: object[] = [];
+if (organizationSchema) {
+  const sameAs = Object.values(settings.social).filter(Boolean);
+  jsonLd.push({
+    '@context': 'https://schema.org',
+    '@type': 'NGO',
+    name: settings.organizationName,
+    description: settings.shortDescription,
+    url: new URL(alternates[locale], site).href,
+    logo: new URL('/brand/logo-original.png', site).href,
+    image: ogImageFinal,
+    email: settings.email,
+    telephone: settings.phones.map((p) => p.number),
+    address: { '@type': 'PostalAddress', addressLocality: 'Leticia', addressRegion: 'Amazonas', addressCountry: 'CO' },
+    ...(sameAs.length > 0 && { sameAs }),
+  });
+}
+if (breadcrumbs && breadcrumbs.length > 0) {
+  jsonLd.push({
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: breadcrumbs.map((b, i) => ({
+      '@type': 'ListItem',
+      position: i + 1,
+      name: b.name,
+      item: new URL(b.url, site).href,
+    })),
+  });
+}
 ---
 
 <!doctype html>
@@ -88,9 +135,21 @@ const ogLocale = { es: 'es_CO', en: 'en_US' } satisfies Record<Locale, string>;
     <meta property="og:title" content={pageTitle} />
     <meta property="og:description" content={metaDescription} />
     <meta property="og:url" content={canonical} />
-    <meta property="og:image" content={ogImageUrl} />
+    <meta property="og:image" content={ogImageFinal} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
     <meta property="og:locale" content={ogLocale[locale]} />
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content={ogImageFinal} />
+
+    {jsonLd.map((data) => <script type="application/ld+json" set:html={JSON.stringify(data)} />)}
+
+    <!-- Analítica sin cookies (solo si está configurada) -->
+    {
+      umamiWebsiteId && (
+        <script is:inline defer data-umami src="https://cloud.umami.is/script.js" data-website-id={umamiWebsiteId} />
+      )
+    }
 
     <meta name="theme-color" content="#102a2a" />
     <link rel="icon" type="image/png" href="/brand/logo-dark.png" />
@@ -98,7 +157,7 @@ const ogLocale = { es: 'es_CO', en: 'en_US' } satisfies Record<Locale, string>;
     <link rel="sitemap" href="/sitemap-index.xml" />
     <meta name="generator" content={Astro.generator} />
   </head>
-  <body>
+  <body data-page-event={pageEvent} data-page-item={pageItem}>
     <a class="skip-link" href="#main">{ui.skipToContent}</a>
     <Header locale={locale} alternates={alternates} settings={settings} overlay={headerOverlay} />
     <main id="main" tabindex="-1">
@@ -106,9 +165,10 @@ const ogLocale = { es: 'es_CO', en: 'en_US' } satisfies Record<Locale, string>;
     </main>
     <Footer locale={locale} settings={settings} />
 
-    <!-- Activa las animaciones de aparición (data-reveal) en toda la página. -->
+    <!-- Animaciones de aparición (data-reveal) y registro de eventos de analítica. -->
     <script>
       import '@/scripts/reveal';
+      import '@/scripts/analytics';
     </script>
   </body>
 </html>
