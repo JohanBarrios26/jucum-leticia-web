@@ -41,7 +41,7 @@ const { locale, what } = Astro.props;
     font-size: var(--text-sm);
     font-weight: 600;
     letter-spacing: 0.04em;
-    opacity: 0.75;
+    /* Sin transparencia: así cumple el contraste mínimo en cualquier fondo. */
   }
 
   .pending__what {
