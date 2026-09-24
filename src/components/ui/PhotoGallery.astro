@@ -1,0 +1,300 @@
+---
+/**
+ * GALERÍA DE FOTOS CON VISOR (usada en las páginas de las bases)
+ * ----------------------------------------------------------------------------
+ * - La cuadrícula se adapta a la cantidad de fotos para que nunca queden
+ *   huecos: 1 foto = ancha; 2 = mitad y mitad; 3 = una grande + dos; 4 o más =
+ *   mosaico con la primera destacada.
+ * - Al tocar una foto se abre un visor a pantalla completa (<dialog>) con
+ *   flechas, teclado (← → Esc) y la descripción de la foto.
+ * - Las fotos grandes del visor se descargan solo al abrirlo.
+ */
+import SmartImage from '@/components/ui/SmartImage.astro';
+import type { Locale } from '@/i18n/routes';
+import { t } from '@/i18n/ui';
+import type { ImageRef } from '@/lib/content';
+
+interface Props {
+  locale: Locale;
+  images: ImageRef[];
+}
+
+const { locale, images } = Astro.props;
+const ui = t(locale).gallery;
+
+/** URL grande para el visor: del CDN de Sanity o el archivo local original. */
+const fullUrl = (img: ImageRef) =>
+  typeof img.src === 'string' ? `${img.src}?w=1800&q=70&auto=format&fit=max` : img.src.src;
+
+// Pocas fotos → más grandes; muchas → mosaico.
+const layout = images.length === 1 ? 'one' : images.length === 2 ? 'two' : images.length === 3 ? 'three' : 'many';
+---
+
+<div class="pg" data-gallery>
+  <ul role="list" class={`pg__grid pg__grid--${layout}`}>
+    {
+      images.map((img, i) => (
+        <li class="pg__item" data-reveal="scale" style={`--reveal-delay: ${(i % 3) * 80}ms`}>
+          <button
+            type="button"
+            class="pg__button"
+            data-full={fullUrl(img)}
+            data-alt={img.alt}
+            data-index={i}
+            aria-label={`${ui.open}: ${img.alt}`}
+          >
+            <SmartImage
+              image={img}
+              decorative
+              sizes={layout === 'one' ? '(min-width: 64rem) 80rem, 100vw' : '(min-width: 64rem) 45vw, 90vw'}
+              widths={[480, 768, 1080, 1440]}
+            />
+          </button>
+        </li>
+      ))
+    }
+  </ul>
+
+  <!-- Visor a pantalla completa -->
+  <dialog class="pg__viewer" aria-label={ui.viewer} data-viewer>
+    <figure class="pg__figure">
+      <img alt="" data-viewer-img />
+      <figcaption data-viewer-caption></figcaption>
+    </figure>
+    <button type="button" class="pg__nav pg__nav--prev" aria-label={ui.prev} data-viewer-prev>←</button>
+    <button type="button" class="pg__nav pg__nav--next" aria-label={ui.next} data-viewer-next>→</button>
+    <button type="button" class="pg__close" aria-label={ui.close} data-viewer-close>×</button>
+    <span class="pg__count" data-viewer-count></span>
+  </dialog>
+</div>
+
+<script>
+  /* Visor: abre la foto tocada, permite pasar a la anterior/siguiente y cerrar. */
+  document.querySelectorAll<HTMLElement>('[data-gallery]').forEach((gallery) => {
+    const buttons = [...gallery.querySelectorAll<HTMLButtonElement>('button[data-full]')];
+    const viewer = gallery.querySelector<HTMLDialogElement>('[data-viewer]')!;
+    const img = viewer.querySelector<HTMLImageElement>('[data-viewer-img]')!;
+    const caption = viewer.querySelector<HTMLElement>('[data-viewer-caption]')!;
+    const count = viewer.querySelector<HTMLElement>('[data-viewer-count]')!;
+    const multiple = buttons.length > 1;
+    let index = 0;
+
+    viewer.toggleAttribute('data-single', !multiple);
+
+    // La foto aparece con un fundido cuando termina de cargar (sin mostrar la anterior).
+    img.addEventListener('load', () => img.removeAttribute('data-loading'));
+
+    const show = (i: number) => {
+      index = (i + buttons.length) % buttons.length;
+      const b = buttons[index];
+      img.setAttribute('data-loading', '');
+      img.src = b.dataset.full ?? '';
+      img.alt = b.dataset.alt ?? '';
+      caption.textContent = b.dataset.alt ?? '';
+      count.textContent = multiple ? `${index + 1} / ${buttons.length}` : '';
+    };
+
+    buttons.forEach((b, i) =>
+      b.addEventListener('click', () => {
+        show(i);
+        viewer.showModal();
+      }),
+    );
+    viewer.querySelector('[data-viewer-prev]')?.addEventListener('click', () => show(index - 1));
+    viewer.querySelector('[data-viewer-next]')?.addEventListener('click', () => show(index + 1));
+    viewer.querySelector('[data-viewer-close]')?.addEventListener('click', () => viewer.close());
+    // Clic fuera de la foto (en el fondo) cierra el visor.
+    viewer.addEventListener('click', (e) => {
+      if (e.target === viewer) viewer.close();
+    });
+    viewer.addEventListener('keydown', (e) => {
+      if (!multiple) return;
+      if (e.key === 'ArrowLeft') show(index - 1);
+      if (e.key === 'ArrowRight') show(index + 1);
+    });
+    // Al cerrar, el foco vuelve a la foto que se abrió.
+    viewer.addEventListener('close', () => buttons[index]?.focus());
+  });
+</script>
+
+<style>
+  .pg__grid {
+    display: grid;
+    gap: clamp(0.5rem, 1vw, 1rem);
+    grid-template-columns: repeat(2, 1fr);
+    grid-auto-rows: clamp(9rem, 20vw, 15rem);
+  }
+
+  .pg__item {
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+
+  /* 1 foto: ancha. */
+  .pg__grid--one {
+    grid-template-columns: 1fr;
+    grid-auto-rows: auto;
+  }
+
+  .pg__grid--one .pg__item {
+    aspect-ratio: 16 / 9;
+    max-height: min(34rem, 70svh);
+  }
+
+  /* 2 fotos: mitad y mitad. */
+  .pg__grid--two {
+    grid-auto-rows: clamp(12rem, 28vw, 22rem);
+  }
+
+  /* 3 o más: la primera ocupa el doble. */
+  .pg__grid--three .pg__item:first-child,
+  .pg__grid--many .pg__item:first-child {
+    grid-column: span 2;
+    grid-row: span 2;
+  }
+
+  @media (min-width: 48rem) {
+    .pg__grid--three {
+      grid-template-columns: 2fr 1fr;
+    }
+
+    .pg__grid--three .pg__item:first-child {
+      grid-column: 1;
+    }
+
+    .pg__grid--many {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+
+  .pg__button {
+    display: block;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    border: 0;
+    background: none;
+    cursor: zoom-in;
+  }
+
+  .pg__button :global(img),
+  .pg__button :global(picture) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 900ms var(--ease);
+  }
+
+  .pg__button:hover :global(img) {
+    transform: scale(1.04);
+  }
+
+  /* ---------- Visor ---------- */
+  .pg__viewer {
+    width: 100vw;
+    max-width: 100vw;
+    height: 100dvh;
+    max-height: 100dvh;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: rgb(10 29 29 / 0.96);
+    color: var(--color-cloud);
+  }
+
+  .pg__viewer::backdrop {
+    background: rgb(10 29 29 / 0.8);
+  }
+
+  .pg__figure {
+    display: grid;
+    place-items: center;
+    gap: var(--space-4);
+    height: 100%;
+    padding: var(--space-8) var(--space-9) var(--space-6);
+  }
+
+  .pg__figure img {
+    max-width: 100%;
+    max-height: calc(100dvh - 10rem);
+    object-fit: contain;
+    border-radius: var(--radius-sm);
+    transition: opacity 300ms var(--ease);
+  }
+
+  .pg__figure img[data-loading] {
+    opacity: 0;
+  }
+
+  .pg__figure figcaption {
+    max-width: 48rem;
+    color: var(--color-text-on-dark-muted);
+    font-size: var(--text-sm);
+    text-align: center;
+  }
+
+  .pg__nav,
+  .pg__close {
+    position: absolute;
+    display: grid;
+    place-items: center;
+    width: 3rem;
+    height: 3rem;
+    border: 1px solid var(--color-border-on-dark);
+    border-radius: 50%;
+    background: rgb(255 255 255 / 0.06);
+    color: var(--color-cloud);
+    font-size: 1.25rem;
+    transition: background-color var(--duration) var(--ease);
+  }
+
+  .pg__nav:hover,
+  .pg__close:hover {
+    background: var(--color-river);
+    color: var(--color-night);
+  }
+
+  .pg__nav {
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  .pg__nav--prev {
+    left: var(--space-4);
+  }
+
+  .pg__nav--next {
+    right: var(--space-4);
+  }
+
+  .pg__viewer[data-single] .pg__nav {
+    display: none;
+  }
+
+  .pg__close {
+    top: var(--space-4);
+    right: var(--space-4);
+    font-size: 1.75rem;
+  }
+
+  .pg__count {
+    position: absolute;
+    top: var(--space-5);
+    left: var(--space-5);
+    color: var(--color-text-on-dark-muted);
+    font-size: var(--text-sm);
+    font-variant-numeric: tabular-nums;
+  }
+
+  @media (max-width: 40rem) {
+    .pg__figure {
+      padding: var(--space-8) var(--space-3) var(--space-6);
+    }
+
+    .pg__nav {
+      top: auto;
+      bottom: var(--space-4);
+      transform: none;
+    }
+  }
+</style>

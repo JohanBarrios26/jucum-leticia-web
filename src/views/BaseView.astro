@@ -11,7 +11,7 @@ import BaseAccess from '@/components/BaseAccess.astro';
 import PageHero from '@/components/PageHero.astro';
 import PendingContent from '@/components/PendingContent.astro';
 import LiteVideo from '@/components/features/LiteVideo.astro';
-import SmartImage from '@/components/ui/SmartImage.astro';
+import PhotoGallery from '@/components/ui/PhotoGallery.astro';
 import { baseAlternates, ministryAlternates, routes, schoolAlternates, type Locale } from '@/i18n/routes';
 import { t } from '@/i18n/ui';
 import { showPending } from '@/lib/config';
@@ -28,7 +28,16 @@ const settings = await getSiteSettings(locale);
 const visitHref = settings.whatsapp
   ? whatsappUrl(settings.whatsapp, `${ui.bases.visitMessage} ${base.name}.`)
   : routes.contact[locale];
-const hasMedia = base.gallery.length > 0 || base.videos.length > 0;
+const hasPhotos = base.gallery.length > 0;
+const hasVideos = base.videos.length > 0;
+const hasMedia = hasPhotos || hasVideos;
+// El título dice solo lo que hay: "Fotos", "Videos" o "Fotos · Videos".
+const mediaTitle =
+  hasPhotos && !hasVideos
+    ? ui.bases.photos
+    : hasVideos && !hasPhotos
+      ? ui.bases.videos
+      : `${ui.bases.photos} · ${ui.bases.videos}`;
 ---
 
 <BaseLayout
@@ -106,20 +115,12 @@ const hasMedia = base.gallery.length > 0 || base.videos.length > 0;
       <section class="section surface-dark" aria-labelledby="media-title">
         <div class="container">
           <h2 id="media-title" class="media-title" data-reveal>
-            {ui.bases.photos} · {ui.bases.videos}
+            {mediaTitle}
           </h2>
 
-          {base.gallery.length > 0 && (
-            <ul role="list" class="photos">
-              {base.gallery.map((img, i) => (
-                <li data-reveal="scale" style={`--reveal-delay: ${(i % 3) * 80}ms`}>
-                  <SmartImage image={img} sizes="(min-width: 64rem) 30vw, 90vw" widths={[480, 768, 1080]} />
-                </li>
-              ))}
-            </ul>
-          )}
+          {hasPhotos && <PhotoGallery locale={locale} images={base.gallery} />}
 
-          {base.videos.length > 0 && (
+          {hasVideos && (
             <div class="videos">
               {base.videos.map((v, i) => (
                 <LiteVideo
@@ -224,25 +225,6 @@ const hasMedia = base.gallery.length > 0 || base.videos.length > 0;
   /* Fotos y videos */
   .media-title {
     margin-bottom: var(--space-6);
-  }
-
-  .photos {
-    display: grid;
-    gap: var(--space-3);
-    grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
-  }
-
-  .photos li {
-    aspect-ratio: 4 / 3;
-    border-radius: var(--radius);
-    overflow: hidden;
-  }
-
-  .photos :global(img),
-  .photos :global(picture) {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
   }
 
   .videos {

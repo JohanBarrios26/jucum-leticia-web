@@ -126,8 +126,14 @@ Por respeto y por ley, **solo publica con autorización**:
 
 ## 5. Mensajes del formulario de contacto
 
-Los mensajes que las personas envían desde **/contacto/** llegan por correo a **ywamleticia@gmail.com** con el asunto "Nuevo mensaje desde el sitio web · [motivo]" (ej. "Quiero venir").
-Para responder, simplemente responde ese correo: la respuesta le llega a la persona que escribió.
+Los mensajes que las personas envían desde **/contacto/** llegan por correo a **ywamleticia@gmail.com** (y se reenvían a jucumlc@gmail.com) con un asunto como:
+
+> 🙋 Quiero venir — María Pérez · Nuevo mensaje desde el sitio web
+
+Dentro, los datos vienen ordenados y en español: motivo, nombre, correo, teléfono, **enlace directo para escribirle por WhatsApp**, país, ciudad, mensaje, idioma en que visitó el sitio, página desde donde escribió y fecha (hora de Colombia).
+
+- Para responder, simplemente **responde ese correo**: la respuesta le llega a la persona que escribió.
+- No cambies el filtro de Gmail que busca "Nuevo mensaje desde el sitio web": es el que reenvía los mensajes.
 
 ---
 

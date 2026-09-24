@@ -140,6 +140,15 @@ const es = {
     atBase: 'Se realiza en',
   },
 
+  /* Visor de fotos */
+  gallery: {
+    open: 'Ampliar foto',
+    viewer: 'Visor de fotos',
+    prev: 'Foto anterior',
+    next: 'Foto siguiente',
+    close: 'Cerrar',
+  },
+
   /* Llamado a la acción al final de los listados */
   cta: {
     joinText: 'Hay cuatro caminos para ser parte: orar, servir, venir y apoyar.',
@@ -353,6 +362,13 @@ const en: UIStrings = {
     school: 'School',
     ministry: 'Ministry',
     atBase: 'Takes place at',
+  },
+  gallery: {
+    open: 'Enlarge photo',
+    viewer: 'Photo viewer',
+    prev: 'Previous photo',
+    next: 'Next photo',
+    close: 'Close',
   },
   cta: {
     joinText: 'There are four ways to be part: pray, serve, come and support.',
