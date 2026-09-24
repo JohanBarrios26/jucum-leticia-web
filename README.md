@@ -88,7 +88,7 @@ Variables de entorno opcionales: ver [`.env.example`](.env.example).
 cd studio
 npm install
 npx sanity dev      # http://localhost:3333
-npx sanity deploy   # publica en https://jucum-leticia.sanity.studio
+npx sanity deploy   # publica el panel (también automático con GitHub Actions al subir cambios en studio/)
 npm run backup      # copia de seguridad del contenido
 ```
 

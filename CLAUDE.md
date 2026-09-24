@@ -18,7 +18,7 @@ npm run build    # static build to dist/
 npm run check    # astro check (types + .astro diagnostics)
 ```
 
-Studio (run inside `studio/`): `npx sanity dev` (http://localhost:3333), `npx sanity schema validate`, `npx sanity deploy -y`, `npm run backup` (dataset export to `studio/backups/`, gitignored).
+Studio (run inside `studio/`): `npx sanity dev` (http://localhost:3333), `npx sanity schema validate`, `npm run backup` (dataset export to `studio/backups/`, gitignored). **Studio deploys run on GitHub Actions** (`.github/workflows/deploy-studio.yml`) on every push that touches `studio/**`, or manually with `gh workflow run deploy-studio.yml`. Local `sanity deploy` often crashes on this low-RAM machine. The workflow uses the `SANITY_AUTH_TOKEN` repo secret (a Deploy Studio role token) and installs the root deps too, because Sanity reads the root `tsconfig.json`.
 
 There is no test suite. Verify changes with `npm run check && npm run build && npm run check:links` (the last one checks every internal link and anchor in `dist/`); for Studio changes also run `npx tsc --noEmit -p studio` and `npx sanity schema validate`. The dev machine has about 6 GB of RAM and is often nearly full. If check or build dies with "heap out of memory" or "memory allocation failed", prefix the command with `NODE_OPTIONS=--max-old-space-size=3072` and stop the dev server first.
 
