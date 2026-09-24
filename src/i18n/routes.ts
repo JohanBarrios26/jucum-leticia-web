@@ -24,6 +24,7 @@ export type Alternates = Record<Locale, string>;
 export const routes = {
   home: { es: '/', en: '/en/' },
   about: { es: '/quienes-somos/', en: '/en/about/' },
+  bases: { es: '/bases/', en: '/en/bases/' },
   ministries: { es: '/ministerios/', en: '/en/ministries/' },
   schools: { es: '/escuelas/', en: '/en/schools/' },
   join: { es: '/se-parte/', en: '/en/get-involved/' },
@@ -34,7 +35,8 @@ export const routes = {
 export type RouteKey = keyof typeof routes;
 
 /** Orden del menú principal (definido en la especificación §3). */
-export const mainNav: RouteKey[] = ['home', 'about', 'ministries', 'schools', 'join', 'contact'];
+// "Bases" se agregó a pedido del cliente (no estaba en la especificación original).
+export const mainNav: RouteKey[] = ['home', 'about', 'bases', 'ministries', 'schools', 'join', 'contact'];
 
 /* ------------------------------------------------ Páginas dinámicas (por slug) */
 // El slug es el mismo en ambos idiomas (viene del CMS), solo cambia la carpeta.
@@ -42,6 +44,11 @@ export const mainNav: RouteKey[] = ['home', 'about', 'ministries', 'schools', 'j
 /** URLs de la página de un ministerio en ambos idiomas. */
 export function ministryAlternates(slug: string): Alternates {
   return { es: `${routes.ministries.es}${slug}/`, en: `${routes.ministries.en}${slug}/` };
+}
+
+/** URLs de la página de una base en ambos idiomas. */
+export function baseAlternates(slug: string): Alternates {
+  return { es: `${routes.bases.es}${slug}/`, en: `${routes.bases.en}${slug}/` };
 }
 
 /** URLs de la página de una persona del equipo en ambos idiomas. */

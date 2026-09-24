@@ -1,0 +1,109 @@
+---
+/**
+ * TARJETA DE BASE
+ * ----------------------------------------------------------------------------
+ * Foto de fondo, frase corta (ej. "La base de la selva"), nombre, ubicación y
+ * el motivo visual. Lleva a la página de la base. La usan el inicio y /bases/.
+ */
+import ImagePlaceholder from '@/components/ui/ImagePlaceholder.astro';
+import Motif from '@/components/ui/Motif.astro';
+import SmartImage from '@/components/ui/SmartImage.astro';
+import { baseAlternates, type Locale } from '@/i18n/routes';
+import { t } from '@/i18n/ui';
+import type { Base } from '@/lib/content';
+
+interface Props {
+  locale: Locale;
+  base: Base;
+  sizes?: string;
+}
+
+const { locale, base: b, sizes = '(min-width: 64rem) 45vw, 100vw' } = Astro.props;
+const ui = t(locale).bases;
+---
+
+<a class="base-card" href={baseAlternates(b.slug)[locale]} data-event="base_card_click">
+  <div class="base-card__media">
+    {b.image ? <SmartImage image={b.image} decorative sizes={sizes} widths={[480, 768, 1080, 1440]} /> : <ImagePlaceholder />}
+  </div>
+  <div class="base-card__body">
+    {b.motif && (
+      <div class="base-card__motif">
+        <Motif name={b.motif} />
+      </div>
+    )}
+    {b.tagline && <p class="eyebrow eyebrow--line base-card__tagline">{b.tagline}</p>}
+    <h3 class="base-card__name">{b.name}</h3>
+    {b.location && <p class="base-card__location">{b.location}</p>}
+    <span class="link-arrow base-card__more">{ui.viewBase} <span aria-hidden="true">→</span></span>
+  </div>
+</a>
+
+<style>
+  .base-card {
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    min-height: clamp(20rem, 50vh, 28rem);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    color: var(--color-text-on-dark);
+    text-decoration: none;
+    isolation: isolate;
+  }
+
+  .base-card__media {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+  }
+
+  .base-card__media :global(img),
+  .base-card__media :global(picture) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 900ms var(--ease);
+  }
+
+  .base-card:hover .base-card__media :global(img) {
+    transform: scale(1.05);
+  }
+
+  .base-card__media::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgb(10 29 29 / 0.92), rgb(10 29 29 / 0.35) 55%, rgb(10 29 29 / 0.1));
+  }
+
+  .base-card__body {
+    display: grid;
+    gap: var(--space-2);
+    width: 100%;
+    padding: clamp(1.5rem, 1rem + 2vw, 2.5rem);
+  }
+
+  .base-card__motif {
+    width: 6rem;
+    margin-bottom: var(--space-3);
+  }
+
+  .base-card__tagline {
+    color: var(--color-river);
+  }
+
+  .base-card__name {
+    font-size: clamp(2.25rem, 1.5rem + 2.5vw, 3.5rem);
+    line-height: 0.95;
+  }
+
+  .base-card__location {
+    color: var(--color-text-on-dark-muted);
+  }
+
+  .base-card__more {
+    margin-top: var(--space-3);
+    color: var(--color-river);
+  }
+</style>

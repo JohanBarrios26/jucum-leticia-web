@@ -5,7 +5,7 @@
  * Logo + menú principal + selector de idioma. Aparece en todas las páginas.
  *
  * Comportamiento:
- *   - Escritorio (≥ 1152px): menú horizontal; "Sé parte" se destaca como botón.
+ *   - Escritorio (≥ 1200px): menú horizontal; "Sé parte" se destaca como botón.
  *   - Móvil y tablet: botón hamburguesa que abre un panel a pantalla completa.
  *   - Modo `overlay` (página de inicio): el encabezado es transparente sobre la
  *     foto principal y se vuelve sólido al bajar un poco.
@@ -127,8 +127,8 @@ function isActive(href: string): boolean {
   const header = document.querySelector<HTMLElement>('[data-header]');
   const toggle = header?.querySelector<HTMLButtonElement>('[data-menu-toggle]');
   const label = header?.querySelector<HTMLElement>('[data-menu-label]');
-  // Debe coincidir con el breakpoint de escritorio del CSS de abajo (72rem).
-  const desktop = window.matchMedia('(min-width: 72rem)');
+  // Debe coincidir con el breakpoint de escritorio del CSS de abajo (75rem).
+  const desktop = window.matchMedia('(min-width: 75rem)');
 
   function setOpen(open: boolean) {
     if (!header || !toggle || !label) return;
@@ -393,8 +393,8 @@ function isActive(href: string): boolean {
     text-decoration: none;
   }
 
-  /* ---------- Escritorio (≥ 1152px) ---------- */
-  @media (min-width: 72rem) {
+  /* ---------- Escritorio (≥ 1200px) ---------- */
+  @media (min-width: 75rem) {
     .menu-toggle {
       display: none;
     }

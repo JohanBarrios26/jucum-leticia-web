@@ -1,0 +1,113 @@
+---
+/**
+ * BLOQUE DE CIERRE (llamado a la acción)
+ * ----------------------------------------------------------------------------
+ * Tarjeta compacta al final de los listados (Ministerios, Escuelas, Bases,
+ * Equipo): título + texto + botones juntos a la izquierda y el motivo visual
+ * a la derecha. Reemplaza el título suelto con el botón alejado.
+ *
+ * Uso: <CtaBand locale={locale} />  (por defecto invita a "Sé parte")
+ */
+import Motif from '@/components/ui/Motif.astro';
+import { routes, type Locale } from '@/i18n/routes';
+import { t } from '@/i18n/ui';
+import type { MotifName } from '@/lib/content';
+
+interface Props {
+  locale: Locale;
+  title?: string;
+  text?: string;
+  motif?: MotifName;
+}
+
+const { locale, title, text, motif = 'path' } = Astro.props;
+const ui = t(locale);
+---
+
+<section class="section cta-section">
+  <div class="container">
+    <div class="cta-card" data-reveal>
+      <div class="cta-card__text">
+        <p class="eyebrow eyebrow--line cta-card__eyebrow">{ui.home.joinEyebrow}</p>
+        <h2 class="cta-card__title">{title ?? ui.home.joinTitle}</h2>
+        <p class="cta-card__lead">{text ?? ui.cta.joinText}</p>
+        <div class="cta-card__actions">
+          <a class="btn btn--primary" href={routes.join[locale]} data-event="cta_join_click">
+            {ui.nav.join} <span class="btn__arrow" aria-hidden="true">→</span>
+          </a>
+          <a class="btn btn--outline" href={routes.contact[locale]} data-event="cta_contact_click">
+            {ui.nav.contact}
+          </a>
+        </div>
+      </div>
+      <div class="cta-card__motif" aria-hidden="true">
+        <Motif name={motif} />
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .cta-section {
+    padding-block: var(--space-8);
+  }
+
+  .cta-card {
+    display: grid;
+    gap: var(--space-6);
+    align-items: center;
+    padding: clamp(1.75rem, 1rem + 3vw, 3.5rem);
+    border-radius: var(--radius-lg);
+    background:
+      radial-gradient(ellipse at 100% 0%, rgb(31 111 91 / 0.6), transparent 60%),
+      var(--color-night);
+    color: var(--color-text-on-dark);
+    overflow: hidden;
+  }
+
+  @media (min-width: 48rem) {
+    .cta-card {
+      grid-template-columns: 1fr 14rem;
+    }
+  }
+
+  .cta-card__text {
+    display: grid;
+    gap: var(--space-4);
+    justify-items: start;
+  }
+
+  .cta-card__eyebrow {
+    color: var(--color-river);
+  }
+
+  .cta-card__title {
+    max-width: 22ch;
+    font-size: var(--text-h2);
+  }
+
+  .cta-card__lead {
+    max-width: 34rem;
+    color: var(--color-text-on-dark-muted);
+  }
+
+  .cta-card__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    margin-top: var(--space-2);
+  }
+
+  .cta-card__motif {
+    width: 100%;
+    max-width: 14rem;
+    justify-self: end;
+    opacity: 0.9;
+  }
+
+  @media (max-width: 47.99rem) {
+    .cta-card__motif {
+      display: none;
+    }
+  }
+</style>

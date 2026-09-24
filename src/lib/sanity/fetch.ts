@@ -12,6 +12,8 @@
 import { createClient } from '@sanity/client';
 import type {
   AboutRaw,
+  AccessMode,
+  BaseRaw,
   FeatureBlockRaw,
   GalleryCategory,
   GalleryItemRaw,
@@ -67,7 +69,12 @@ const query = `{
   },
   "schools": *[_type == "school"] | order(orderRank){
     ..., "slug": slug.current, image${photo},
-    contacts[]{..., photo${photo}}, ${features}
+    contacts[]{..., photo${photo}}, ${features},
+    "baseRef": base->{"slug": slug.current, name, active}
+  },
+  "bases": *[_type == "base"] | order(orderRank){
+    ..., "slug": slug.current, image${photo}, gallery[]${photo},
+    "programs": programs[]->{_type, "slug": slug.current, name, active}
   },
   "about": *[_id == "about"][0]{..., image${photo}, history[]{..., image${photo}}},
   "pageTexts": *[_id == "pageTexts"][0],
@@ -101,6 +108,7 @@ type Doc = Record<string, any>;
 
 export interface CmsContent {
   siteSettings: SiteSettingsRaw;
+  bases: BaseRaw[];
   about: AboutRaw;
   pageTexts: PageTextsRaw;
   people: PersonRaw[];
@@ -329,6 +337,32 @@ function toSchool(d: Doc, i: number): SchoolRaw {
     order: i,
     motif: toMotif(d.motif),
     features: toFeatures(d.features),
+    base: d.baseRef?.slug && d.baseRef.active !== false ? { slug: d.baseRef.slug, name: d.baseRef.name } : null,
+  };
+}
+
+function toBase(d: Doc, i: number): BaseRaw {
+  const modes = ['walk', 'river', 'road', 'air'];
+  return {
+    slug: d.slug,
+    name: d.name,
+    tagline: lx(d.tagline),
+    location: lx(d.location),
+    description: lx(d.description),
+    image: toImage(d.image),
+    motif: toMotif(d.motif),
+    // Solo programas activos y con identificador.
+    programs: (d.programs ?? [])
+      .filter((p: Doc) => p?.slug && p.active !== false)
+      .map((p: Doc) => ({ kind: p._type === 'ministry' ? 'ministry' : 'school', slug: p.slug, name: p.name })),
+    accessFrom: d.accessFrom ?? null,
+    accessRoutes: (d.accessRoutes ?? [])
+      .filter((r: Doc) => modes.includes(r.mode) && r.duration)
+      .map((r: Doc) => ({ mode: r.mode as AccessMode, duration: r.duration, note: lx(r.note) })),
+    gallery: (d.gallery ?? []).map(toImage).filter(Boolean) as ImageRawRef[],
+    videos: (d.videos ?? []).filter((v: Doc) => v.url).map((v: Doc) => ({ title: lx(v.title), url: v.url })),
+    active: d.active !== false,
+    order: i,
   };
 }
 
@@ -358,8 +392,10 @@ let cache: Promise<CmsContent> | undefined;
 export function fetchCmsContent(): Promise<CmsContent> {
   cache ??= client.fetch<Record<string, any>>(query).then((r) => ({
     siteSettings: toSiteSettings(r.siteSettings),
+    bases: (r.bases ?? []).filter((b: Doc) => b.slug && b.name).map(toBase),
     about: toAbout(r.about),
     pageTexts: {
+      basesIntro: lx(r.pageTexts?.basesIntro),
       ministriesIntro: lx(r.pageTexts?.ministriesIntro),
       peopleIntro: lx(r.pageTexts?.peopleIntro),
       schoolsIntro: lx(r.pageTexts?.schoolsIntro),

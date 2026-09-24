@@ -14,6 +14,8 @@ import { joinPathUrl, joinPaths as joinPathOrder, type Locale } from '@/i18n/rou
 import { fetchCmsContent, type CmsContent } from '@/lib/sanity/fetch';
 import type {
   About,
+  Base,
+  BaseRaw,
   FeatureBlock,
   FeatureBlockRaw,
   GalleryItem,
@@ -265,6 +267,7 @@ function resolveSchool(s: SchoolRaw, locale: Locale): School {
     order: s.order,
     motif: s.motif,
     features: resolveFeatures(s.features, locale),
+    base: s.base ? { slug: s.base.slug, name: localize(s.base.name, locale) } : null,
   };
 }
 
@@ -390,10 +393,52 @@ function resolvePerson(p: PersonRaw, locale: Locale): Person {
 export async function getPageTexts(locale: Locale): Promise<PageTexts> {
   const t = (await source()).pageTexts;
   return {
+    basesIntro: localizeMaybe(t.basesIntro, locale),
     ministriesIntro: localizeMaybe(t.ministriesIntro, locale),
     peopleIntro: localizeMaybe(t.peopleIntro, locale),
     schoolsIntro: localizeMaybe(t.schoolsIntro, locale),
     joinIntro: localizeMaybe(t.joinIntro, locale),
     contactIntro: localizeMaybe(t.contactIntro, locale),
   };
+}
+
+/* -------------------------------------------------------------------- Bases */
+
+function resolveBase(b: BaseRaw, locale: Locale): Base {
+  return {
+    slug: b.slug,
+    name: localize(b.name, locale),
+    tagline: localizeMaybe(b.tagline, locale),
+    location: localizeMaybe(b.location, locale),
+    description: localizeMaybe(b.description, locale),
+    image: resolveImageMaybe(b.image, locale),
+    motif: b.motif,
+    programs: b.programs.map((p) => ({ kind: p.kind, slug: p.slug, name: localize(p.name, locale) })),
+    accessFrom: b.accessFrom,
+    accessRoutes: b.accessRoutes.map((r) => ({
+      mode: r.mode,
+      duration: localize(r.duration, locale),
+      note: localizeMaybe(r.note, locale),
+    })),
+    gallery: b.gallery.map((g) => resolveImage(g, locale)),
+    videos: b.videos.map((v) => ({ title: localizeMaybe(v.title, locale), url: v.url, youtubeId: youtubeId(v.url) })),
+    order: b.order,
+  };
+}
+
+/** Bases activas, en el orden del panel. */
+export async function getBases(locale: Locale): Promise<Base[]> {
+  return (await source()).bases
+    .filter((b) => b.active)
+    .sort(byOrder)
+    .map((b) => resolveBase(b, locale));
+}
+
+export async function getBaseSlugs(): Promise<string[]> {
+  return (await source()).bases.filter((b) => b.active).map((b) => b.slug);
+}
+
+export async function getBase(slug: string, locale: Locale): Promise<Maybe<Base>> {
+  const b = (await source()).bases.find((x) => x.slug === slug && x.active);
+  return b ? resolveBase(b, locale) : null;
 }

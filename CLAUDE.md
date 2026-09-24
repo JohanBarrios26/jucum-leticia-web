@@ -41,5 +41,9 @@ There is no test suite. Verify changes with `npm run check && npm run build`; fo
 
 ## Client requirements not in the spec
 
+- **Bases** (added at the client's request): a `base` document type, `/bases/` and `/bases/[slug]/` pages (`BasesView`, `BaseView`), `HomeBases` placed after "Sobre JUCUM", and "Bases" added to `mainNav`, so the menu has 7 items and the desktop nav breakpoint is 75rem. JUCUM El Puente is a base, not a school or ministry: it is in the community of Ronda (about 4 h on foot or 2 h by river from Leticia), and EMI and the pastors' seminars take place there. Its old school and ministry documents are hidden (`active: false`), not deleted. Schools can reference a `base`, shown in the school's info list. `BaseAccess.astro` draws the routes (river = wavy blue line, walk = dotted green trail).
+- **Closing CTA:** listing pages end with `components/CtaBand.astro`. Don't use a loose heading with a far-away button.
+- **Desktop scale:** the client found sections too big on laptops. Big headings in `tokens.css` are capped with `min(…, Nsvh)`, and card and hero heights are kept modest. Check new sections at 1366×768 and 1280×720.
+
 - Each school has `contacts`: the people in charge of that specific school, each with their own WhatsApp, email and phone. They render on the school page.
 - Contact-form recipients and CMS admin emails are recorded in the project memory. They must never appear in frontend code.

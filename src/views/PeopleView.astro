@@ -7,6 +7,7 @@
  * orar por ella y apoyarla personalmente.
  */
 import BaseLayout from '@/layouts/BaseLayout.astro';
+import CtaBand from '@/components/CtaBand.astro';
 import PageHero from '@/components/PageHero.astro';
 import PendingContent from '@/components/PendingContent.astro';
 import PersonCard from '@/components/PersonCard.astro';
@@ -65,6 +66,8 @@ const [people, texts, settings] = await Promise.all([getPeople(locale), getPageT
       }
     </div>
   </section>
+
+  <CtaBand locale={locale} motif="crown" />
 </BaseLayout>
 
 <style>

@@ -175,7 +175,7 @@ const supportHref = p.support.link ?? wa(`${ui.people.supportMessage} ${p.name}.
 
   .profile__photo {
     aspect-ratio: 4 / 5;
-    max-height: 70vh;
+    max-height: min(34rem, 70svh);
     border-radius: var(--radius-lg);
     overflow: hidden;
   }

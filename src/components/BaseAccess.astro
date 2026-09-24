@@ -1,0 +1,244 @@
+---
+/**
+ * CÓMO LLEGAR A UNA BASE
+ * ----------------------------------------------------------------------------
+ * Ilustración con el punto de partida (ej. Leticia) a la izquierda, la base a
+ * la derecha y una "carril" por cada ruta entre ambos:
+ *   - río      → línea ondulada azul (como el Amazonas)
+ *   - a pie    → sendero punteado verde con árboles (la selva)
+ *   - carretera/avión → línea recta / arco
+ * Cada carril muestra el medio, la duración y un detalle. Las líneas se
+ * dibujan al entrar en pantalla (se respeta "reducir movimiento").
+ */
+import type { Locale } from '@/i18n/routes';
+import { t } from '@/i18n/ui';
+import type { Base } from '@/lib/content';
+
+interface Props {
+  locale: Locale;
+  base: Base;
+  titleId: string;
+}
+
+const { locale, base, titleId } = Astro.props;
+const ui = t(locale).bases;
+
+// Trazo de cada medio de transporte (viewBox 0 0 600 60).
+const paths = {
+  river: 'M0 30 C 50 8, 100 52, 150 30 S 250 8, 300 30 S 400 52, 450 30 S 550 8, 600 30',
+  walk: 'M0 36 C 80 36, 90 20, 170 24 S 280 44, 360 34 S 500 18, 600 26',
+  road: 'M0 30 L 600 30',
+  air: 'M0 50 C 150 -10, 450 -10, 600 50',
+};
+---
+
+<div class="access">
+  <h2 id={titleId} class="access__title" data-reveal>{ui.access}</h2>
+
+  <div class="access__map">
+    <div class="access__ends" aria-hidden="true">
+      <span class="access__end"><span class="access__pin" />{base.accessFrom}</span>
+      <span class="access__end access__end--to"><span class="access__pin access__pin--to" />{base.name}</span>
+    </div>
+
+    <ul role="list" class="access__routes">
+      {
+        base.accessRoutes.map((r, i) => (
+          <li class={`access__route access__route--${r.mode}`} data-reveal style={`--reveal-delay: ${i * 150}ms`}>
+            <div class="access__label">
+              <span class="access__icon" aria-hidden="true">
+                {r.mode === 'river' && (
+                  <svg viewBox="0 0 24 24">
+                    <path d="M3 15h18l-2.5 4h-13zM8 15V6l7 5H8" />
+                  </svg>
+                )}
+                {r.mode === 'walk' && (
+                  <svg viewBox="0 0 24 24">
+                    <circle cx="13" cy="4.5" r="2" />
+                    <path d="M11 21l2-6 3 3v3M10 12l1-4 3 2 3 1M11 8l-3 2-1 4" />
+                  </svg>
+                )}
+                {r.mode === 'road' && (
+                  <svg viewBox="0 0 24 24">
+                    <path d="M4 16V11l2-5h12l2 5v5zM4 11h16M7 16v2M17 16v2" />
+                  </svg>
+                )}
+                {r.mode === 'air' && (
+                  <svg viewBox="0 0 24 24">
+                    <path d="M2 13l8-2 3-7h2l-1 7 6 1v2l-6 1 1 5h-2l-3-5-8-1z" />
+                  </svg>
+                )}
+              </span>
+              <span class="access__mode">{ui.modes[r.mode]}</span>
+              <span class="access__duration">≈ {r.duration}</span>
+              {r.note && <span class="access__note">{r.note}</span>}
+            </div>
+            <svg class="access__line" viewBox="0 0 600 60" preserveAspectRatio="none" aria-hidden="true">
+              <path pathLength="1" d={paths[r.mode]} />
+              {r.mode === 'walk' &&
+                [90, 230, 380, 520].map((x) => <path class="access__tree" d={`M${x} 22 l-7 12 h14 z M${x} 34 v6`} />)}
+            </svg>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</div>
+
+<style>
+  .access__title {
+    margin-bottom: var(--space-6);
+  }
+
+  .access__map {
+    padding: clamp(1.25rem, 1rem + 2vw, 2.5rem);
+    border-radius: var(--radius-lg);
+    background: var(--color-cloud);
+  }
+
+  /* Puntos de partida y llegada */
+  .access__ends {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--space-4);
+    margin-bottom: var(--space-5);
+    font-family: var(--font-display);
+    font-size: var(--text-2xl);
+    line-height: 1;
+    text-transform: uppercase;
+  }
+
+  .access__end {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+  }
+
+  .access__end--to {
+    text-align: right;
+  }
+
+  .access__pin {
+    width: 0.9rem;
+    height: 0.9rem;
+    border-radius: 50%;
+    background: var(--color-night);
+    flex-shrink: 0;
+  }
+
+  .access__pin--to {
+    order: 2;
+    background: var(--color-river);
+    box-shadow: 0 0 0 4px rgb(0 173 239 / 0.25);
+  }
+
+  /* Rutas */
+  .access__routes {
+    display: grid;
+    gap: var(--space-5);
+  }
+
+  .access__label {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2) var(--space-3);
+  }
+
+  .access__icon svg {
+    width: 1.5rem;
+    height: 1.5rem;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .access__mode {
+    font-weight: 700;
+  }
+
+  .access__duration {
+    padding: var(--space-1) var(--space-3);
+    border-radius: var(--radius-pill);
+    background: var(--color-night);
+    color: var(--color-cloud);
+    font-size: var(--text-sm);
+    font-weight: 700;
+  }
+
+  .access__note {
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+  }
+
+  .access__line {
+    display: block;
+    width: 100%;
+    height: 3rem;
+    overflow: visible;
+  }
+
+  .access__line path {
+    fill: none;
+    stroke-width: 3;
+    stroke-linecap: round;
+    vector-effect: non-scaling-stroke;
+  }
+
+  .access__route--river {
+    color: #0079a8;
+  }
+
+  .access__route--river .access__line path {
+    stroke: var(--color-river);
+    stroke-width: 4;
+  }
+
+  .access__route--walk {
+    color: var(--color-green);
+  }
+
+  .access__route--walk .access__line path:first-child {
+    stroke: var(--color-green);
+    stroke-dasharray: 0.012 0.018;
+  }
+
+  .access__line .access__tree {
+    fill: var(--color-green);
+    stroke: var(--color-green);
+    stroke-width: 1.5;
+    opacity: 0.7;
+  }
+
+  .access__route--road .access__line path,
+  .access__route--air .access__line path {
+    stroke: var(--color-night);
+  }
+
+  /* Dibujo de la línea al entrar en pantalla (excepto el sendero punteado). */
+  @supports (animation-timeline: view()) {
+    .access__route:not(.access__route--walk) .access__line path {
+      stroke-dasharray: 1;
+      animation: access-draw linear both;
+      animation-timeline: view();
+      animation-range: entry 10% cover 40%;
+    }
+  }
+
+  @keyframes access-draw {
+    from {
+      stroke-dashoffset: 1;
+    }
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .access__line path {
+      animation: none !important;
+    }
+  }
+</style>

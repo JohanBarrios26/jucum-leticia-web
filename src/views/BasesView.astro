@@ -1,0 +1,56 @@
+---
+/**
+ * VISTA: NUESTRAS BASES (/bases/)
+ * ----------------------------------------------------------------------------
+ * Las bases de JUCUM Leticia (ej. Leticia y JUCUM El Puente en Ronda), cada
+ * una en una tarjeta grande que lleva a su página. Pedido del cliente.
+ */
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import BaseCard from '@/components/BaseCard.astro';
+import CtaBand from '@/components/CtaBand.astro';
+import PageHero from '@/components/PageHero.astro';
+import { routes, type Locale } from '@/i18n/routes';
+import { t } from '@/i18n/ui';
+import { getBases, getPageTexts, getSiteSettings } from '@/lib/content';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const ui = t(locale);
+const [bases, texts, settings] = await Promise.all([getBases(locale), getPageTexts(locale), getSiteSettings(locale)]);
+---
+
+<BaseLayout locale={locale} alternates={routes.bases} title={ui.nav.bases} description={texts.basesIntro ?? undefined} headerOverlay>
+  <PageHero title={ui.bases.eyebrow} eyebrow={settings.organizationName} lead={texts.basesIntro} motif="bridge" />
+
+  <section class="section" aria-label={ui.bases.eyebrow}>
+    <div class="container">
+      <ul role="list" class="bases-grid">
+        {
+          bases.map((b, i) => (
+            <li data-reveal style={`--reveal-delay: ${i * 100}ms`}>
+              <BaseCard locale={locale} base={b} />
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <CtaBand locale={locale} motif="bridge" />
+</BaseLayout>
+
+<style>
+  .bases-grid {
+    display: grid;
+    gap: var(--space-5);
+  }
+
+  @media (min-width: 48rem) {
+    .bases-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+</style>

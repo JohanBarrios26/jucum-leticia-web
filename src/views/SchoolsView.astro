@@ -7,6 +7,7 @@
  * Las tarjetas alternan la foto a izquierda y derecha en escritorio.
  */
 import BaseLayout from '@/layouts/BaseLayout.astro';
+import CtaBand from '@/components/CtaBand.astro';
 import PageHero from '@/components/PageHero.astro';
 import PendingContent from '@/components/PendingContent.astro';
 import ImagePlaceholder from '@/components/ui/ImagePlaceholder.astro';
@@ -83,6 +84,8 @@ const pad = (n: number) => String(n).padStart(2, '0');
       </ul>
     </div>
   </section>
+
+  <CtaBand locale={locale} motif="path" />
 </BaseLayout>
 
 <style>
@@ -165,7 +168,7 @@ const pad = (n: number) => String(n).padStart(2, '0');
   }
 
   .school-card__name {
-    font-size: clamp(3rem, 2rem + 4vw, 6rem);
+    font-size: clamp(2.5rem, 1.8rem + 2.8vw, 4.25rem);
     line-height: 0.9;
   }
 

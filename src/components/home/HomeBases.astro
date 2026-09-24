@@ -1,0 +1,75 @@
+---
+/**
+ * INICIO · NUESTRAS BASES (pedido del cliente)
+ * ----------------------------------------------------------------------------
+ * Las bases de JUCUM Leticia lado a lado (ej. Leticia en la ciudad y
+ * JUCUM El Puente en la selva), cada una lleva a su página.
+ */
+import BaseCard from '@/components/BaseCard.astro';
+import { routes, type Locale } from '@/i18n/routes';
+import { t } from '@/i18n/ui';
+import type { Base } from '@/lib/content';
+
+interface Props {
+  locale: Locale;
+  bases: Base[];
+}
+
+const { locale, bases } = Astro.props;
+const ui = t(locale);
+---
+
+{
+  bases.length > 0 && (
+    <section class="section home-bases surface-sand" aria-labelledby="home-bases-title">
+      <div class="container">
+        <div class="home-bases__head" data-reveal>
+          <div class="section-head">
+            <p class="eyebrow eyebrow--line">{ui.bases.eyebrow}</p>
+            <h2 id="home-bases-title">{ui.bases.homeTitle}</h2>
+          </div>
+          <a class="link-arrow" href={routes.bases[locale]}>
+            {ui.nav.bases} <span aria-hidden="true">→</span>
+          </a>
+        </div>
+        <ul role="list" class="home-bases__grid">
+          {bases.map((b, i) => (
+            <li data-reveal style={`--reveal-delay: ${i * 120}ms`}>
+              <BaseCard locale={locale} base={b} />
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+  )
+}
+
+<style>
+  .home-bases__head {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: end;
+    gap: var(--space-4);
+    margin-bottom: var(--space-6);
+  }
+
+  .home-bases__head .section-head {
+    margin-bottom: 0;
+  }
+
+  .home-bases__head .link-arrow {
+    color: var(--color-green);
+  }
+
+  .home-bases__grid {
+    display: grid;
+    gap: var(--space-5);
+  }
+
+  @media (min-width: 48rem) {
+    .home-bases__grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+</style>

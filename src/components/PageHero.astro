@@ -74,8 +74,8 @@ const { title, eyebrow, lead, image, motif, back, compact = false } = Astro.prop
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
-    min-height: min(40rem, 78svh);
-    padding-top: calc(var(--header-height) + var(--space-8));
+    min-height: min(32rem, 68svh);
+    padding-top: calc(var(--header-height) + var(--space-7));
     color: var(--color-text-on-dark);
     background:
       radial-gradient(ellipse at 85% 10%, rgb(0 173 239 / 0.16), transparent 50%),
@@ -86,7 +86,7 @@ const { title, eyebrow, lead, image, motif, back, compact = false } = Astro.prop
   }
 
   .page-hero--image {
-    min-height: min(46rem, 88svh);
+    min-height: min(38rem, 78svh);
   }
 
   .page-hero__media {
@@ -133,8 +133,11 @@ const { title, eyebrow, lead, image, motif, back, compact = false } = Astro.prop
     }
   }
 
+  /* En su propia línea, aunque haya una frase (eyebrow) debajo. */
   .page-hero__back {
-    margin-bottom: var(--space-5);
+    display: flex;
+    width: fit-content;
+    margin-bottom: var(--space-4);
     color: var(--color-river);
   }
 
@@ -169,7 +172,7 @@ const { title, eyebrow, lead, image, motif, back, compact = false } = Astro.prop
   }
 
   .page-hero__motif {
-    max-width: 22rem;
+    max-width: 18rem;
     width: 100%;
     justify-self: end;
     opacity: 0.95;

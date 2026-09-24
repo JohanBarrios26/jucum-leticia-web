@@ -218,6 +218,8 @@ export interface SchoolRaw {
   order: number;
   motif: Maybe<MotifName>;
   features: FeatureBlockRaw[];
+  /** Base donde se realiza (enlace a su página). */
+  base: Maybe<{ slug: string; name: Localized }>;
 }
 
 export interface School {
@@ -238,6 +240,7 @@ export interface School {
   order: number;
   motif: Maybe<MotifName>;
   features: FeatureBlock[];
+  base: Maybe<{ slug: string; name: string }>;
 }
 
 /* ------------------------------------------------------ Caminos para participar */
@@ -383,7 +386,48 @@ export interface Person {
 
 /* ------------------------------------------------------- Textos de las páginas */
 
+/* -------------------------------------------------------------------- Bases */
+
+export const accessModes = ['walk', 'river', 'road', 'air'] as const;
+export type AccessMode = (typeof accessModes)[number];
+
+/** Base física de JUCUM Leticia (ej. Leticia, JUCUM El Puente en Ronda). */
+export interface BaseRaw {
+  slug: string;
+  name: Localized;
+  tagline: Maybe<Localized>;
+  location: Maybe<Localized>;
+  description: Maybe<Localized>;
+  image: Maybe<ImageRawRef>;
+  motif: Maybe<MotifName>;
+  /** Escuelas y ministerios que se realizan en la base. */
+  programs: { kind: 'school' | 'ministry'; slug: string; name: Localized }[];
+  accessFrom: Maybe<string>;
+  accessRoutes: { mode: AccessMode; duration: Localized; note: Maybe<Localized> }[];
+  gallery: ImageRawRef[];
+  videos: { title: Maybe<Localized>; url: string }[];
+  active: boolean;
+  order: number;
+}
+
+export interface Base {
+  slug: string;
+  name: string;
+  tagline: Maybe<string>;
+  location: Maybe<string>;
+  description: Maybe<string>;
+  image: Maybe<ImageRef>;
+  motif: Maybe<MotifName>;
+  programs: { kind: 'school' | 'ministry'; slug: string; name: string }[];
+  accessFrom: Maybe<string>;
+  accessRoutes: { mode: AccessMode; duration: string; note: Maybe<string> }[];
+  gallery: ImageRef[];
+  videos: { title: Maybe<string>; url: string; youtubeId: Maybe<string> }[];
+  order: number;
+}
+
 export interface PageTextsRaw {
+  basesIntro: Maybe<Localized>;
   ministriesIntro: Maybe<Localized>;
   peopleIntro: Maybe<Localized>;
   schoolsIntro: Maybe<Localized>;

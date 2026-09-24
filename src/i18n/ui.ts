@@ -23,6 +23,7 @@ const es = {
   nav: {
     home: 'Inicio',
     about: 'Quiénes somos',
+    bases: 'Bases',
     ministries: 'Ministerios',
     schools: 'Escuelas',
     join: 'Sé parte',
@@ -117,6 +118,31 @@ const es = {
     videoTitle: 'Video',
     videoPlay: 'Reproducir video',
     statsTitle: 'Cifras',
+  },
+
+  /* Bases (Leticia, El Puente…) */
+  bases: {
+    eyebrow: 'Nuestras bases',
+    homeTitle: 'Desde la ciudad hasta la selva',
+    viewBase: 'Conocer la base',
+    access: 'Cómo llegar',
+    from: 'Desde',
+    modes: { walk: 'A pie', river: 'Por río', road: 'Por carretera', air: 'En avión' },
+    programs: 'Qué se realiza aquí',
+    photos: 'Fotos',
+    videos: 'Videos',
+    mediaPending: 'Aquí aparecerán fotos y videos de la base.',
+    visit: 'Ven a conocerla',
+    visitText: 'Escríbenos y te contamos cómo visitar la base o servir allí.',
+    visitMessage: 'Hola, me gustaría conocer la base',
+    school: 'Escuela',
+    ministry: 'Ministerio',
+    atBase: 'Se realiza en',
+  },
+
+  /* Llamado a la acción al final de los listados */
+  cta: {
+    joinText: 'Hay cuatro caminos para ser parte: orar, servir, venir y apoyar.',
   },
 
   /* Página "Nuestro equipo" y perfil de cada persona */
@@ -226,6 +252,7 @@ const en: UIStrings = {
   nav: {
     home: 'Home',
     about: 'About us',
+    bases: 'Bases',
     ministries: 'Ministries',
     schools: 'Schools',
     join: 'Get involved',
@@ -308,6 +335,27 @@ const en: UIStrings = {
     videoTitle: 'Video',
     videoPlay: 'Play video',
     statsTitle: 'Figures',
+  },
+  bases: {
+    eyebrow: 'Our bases',
+    homeTitle: 'From the city to the rainforest',
+    viewBase: 'Visit the base',
+    access: 'How to get there',
+    from: 'From',
+    modes: { walk: 'On foot', river: 'By river', road: 'By road', air: 'By plane' },
+    programs: 'What happens here',
+    photos: 'Photos',
+    videos: 'Videos',
+    mediaPending: 'Photos and videos of the base will appear here.',
+    visit: 'Come and see it',
+    visitText: 'Write to us and we will tell you how to visit or serve at this base.',
+    visitMessage: 'Hello, I would like to visit the base',
+    school: 'School',
+    ministry: 'Ministry',
+    atBase: 'Takes place at',
+  },
+  cta: {
+    joinText: 'There are four ways to be part: pray, serve, come and support.',
   },
   people: {
     eyebrow: 'People',

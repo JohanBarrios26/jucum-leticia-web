@@ -17,6 +17,7 @@ Todo se hace desde el **panel de administración**, una página web con usuario 
 | **Textos de las páginas** | La frase bajo el título de Ministerios, Escuelas, Sé parte y Contacto. |
 | **Página de inicio** | Foto y textos de la portada, frase "Sobre JUCUM", actividades, sección de corto plazo y cómo se ve el sitio en Google. |
 | **Quiénes somos** | Introducción, misión, visión, valores e historia. |
+| **Bases** | Cada base (Leticia, JUCUM El Puente…): descripción, cómo llegar, qué se realiza allí, fotos y videos. |
 | **Ministerios** | Cada ministerio con su foto, descripción, actividades, **motivo visual** y **bloques especiales**. |
 | **Escuelas** | Cada escuela, su ficha (fechas, costos, requisitos…), las **personas encargadas** y sus bloques especiales. |
 | **Cómo participar** | Orar, Servir, Venir y Apoyar: textos, preguntas frecuentes y el mensaje de WhatsApp. |
@@ -74,6 +75,17 @@ Para volver a mostrarlo, actívalo de nuevo.
 - Escribe siempre la **descripción de la foto** (qué se ve). Sirve para personas ciegas y para Google.
 - Después de subirla, haz clic en el ícono del **lápiz / recorte** y marca el **punto de interés** (por ejemplo, la cara de una persona). El sitio nunca recortará ese punto.
 - Las fotos marcadas como **"Foto temporal"** son provisionales: reemplázalas por fotos de JUCUM y desmarca la casilla.
+
+### Agregar fotos o videos a una base
+1. Abre **Bases** → la base (ej. **JUCUM El Puente**).
+2. Pestaña **Fotos y videos**:
+   - **Fotos:** súbelas y escribe la descripción de cada una (solo con autorización de las personas que aparecen).
+   - **Videos:** pega el enlace de YouTube y un título. El video solo se carga cuando alguien presiona reproducir.
+3. Pestaña **Cómo llegar:** el punto de partida (ej. "Leticia") y cada ruta con su medio y duración (ej. "A pie · 4 horas", "Por río · 2 horas").
+4. En **General → Qué se realiza en esta base**, elige las escuelas o ministerios que funcionan allí.
+5. **Publicar.**
+
+Para indicar en una escuela dónde se realiza: abre la escuela → pestaña **Ficha** → **Base donde se realiza**.
 
 ### Bloques especiales (lo que hace única a cada página)
 En un ministerio o escuela, pestaña **Bloques especiales**:

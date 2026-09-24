@@ -41,18 +41,22 @@
   --font-display: 'Bebas Neue', 'Arial Narrow', sans-serif; /* Títulos */
   --font-body: 'Inter Variable', 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; /* Texto */
 
-  /* Tamaños fluidos: clamp(mínimo, preferido según ancho de pantalla, máximo) */
+  /*
+   * Tamaños fluidos: clamp(mínimo, preferido según ancho de pantalla, máximo).
+   * Los títulos más grandes también se limitan por la ALTURA de la pantalla
+   * (svh) para que quepan bien en portátiles de 720–768 px de alto.
+   */
   --text-xs: 0.75rem;
   --text-sm: 0.875rem;
   --text-base: 1rem;
   --text-lg: 1.125rem;
   --text-xl: clamp(1.125rem, 1rem + 0.5vw, 1.375rem);
-  --text-2xl: clamp(1.375rem, 1.1rem + 1.2vw, 2rem);
-  --text-h3: clamp(1.75rem, 1.4rem + 1.6vw, 2.75rem);
-  --text-h2: clamp(2.5rem, 1.6rem + 3.6vw, 4.75rem);
-  --text-h1: clamp(3rem, 1.8rem + 5vw, 6rem);
-  --text-display: clamp(3.5rem, 1.5rem + 8.5vw, 10rem);
-  --text-statement: clamp(1.75rem, 1rem + 3vw, 3.75rem);
+  --text-2xl: clamp(1.25rem, 1rem + 0.9vw, 1.75rem);
+  --text-h3: clamp(1.5rem, 1.25rem + 1.1vw, 2.25rem);
+  --text-h2: min(clamp(2.1rem, 1.5rem + 2.2vw, 3.5rem), 8svh);
+  --text-h1: min(clamp(2.6rem, 1.6rem + 3.4vw, 4.5rem), 10svh);
+  --text-display: min(clamp(3rem, 1.6rem + 4.8vw, 6.25rem), 12.5svh);
+  --text-statement: clamp(1.5rem, 1rem + 2vw, 2.75rem);
 
   --leading-tight: 0.92;
   --leading-normal: 1.6;
@@ -68,8 +72,8 @@
   --space-6: 2rem;
   --space-7: 3rem;
   --space-8: 4rem;
-  --space-9: 6rem;
-  --space-section: clamp(5rem, 3rem + 7vw, 10rem); /* Separación entre secciones */
+  --space-9: 5rem;
+  --space-section: clamp(3.5rem, 2rem + 4vw, 6.5rem); /* Separación entre secciones */
 
   /* ---------- Layout ---------- */
   --container-max: 84rem;

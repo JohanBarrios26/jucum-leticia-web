@@ -2,7 +2,7 @@
  * MENÚ LATERAL DEL PANEL
  * ----------------------------------------------------------------------------
  * Define qué ve el equipo de JUCUM al entrar al panel y en qué orden:
- *   Configuración · Textos de páginas · Inicio · Quiénes somos · Ministerios ·
+ *   Configuración · Textos de páginas · Inicio · Quiénes somos · Bases · Ministerios ·
  *   Escuelas · Cómo participar · Personas · Galería · Historias
  *
  * Las listas "ordenables" permiten cambiar el orden arrastrando los elementos.
@@ -20,6 +20,7 @@ import {CommentIcon} from '@sanity/icons/Comment'
 import {DocumentTextIcon} from '@sanity/icons/DocumentText'
 import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
 import {UserIcon} from '@sanity/icons/User'
+import {PinIcon} from '@sanity/icons/Pin'
 import type {ComponentType} from 'react'
 import type {ConfigContext} from 'sanity'
 import type {ItemChild, StructureBuilder, StructureResolver} from 'sanity/structure'
@@ -66,6 +67,7 @@ export const structure: StructureResolver = (S, context) =>
         .icon(InfoOutlineIcon)
         .child(S.document().schemaType('about').documentId('about').title('Quiénes somos')),
       S.divider(),
+      orderableList(S, context, 'base', 'Bases', PinIcon),
       orderableList(S, context, 'ministry', 'Ministerios', HeartIcon),
       orderableList(S, context, 'school', 'Escuelas', BookIcon),
       S.listItem()

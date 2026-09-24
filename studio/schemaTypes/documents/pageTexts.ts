@@ -16,6 +16,7 @@ export const pageTexts = defineType({
   type: 'document',
   icon: DocumentTextIcon,
   fields: [
+    intro('basesIntro', 'Página "Bases"'),
     intro('ministriesIntro', 'Página "Ministerios"'),
     intro('peopleIntro', 'Página "Personas" (el equipo)'),
     intro('schoolsIntro', 'Página "Escuelas"'),

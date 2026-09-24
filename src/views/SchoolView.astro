@@ -18,7 +18,7 @@ import FeatureBlocks from '@/components/features/FeatureBlocks.astro';
 import ImagePlaceholder from '@/components/ui/ImagePlaceholder.astro';
 import SmartImage from '@/components/ui/SmartImage.astro';
 import PendingContent from '@/components/PendingContent.astro';
-import { routes, schoolAlternates, type Locale } from '@/i18n/routes';
+import { baseAlternates, routes, schoolAlternates, type Locale } from '@/i18n/routes';
 import { t } from '@/i18n/ui';
 import { ogImageUrl, whatsappUrl, type School } from '@/lib/content';
 
@@ -83,6 +83,16 @@ const facts = [
                 <dd>{f.value ?? <PendingContent locale={locale} />}</dd>
               </div>
             ))
+          }
+          {
+            school.base && (
+              <div class="facts__row">
+                <dt>{ui.bases.atBase}</dt>
+                <dd>
+                  <a href={baseAlternates(school.base.slug)[locale]}>{school.base.name} →</a>
+                </dd>
+              </div>
+            )
           }
         </dl>
       </div>

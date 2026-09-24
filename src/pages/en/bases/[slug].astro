@@ -1,0 +1,19 @@
+---
+/**
+ * Página dinámica: genera una página por cada base activa (una por slug).
+ * El diseño está en src/views/BaseView.astro (compartido con el otro idioma).
+ */
+import BaseView from '@/views/BaseView.astro';
+import { getBase, getBaseSlugs } from '@/lib/content';
+
+export async function getStaticPaths() {
+  const slugs = await getBaseSlugs();
+  return slugs.map((slug) => ({ params: { slug } }));
+}
+
+const base = await getBase(Astro.params.slug!, 'en');
+// getStaticPaths solo genera slugs existentes, así que esto no debería ocurrir.
+if (!base) throw new Error(`Contenido no encontrado: ${Astro.params.slug}`);
+---
+
+<BaseView locale="en" base={base} />

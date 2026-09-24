@@ -5,7 +5,7 @@
  * La comparten /  (español) y /en/  (inglés). Carga todo el contenido y arma
  * las secciones en el orden de la especificación §4:
  *
- *   1 Hero · 2 Sobre JUCUM · 3 Qué hacemos · 4 Ministerios · 5 Escuelas ·
+ *   1 Hero · 2 Sobre JUCUM · (Bases, pedido del cliente) · 3 Qué hacemos · 4 Ministerios · 5 Escuelas ·
  *   6 OBT · 7 Historias · 8 Galería · 9 Cómo participar · 10 Corto plazo ·
  *   11 Contacto · 12 Pie (en BaseLayout)
  *
@@ -15,6 +15,7 @@
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import HomeHero from '@/components/home/HomeHero.astro';
 import HomeAbout from '@/components/home/HomeAbout.astro';
+import HomeBases from '@/components/home/HomeBases.astro';
 import HomeActivities from '@/components/home/HomeActivities.astro';
 import HomeMinistries from '@/components/home/HomeMinistries.astro';
 import HomeSchools from '@/components/home/HomeSchools.astro';
@@ -26,6 +27,7 @@ import HomeShortTerm from '@/components/home/HomeShortTerm.astro';
 import HomeContact from '@/components/home/HomeContact.astro';
 import { routes, type Locale } from '@/i18n/routes';
 import {
+  getBases,
   getGallery,
   getHome,
   getJoinPaths,
@@ -42,7 +44,7 @@ interface Props {
 const { locale } = Astro.props;
 
 // Todo el contenido se pide en paralelo (importa cuando venga del CMS).
-const [home, settings, ministries, schools, stories, gallery, joinPaths] = await Promise.all([
+const [home, settings, ministries, schools, stories, gallery, joinPaths, bases] = await Promise.all([
   getHome(locale),
   getSiteSettings(locale),
   getMinistries(locale),
@@ -50,6 +52,7 @@ const [home, settings, ministries, schools, stories, gallery, joinPaths] = await
   getStories(locale),
   getGallery(locale),
   getJoinPaths(locale),
+  getBases(locale),
 ]);
 
 // OBT tiene su propia sección destacada (además de su tarjeta en Ministerios).
@@ -66,6 +69,7 @@ const obt = ministries.find((m) => m.slug === 'obt');
 >
   <HomeHero locale={locale} hero={home.hero} />
   <HomeAbout locale={locale} about={home.about} />
+  <HomeBases locale={locale} bases={bases} />
   <HomeActivities locale={locale} activities={home.activities} />
   <HomeMinistries locale={locale} ministries={ministries} />
   <HomeSchools locale={locale} schools={schools} />

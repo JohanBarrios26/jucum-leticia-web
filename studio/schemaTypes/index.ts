@@ -3,6 +3,7 @@
  * Para agregar un tipo nuevo: créalo en documents/ u objects/ e inclúyelo aquí.
  */
 import {about} from './documents/about'
+import {base} from './documents/base'
 import {galleryItem} from './documents/galleryItem'
 import {home} from './documents/home'
 import {joinPath} from './documents/joinPath'
@@ -27,6 +28,7 @@ export const schemaTypes = [
   siteSettings,
   home,
   about,
+  base,
   pageTexts,
   person,
   ministry,

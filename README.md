@@ -38,6 +38,7 @@
 - **Escuelas** como lista editorial, con una foto que sigue al cursor.
 - **OBT** (traducción bíblica oral) con una onda de audio animada.
 - **Cuatro caminos para participar** en paneles que se expanden.
+- **Nuestras bases:** una página por base (la ciudad de Leticia y JUCUM El Puente, en medio de la selva) con fotos, videos y una ilustración de **"Cómo llegar"** (a pie por la selva o por el río).
 - **Nuestro equipo:** perfil de cada misionero con su historia, petición de oración y botones **"Orar por…"** y **"Apoyar a…"** (enlace de donación personal o WhatsApp; nunca datos bancarios).
 - **Un detalle propio por ministerio y escuela:** un motivo SVG animado (río, puente, onda de audio, pulso…) y bloques especiales editables. Entre ellos, **audios de la Palabra en lenguas del Amazonas** (OBT), con un reproductor propio que no descarga nada hasta que se presiona reproducir.
 
