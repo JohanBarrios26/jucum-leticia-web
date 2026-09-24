@@ -32,9 +32,17 @@ jobs:
         with:
           node-version: 24
           cache: npm
-          cache-dependency-path: studio/package-lock.json
+          cache-dependency-path: |
+            package-lock.json
+            studio/package-lock.json
 
-      - name: Instalar dependencias
+      # Sanity también lee el tsconfig.json de la raíz (el del sitio, que
+      # extiende la configuración de Astro), así que se instala la raíz también.
+      - name: Instalar dependencias del sitio (raíz)
+        working-directory: .
+        run: npm ci --ignore-scripts
+
+      - name: Instalar dependencias del panel
         run: npm ci
 
       - name: Validar esquemas
