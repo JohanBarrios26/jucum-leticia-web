@@ -76,6 +76,7 @@ npm install
 npm run dev       # http://localhost:4321
 npm run build     # genera dist/
 npm run check     # revisa tipos y errores
+npm run check:links  # busca enlaces rotos (después de build)
 npm run preview   # sirve dist/ localmente
 ```
 
@@ -107,7 +108,9 @@ Guía para quienes editan el contenido: [docs/MANUAL-ADMINISTRADORES.md](docs/MA
 ## Publicación
 
 - **Vista previa para el cliente:** Vercel (`vercel.json` agrega `noindex` para que no aparezca en Google).
-- **Producción:** Cloudflare Pages con el dominio de JUCUM (`public/_headers` define los encabezados de seguridad).
+- **Producción:** Cloudflare Pages con el dominio de JUCUM (`public/_headers` define los encabezados de seguridad). Pasos completos en [docs/PUBLICACION.md](docs/PUBLICACION.md).
+
+**Resultados Lighthouse (móvil, 4G simulada):** rendimiento 87–100 · accesibilidad 100 · buenas prácticas 100 · sin saltos de diseño (CLS 0).
 
 ## Hoja de ruta
 
@@ -116,7 +119,8 @@ Guía para quienes editan el contenido: [docs/MANUAL-ADMINISTRADORES.md](docs/MA
 - [x] **Fase 3:** panel de administración (Sanity) para el equipo de JUCUM
 - [x] **Fase 4:** páginas Quiénes somos, Ministerios, Escuelas, Sé parte y Contacto, y detalle diferencial por ministerio/escuela
 - [x] **Fase 5:** formulario de contacto, analítica, SEO final y página "Nuestro equipo" con apoyo personal
-- [ ] **Fase 6:** pruebas de accesibilidad y rendimiento, y publicación
+- [x] **Fase 6:** pruebas de accesibilidad y rendimiento, enlaces rotos y guía de publicación
+- [ ] **Publicación** con el dominio de JUCUM (cuando el cliente lo apruebe)
 
 ---
 

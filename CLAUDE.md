@@ -20,7 +20,7 @@ npm run check    # astro check (types + .astro diagnostics)
 
 Studio (run inside `studio/`): `npx sanity dev` (http://localhost:3333), `npx sanity schema validate`, `npx sanity deploy -y`, `npm run backup` (dataset export to `studio/backups/`, gitignored).
 
-There is no test suite. Verify changes with `npm run check && npm run build`; for Studio changes also run `npx tsc --noEmit -p studio` and `npx sanity schema validate`. The dev machine has about 6 GB of RAM and is often nearly full. If check or build dies with "heap out of memory" or "memory allocation failed", prefix the command with `NODE_OPTIONS=--max-old-space-size=3072` and stop the dev server first.
+There is no test suite. Verify changes with `npm run check && npm run build && npm run check:links` (the last one checks every internal link and anchor in `dist/`); for Studio changes also run `npx tsc --noEmit -p studio` and `npx sanity schema validate`. The dev machine has about 6 GB of RAM and is often nearly full. If check or build dies with "heap out of memory" or "memory allocation failed", prefix the command with `NODE_OPTIONS=--max-old-space-size=3072` and stop the dev server first.
 
 ## Architecture
 
@@ -43,6 +43,7 @@ There is no test suite. Verify changes with `npm run check && npm run build`; fo
 
 - **Bases** (added at the client's request): a `base` document type, `/bases/` and `/bases/[slug]/` pages (`BasesView`, `BaseView`), `HomeBases` placed after "Sobre JUCUM", and "Bases" added to `mainNav`, so the menu has 7 items and the desktop nav breakpoint is 75rem. JUCUM El Puente is a base, not a school or ministry: it is in the community of Ronda (about 4 h on foot or 2 h by river from Leticia), and EMI and the pastors' seminars take place there. Its old school and ministry documents are hidden (`active: false`), not deleted. Schools can reference a `base`, shown in the school's info list (EDE and OBT use base-leticia; EMI, the Escuela de Misiones Indígenas, and the seminars use base-el-puente). Base photos render with `components/ui/PhotoGallery.astro`: the layout adapts to the photo count and there is a `<dialog>` viewer. The media section title adapts to photos-only or videos-only. `BaseAccess.astro` draws the routes (river = wavy blue line, walk = dotted green trail).
 - **Closing CTA:** listing pages end with `components/CtaBand.astro`. Don't use a loose heading with a far-away button.
+- **Performance rules (Lighthouse):** infinite animations must live inside a `[data-live]` container. They pause off-screen through `reveal.ts` and a CSS rule in `global.css`. The first visible photo gets `preloadImage` on `BaseLayout`, and `lib/images.ts` builds the same srcset as `SmartImage`. Cropped cards pass `ratio` to `SmartImage` so the CDN crops around the hotspot. Fonts are preloaded. The go-live checklist is in `docs/PUBLICACION.md`.
 - **Desktop scale:** the client found sections too big on laptops. Big headings in `tokens.css` are capped with `min(…, Nsvh)`, and card and hero heights are kept modest. Check new sections at 1366×768 and 1280×720.
 
 - Each school has `contacts`: the people in charge of that specific school, each with their own WhatsApp, email and phone. They render on the school page.
