@@ -18,6 +18,9 @@ npm-debug.log*
 *.docx
 ~$*.docx
 
+# Exportación generada para importar en Sanity (contiene rutas locales)
+studio/seed/
+
 # Herramientas locales
 .claude/
 .vercel/

@@ -32,12 +32,20 @@ export interface ImageRawRef {
   src: ImageMetadata | string;
   alt: Localized;
   temporary?: boolean;
+  /** Tamaño original (solo imágenes del CMS; las locales ya lo traen en `src`). */
+  width?: number;
+  height?: number;
+  /** Punto de interés marcado en el panel, como CSS object-position (ej. "50% 30%"). */
+  position?: string;
 }
 
 export interface ImageRef {
   src: ImageMetadata | string;
   alt: string;
   temporary: boolean;
+  width?: number;
+  height?: number;
+  position?: string;
 }
 
 /* ------------------------------------------------------ Configuración global */
@@ -167,6 +175,8 @@ export interface SchoolContactRaw {
   /** Formato wa.me, ej. "573001234567". */
   whatsapp: Maybe<string>;
   photo: Maybe<ImageRawRef>;
+  /** La persona autorizó publicar sus datos. Si es false, no se muestra. */
+  authorized: boolean;
 }
 
 export interface SchoolContact {

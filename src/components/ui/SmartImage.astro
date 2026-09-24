@@ -3,10 +3,13 @@
  * IMAGEN OPTIMIZADA
  * ----------------------------------------------------------------------------
  * Muestra cualquier imagen del contenido (`ImageRef`) de la forma más liviana:
- *   - Archivo local (hoy): Astro genera varios tamaños en AVIF/WebP y el
- *     navegador descarga solo el que necesita. Una foto de 6 MB queda en ~100 KB.
- *   - URL del CMS (fase 3): se usa directamente; Sanity hace el recorte y la
- *     compresión en su CDN.
+ *   - Foto del panel (Sanity): el CDN de Sanity genera cada tamaño al vuelo
+ *     (?w=768&auto=format) y entrega AVIF/WebP según el navegador.
+ *   - Archivo local: Astro genera varios tamaños en AVIF/WebP al compilar.
+ * En ambos casos el navegador descarga solo el tamaño que necesita.
+ *
+ * Si en el panel se marcó un "punto de interés", se aplica como
+ * object-position para que ese punto nunca quede fuera al recortar.
  *
  * Props importantes:
  *   sizes    → qué ancho ocupa la imagen en pantalla (ayuda a elegir el tamaño).
@@ -38,30 +41,55 @@ const {
 const alt = decorative ? '' : image.alt;
 const loading = priority ? 'eager' : 'lazy';
 const fetchpriority = priority ? 'high' : 'auto';
+const style = image.position ? `object-position: ${image.position}` : undefined;
+
+// ---- Imagen remota (Sanity): se arma el srcset con parámetros del CDN.
+let remote: { src: string; srcset: string; width?: number; height?: number } | undefined;
+if (typeof image.src === 'string') {
+  const base = image.src;
+  const max = image.width ?? Math.max(...widths);
+  const usable = widths.filter((w) => w <= max);
+  const list = usable.length > 0 ? usable : [max];
+  const url = (w: number) => `${base}?w=${w}&q=60&auto=format&fit=max`;
+  remote = {
+    src: url(list[Math.min(2, list.length - 1)]),
+    srcset: list.map((w) => `${url(w)} ${w}w`).join(', '),
+    width: image.width,
+    height: image.height,
+  };
+}
 ---
 
 {
-  typeof image.src === 'string' ? (
+  remote ? (
     <img
-      src={image.src}
+      src={remote.src}
+      srcset={remote.srcset}
+      sizes={sizes}
+      width={remote.width}
+      height={remote.height}
       alt={alt}
       class={className}
+      style={style}
       loading={loading}
       fetchpriority={fetchpriority}
       decoding="async"
     />
   ) : (
-    <Picture
-      src={image.src}
-      alt={alt}
-      widths={widths.filter((w) => typeof image.src !== 'string' && w <= image.src.width)}
-      sizes={sizes}
-      formats={['avif', 'webp']}
-      quality={60}
-      class={className}
-      loading={loading}
-      fetchpriority={fetchpriority}
-      decoding="async"
-    />
+    typeof image.src !== 'string' && (
+      <Picture
+        src={image.src}
+        alt={alt}
+        widths={widths.filter((w) => typeof image.src !== 'string' && w <= image.src.width)}
+        sizes={sizes}
+        formats={['avif', 'webp']}
+        quality={60}
+        class={className}
+        style={style}
+        loading={loading}
+        fetchpriority={fetchpriority}
+        decoding="async"
+      />
+    )
   )
 }
