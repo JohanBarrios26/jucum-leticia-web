@@ -1,21 +1,17 @@
 /**
  * CAPA DE CONTENIDO: la única puerta de entrada a los datos editables
  * ----------------------------------------------------------------------------
- * Páginas y componentes NUNCA leen Sanity ni `seed.ts` directamente: siempre
+ * Páginas y componentes NUNCA leen Sanity directamente: siempre
  * llaman a estas funciones (getHome, getMinistries...).
  *
- * ¿De dónde sale el contenido?
- *   - Sanity (el panel de administración) si está configurado el ID del
- *     proyecto (src/lib/sanity/config.ts).
- *   - Si no, del archivo local `seed.ts` (útil para desarrollar sin conexión).
+ * Todo el contenido viene de Sanity (el panel de administración), leído una
+ * sola vez por compilación en src/lib/sanity/fetch.ts.
  *
  * Cada función recibe el idioma y devuelve el contenido ya traducido, filtrado
  * (solo lo activo/publicable/autorizado) y ordenado.
  */
 import { joinPathUrl, joinPaths as joinPathOrder, type Locale } from '@/i18n/routes';
-import { cmsEnabled } from '@/lib/sanity/config';
 import { fetchCmsContent, type CmsContent } from '@/lib/sanity/fetch';
-import * as seedData from './seed';
 import type {
   GalleryItem,
   Home,
@@ -36,19 +32,9 @@ export type * from './types';
 
 /* ------------------------------------------------------- Fuente del contenido */
 
-const seedContent: CmsContent = {
-  siteSettings: seedData.siteSettings,
-  home: seedData.home,
-  ministries: seedData.ministries,
-  schools: seedData.schools,
-  joinPaths: seedData.joinPaths,
-  gallery: seedData.gallery,
-  stories: seedData.stories,
-};
-
-/** Todo el contenido en bruto (sin traducir), desde Sanity o desde el archivo local. */
+/** Todo el contenido en bruto (sin traducir) desde Sanity. */
 function source(): Promise<CmsContent> {
-  return cmsEnabled ? fetchCmsContent() : Promise.resolve(seedContent);
+  return fetchCmsContent();
 }
 
 /* ---------------------------------------------------------------- Utilidades */

@@ -1,13 +1,15 @@
 /**
  * TIPOS DEL CONTENIDO EDITABLE
  * ----------------------------------------------------------------------------
- * Describen la forma de todo lo que JUCUM podrá editar desde el panel (CMS).
+ * Describen la forma de todo lo que JUCUM edita desde el panel (Sanity).
  * Hay dos versiones de cada tipo:
  *   - `XxxRaw`: como se guarda (textos en ambos idiomas: { es, en }).
  *   - `Xxx`:    como lo reciben los componentes (ya resuelto a un idioma).
  *
- * ¿Agregar un campo nuevo? 1) Añádelo aquí en ambos tipos, 2) llénalo en
- * `seed.ts` (o en el CMS en la fase 3), 3) resuélvelo en `index.ts`.
+ * ¿Agregar un campo nuevo?
+ *   1. Agrégalo al esquema del panel (studio/schemaTypes/...).
+ *   2. Añádelo aquí en ambos tipos.
+ *   3. Conviértelo en src/lib/sanity/fetch.ts y resuélvelo en index.ts.
  */
 import type { ImageMetadata } from 'astro';
 import type { Locale } from '@/i18n/routes';
@@ -24,7 +26,7 @@ export type Maybe<T> = T | null;
 /* ---------------------------------------------------------------- Imágenes */
 
 /**
- * Una imagen. `src` es un archivo local importado (hoy) o una URL del CMS (fase 3).
+ * Una imagen. `src` es la URL del CDN de Sanity (o un archivo local importado).
  * `temporary` marca fotos provisionales que deben reemplazarse por fotos reales
  * de JUCUM con autorización de publicación (especificación §21 y §32).
  */

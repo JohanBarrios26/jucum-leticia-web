@@ -10,13 +10,14 @@
     "dev": "sanity dev",
     "build": "sanity build",
     "deploy": "sanity deploy",
-    "import-seed": "sanity dataset import seed/seed.ndjson production --replace"
+    "backup": "sanity dataset export production backups/production.tar.gz --overwrite"
   },
   "dependencies": {
     "@sanity/icons": "^5.2.2",
     "@sanity/locale-es-es": "^1.2.39",
     "@sanity/orderable-document-list": "^2.0.24",
     "@sanity/vision": "^6.16.0",
+    "lexorank": "^1.0.5",
     "react": "^19.3.0",
     "react-dom": "^19.3.0",
     "sanity": "^6.16.0",

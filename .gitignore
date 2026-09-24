@@ -18,8 +18,9 @@ npm-debug.log*
 *.docx
 ~$*.docx
 
-# Exportación generada para importar en Sanity (contiene rutas locales)
+# Respaldos del contenido de Sanity (se guardan fuera de Git)
 studio/seed/
+studio/backups/
 
 # Herramientas locales
 .claude/

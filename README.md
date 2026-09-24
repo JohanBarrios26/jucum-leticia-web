@@ -19,10 +19,11 @@
 | Decisión | Por qué |
 |---|---|
 | **Astro** con salida estática | Se publica HTML puro: carga muy rápido y se puede alojar en cualquier servicio sin servidor ni base de datos. |
-| **Capa de contenido** (`src/lib/content`) | Ninguna página lee datos directamente. En la fase 3 se conecta el CMS (Sanity) cambiando solo esa capa. |
+| **Sanity como CMS** (`studio/`) | Panel en español para que JUCUM edite todo sin programar: campos bilingües, orden por arrastre, fotos con punto de interés y autorizaciones de publicación. |
+| **Capa de contenido** (`src/lib/content`) | Ninguna página lee Sanity directamente: una sola consulta GROQ por compilación, convertida a tipos propios. |
 | **Bilingüe con URLs traducidas** | `/quienes-somos/` ↔ `/en/about/`, con `hreflang`, canónicas y selector de idioma que lleva a la página equivalente. |
 | **Animaciones sin librerías** | CSS *scroll-driven animations*, `IntersectionObserver` y unos pocos scripts pequeños. Cero dependencias de animación. |
-| **Imágenes optimizadas** | Astro genera AVIF/WebP en varios tamaños; el navegador descarga solo el que necesita. |
+| **Imágenes optimizadas** | El CDN de Sanity entrega AVIF/WebP en el tamaño justo; el sitio publicado pesa ~1 MB. |
 | **Accesibilidad desde el inicio** | Navegación por teclado, foco visible, textos alternativos, contraste revisado y respeto por "reducir movimiento". |
 
 ## Detalles de diseño
@@ -48,10 +49,13 @@ src/
 │   ├── home/         Secciones de la página de inicio (una por archivo).
 │   └── ui/           Piezas reutilizables (imagen optimizada, línea de río…).
 ├── layouts/          Plantilla base: <head> SEO, encabezado y pie.
-├── lib/content/      Capa de contenido: tipos, datos temporales y funciones get*.
+├── lib/content/      Capa de contenido: tipos y funciones get* que usan las páginas.
+├── lib/sanity/       Conexión con Sanity: configuración y consulta GROQ.
 ├── i18n/             Rutas por idioma y textos fijos de la interfaz.
 ├── styles/           Tokens de diseño y estilos globales.
 └── scripts/          JavaScript compartido (animaciones de aparición).
+studio/               Panel de administración (Sanity Studio, paquete aparte).
+docs/                 Manual para los administradores de JUCUM.
 ```
 
 Cada archivo empieza con un comentario que explica **qué hace y cómo modificarlo**.
@@ -70,11 +74,24 @@ npm run preview   # sirve dist/ localmente
 
 Variables de entorno opcionales: ver [`.env.example`](.env.example).
 
+### Panel de administración
+
+```bash
+cd studio
+npm install
+npx sanity dev      # http://localhost:3333
+npx sanity deploy   # publica en https://jucum-leticia.sanity.studio
+npm run backup      # copia de seguridad del contenido
+```
+
+Guía para quienes editan el contenido: [docs/MANUAL-ADMINISTRADORES.md](docs/MANUAL-ADMINISTRADORES.md).
+
 ### Tareas comunes
 
 | Quiero… | Dónde |
 |---|---|
-| Cambiar un texto institucional, ministerio, escuela o contacto | `src/lib/content/seed.ts` (luego será el panel del CMS) |
+| Cambiar un texto institucional, ministerio, escuela o contacto | El panel de Sanity (no el código) |
+| Agregar un campo nuevo al contenido | `studio/schemaTypes/` → `src/lib/content/types.ts` → `src/lib/sanity/fetch.ts` → `src/lib/content/index.ts` |
 | Cambiar un texto de botón o menú | `src/i18n/ui.ts` |
 | Agregar una página | `src/i18n/routes.ts` + archivos en `src/pages/` y `src/pages/en/` |
 | Cambiar colores, tipografías o espacios | `src/styles/tokens.css` |
@@ -89,7 +106,7 @@ Variables de entorno opcionales: ver [`.env.example`](.env.example).
 
 - [x] **Fase 1:** base, sistema visual, encabezado, pie y responsive
 - [x] **Fase 2:** página de inicio completa y plantillas de ministerio y escuela
-- [ ] **Fase 3:** panel de administración (Sanity) para el equipo de JUCUM
+- [x] **Fase 3:** panel de administración (Sanity) para el equipo de JUCUM
 - [ ] **Fase 4:** páginas Quiénes somos, Ministerios, Escuelas y Sé parte
 - [ ] **Fase 5:** formulario de contacto, analítica y SEO final
 - [ ] **Fase 6:** pruebas de accesibilidad y rendimiento, y publicación
@@ -97,4 +114,4 @@ Variables de entorno opcionales: ver [`.env.example`](.env.example).
 ---
 
 Diseño y desarrollo: **Johan** ([@JohanBarrios26](https://github.com/JohanBarrios26)).
-Contenido, marca y fotografías © JUCUM Leticia. Las fotos de `src/assets/temporal/` son provisionales.
+Contenido, marca y fotografías © JUCUM Leticia. Las fotos marcadas como temporales en el panel son provisionales.

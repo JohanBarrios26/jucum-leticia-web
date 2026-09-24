@@ -8,7 +8,7 @@
  * "Mostrar en el sitio" desactivado = oculto sin borrarlo.
  */
 import {HeartIcon} from '@sanity/icons/Heart'
-import {orderRankField, orderRankOrdering} from '@sanity/orderable-document-list'
+import {orderRankField, orderRankOrdering} from '../../lib/orderRank'
 import {defineField, defineType} from 'sanity'
 
 export const ministry = defineType({

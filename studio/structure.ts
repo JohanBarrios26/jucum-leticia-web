@@ -4,13 +4,42 @@
  * Define qué ve el equipo de JUCUM al entrar al panel y en qué orden:
  *   Configuración · Página de inicio · Ministerios · Escuelas · Cómo participar
  *   · Galería · Historias
+ *
  * Las listas "ordenables" permiten cambiar el orden arrastrando los elementos.
+ * El complemento que lo hace (@sanity/orderable-document-list) se carga recién
+ * al abrir la lista (import dinámico), porque no puede cargarse en Node al
+ * validar los esquemas (ver lib/orderRank.ts).
  */
 import {CogIcon} from '@sanity/icons/Cog'
 import {HomeIcon} from '@sanity/icons/Home'
 import {UsersIcon} from '@sanity/icons/Users'
-import {orderableDocumentListDeskItem} from '@sanity/orderable-document-list'
-import type {StructureResolver} from 'sanity/structure'
+import {HeartIcon} from '@sanity/icons/Heart'
+import {BookIcon} from '@sanity/icons/Book'
+import {ImagesIcon} from '@sanity/icons/Images'
+import {CommentIcon} from '@sanity/icons/Comment'
+import type {ComponentType} from 'react'
+import type {ConfigContext} from 'sanity'
+import type {ItemChild, StructureBuilder, StructureResolver} from 'sanity/structure'
+
+/** Lista ordenable por arrastre, cargada bajo demanda. */
+function orderableList(
+  S: StructureBuilder,
+  context: ConfigContext,
+  type: string,
+  title: string,
+  icon: ComponentType,
+) {
+  return S.listItem()
+    .id(`orderable-${type}`)
+    .title(title)
+    .icon(icon)
+    .child(async () => {
+      const {orderableDocumentListDeskItem} = await import('@sanity/orderable-document-list')
+      const item = orderableDocumentListDeskItem({type, title, icon, S, context})
+      // El complemento devuelve la vista ya armada (un panel de lista ordenable).
+      return item.child as unknown as ItemChild
+    })
+}
 
 export const structure: StructureResolver = (S, context) =>
   S.list()
@@ -25,13 +54,13 @@ export const structure: StructureResolver = (S, context) =>
         .icon(HomeIcon)
         .child(S.document().schemaType('home').documentId('home').title('Página de inicio')),
       S.divider(),
-      orderableDocumentListDeskItem({type: 'ministry', title: 'Ministerios', S, context}),
-      orderableDocumentListDeskItem({type: 'school', title: 'Escuelas', S, context}),
+      orderableList(S, context, 'ministry', 'Ministerios', HeartIcon),
+      orderableList(S, context, 'school', 'Escuelas', BookIcon),
       S.listItem()
         .title('Cómo participar')
         .icon(UsersIcon)
-        .child(S.documentTypeList('joinPath').title('Cómo participar').canHandleIntent(() => false)),
+        .child(S.documentTypeList('joinPath').title('Cómo participar')),
       S.divider(),
-      orderableDocumentListDeskItem({type: 'galleryItem', title: 'Galería', S, context}),
-      orderableDocumentListDeskItem({type: 'story', title: 'Historias', S, context}),
+      orderableList(S, context, 'galleryItem', 'Galería', ImagesIcon),
+      orderableList(S, context, 'story', 'Historias', CommentIcon),
     ])

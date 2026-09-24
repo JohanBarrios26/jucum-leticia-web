@@ -7,7 +7,7 @@
  * Los campos vacíos se muestran como "Pendiente de contenido".
  */
 import {BookIcon} from '@sanity/icons/Book'
-import {orderRankField, orderRankOrdering} from '@sanity/orderable-document-list'
+import {orderRankField, orderRankOrdering} from '../../lib/orderRank'
 import {defineArrayMember, defineField, defineType} from 'sanity'
 
 export const school = defineType({

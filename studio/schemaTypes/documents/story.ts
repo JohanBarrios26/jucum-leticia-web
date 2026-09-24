@@ -6,7 +6,7 @@
  * testimonio de alguien sin su permiso.
  */
 import {CommentIcon} from '@sanity/icons/Comment'
-import {orderRankField, orderRankOrdering} from '@sanity/orderable-document-list'
+import {orderRankField, orderRankOrdering} from '../../lib/orderRank'
 import {defineField, defineType} from 'sanity'
 
 export const story = defineType({

@@ -5,7 +5,7 @@
  * (especificación §32). El orden se cambia arrastrando en la lista.
  */
 import {ImagesIcon} from '@sanity/icons/Images'
-import {orderRankField, orderRankOrdering} from '@sanity/orderable-document-list'
+import {orderRankField, orderRankOrdering} from '../../lib/orderRank'
 import {defineField, defineType} from 'sanity'
 
 export const galleryCategories = [
