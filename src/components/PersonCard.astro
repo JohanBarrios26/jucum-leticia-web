@@ -11,7 +11,7 @@ import ImagePlaceholder from '@/components/ui/ImagePlaceholder.astro';
 import SmartImage from '@/components/ui/SmartImage.astro';
 import { personAlternates, type Locale } from '@/i18n/routes';
 import { t } from '@/i18n/ui';
-import type { Person } from '@/lib/content';
+import { joinNames, type Person } from '@/lib/content';
 
 interface Props {
   locale: Locale;
@@ -20,6 +20,16 @@ interface Props {
 
 const { locale, person: p } = Astro.props;
 const ui = t(locale).people;
+
+// Familias: "Carlos y Ana con sus hijos Samuel y Sofía".
+const adults = p.members.filter((m) => m.relation === 'adult').map((m) => m.name);
+const children = p.members.filter((m) => m.relation === 'child').map((m) => m.name);
+const membersLine =
+  p.members.length > 0
+    ? [joinNames(adults, locale), children.length > 0 ? `${ui.withChildren} ${joinNames(children, locale)}` : '']
+        .filter(Boolean)
+        .join(' ')
+    : null;
 ---
 
 <a class="person-card" href={personAlternates(p.slug)[locale]} data-event="person_card_click">
@@ -28,6 +38,7 @@ const ui = t(locale).people;
     {p.support.enabled && <span class="person-card__badge">{ui.supportBadge}</span>}
   </div>
   <h3 class="person-card__name">{p.name}</h3>
+  {membersLine && <p class="person-card__members">{membersLine}</p>}
   {p.role && <p class="person-card__role">{p.role}</p>}
   {
     p.country && (
@@ -84,6 +95,11 @@ const ui = t(locale).people;
 
   .person-card__name {
     font-size: var(--text-2xl);
+  }
+
+  .person-card__members {
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
   }
 
   .person-card__role {

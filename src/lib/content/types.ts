@@ -354,9 +354,17 @@ export interface PersonSupportRaw {
   text: Maybe<Localized>;
 }
 
+/** Integrante de una familia misionera (de los niños, solo el primer nombre). */
+export interface FamilyMember {
+  name: string;
+  relation: 'adult' | 'child';
+}
+
 export interface PersonRaw {
   slug: string;
   name: string;
+  /** Si tiene integrantes, el perfil es de una familia. */
+  members: FamilyMember[];
   country: Maybe<Localized>;
   support: PersonSupportRaw;
   photo: Maybe<ImageRawRef>;
@@ -373,6 +381,7 @@ export interface PersonRaw {
 export interface Person {
   slug: string;
   name: string;
+  members: FamilyMember[];
   country: Maybe<string>;
   support: { enabled: boolean; link: Maybe<string>; text: Maybe<string> };
   photo: Maybe<ImageRef>;

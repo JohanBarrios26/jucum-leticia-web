@@ -16,7 +16,7 @@ import RiverLine from '@/components/ui/RiverLine.astro';
 import SmartImage from '@/components/ui/SmartImage.astro';
 import { ministryAlternates, personAlternates, routes, type Locale } from '@/i18n/routes';
 import { t } from '@/i18n/ui';
-import { getMinistries, getPeople, getSiteSettings, ogImageUrl, whatsappUrl, type Person } from '@/lib/content';
+import { getMinistries, getPeople, getSiteSettings, joinNames, ogImageUrl, whatsappUrl, type Person } from '@/lib/content';
 
 interface Props {
   locale: Locale;
@@ -32,6 +32,11 @@ const others = people.filter((x) => x.slug !== p.slug).slice(0, 4);
 const wa = (text: string) => (settings.whatsapp ? whatsappUrl(settings.whatsapp, text) : routes.contact[locale]);
 const prayHref = wa(`${ui.people.prayMessage} ${p.name}.`);
 const supportHref = p.support.link ?? wa(`${ui.people.supportMessage} ${p.name}.`);
+
+// Familias: adultos e hijos por separado ("Carlos y Ana" · "Samuel y Sofía").
+const adults = p.members.filter((m) => m.relation === 'adult').map((m) => m.name);
+const children = p.members.filter((m) => m.relation === 'child').map((m) => m.name);
+const isFamily = p.members.length > 0;
 ---
 
 <BaseLayout
@@ -59,6 +64,24 @@ const supportHref = p.support.link ?? wa(`${ui.people.supportMessage} ${p.name}.
         <a class="link-arrow profile__back" href={routes.people[locale]}><span aria-hidden="true">←</span> {ui.nav.people}</a>
         <h1 class="profile__name">{p.name}</h1>
         {p.role && <p class="lead profile__role">{p.role}</p>}
+        {
+          isFamily && (
+            <ul role="list" class="profile__members" aria-label={ui.people.members}>
+              {adults.length > 0 && (
+                <li>
+                  <span class="profile__members-label">{ui.people.family}</span>
+                  {joinNames(adults, locale)}
+                </li>
+              )}
+              {children.length > 0 && (
+                <li>
+                  <span class="profile__members-label">{ui.people.children}</span>
+                  {joinNames(children, locale)}
+                </li>
+              )}
+            </ul>
+          )
+        }
         <dl class="profile__facts">
           {
             p.country && (
@@ -200,6 +223,32 @@ const supportHref = p.support.link ?? wa(`${ui.people.supportMessage} ${p.name}.
   .profile__role {
     margin-top: var(--space-4);
     color: var(--color-river);
+  }
+
+  /* Integrantes de la familia: dos "píldoras" (adultos · hijos). */
+  .profile__members {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2) var(--space-3);
+    margin-top: var(--space-4);
+  }
+
+  .profile__members li {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-4);
+    border: 1px solid var(--color-border-on-dark);
+    border-radius: var(--radius-pill);
+    font-size: var(--text-lg);
+  }
+
+  .profile__members-label {
+    color: var(--color-river);
+    font-size: var(--text-xs);
+    font-weight: 700;
+    letter-spacing: var(--tracking-eyebrow);
+    text-transform: uppercase;
   }
 
   .profile__facts {

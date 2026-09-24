@@ -108,6 +108,16 @@ En un ministerio o escuela, pestaña **Bloques especiales**:
 Marca **"Autorizó publicar su nombre, foto e historia"** solo con permiso. **Publicar.**
 Cada persona tiene su propia página en **/personas/** con los botones **"Orar por…"** y, si se activa, **"Apoyar a…"**.
 
+### Agregar una familia
+Muchos servidores sirven en familia: se hace **un solo perfil familiar**.
+1. **Personas** → botón **+**. En **Nombre** escribe "Familia Apellido" (ej. "Familia Rodríguez").
+2. En **Integrantes** agrega a cada miembro y marca si es **Adulto** (papá, mamá) o **Hijo o hija**.
+   - De los niños escribe **solo el primer nombre** (sin apellidos ni edades), por su seguridad.
+3. Sube **una foto de toda la familia** y llena el resto igual que una persona (rol, ministerio, historia, oración, apoyo).
+4. La autorización de publicación de los niños la dan sus papás.
+
+En la página se verá: *"Carlos y Ana con sus hijos Samuel y Sofía"*.
+
 ### Activar el apoyo personal a un misionero
 Abre la persona → pestaña **Apoyo**:
 1. Activa **"Mostrar botón Apoyar"** (solo si la persona recibe apoyo y lo autoriza).

@@ -1,7 +1,9 @@
 /**
  * PERSONA DEL EQUIPO (especificación §7.5 y §12)
  * ----------------------------------------------------------------------------
- * Quienes sirven en JUCUM Leticia. Cada persona tiene su página propia en
+ * Quienes sirven en JUCUM Leticia: una persona o una FAMILIA (en ese caso el
+ * nombre es "Familia Apellido" y se llenan los "Integrantes").
+ * Cada perfil tiene su página propia en
  * /personas/<identificador>/ y aparece en "Quiénes somos", en "Personas" y en
  * la página de su ministerio. Solo se publican con autorización.
  *
@@ -11,7 +13,7 @@
  * Nunca se escriben números de cuenta bancaria en el sitio (especificación §15.4).
  */
 import {UserIcon} from '@sanity/icons/User'
-import {defineField, defineType} from 'sanity'
+import {defineArrayMember, defineField, defineType} from 'sanity'
 import {orderRankField, orderRankOrdering} from '../../lib/orderRank'
 
 export const person = defineType({
@@ -28,7 +30,51 @@ export const person = defineType({
   ],
   fields: [
     orderRankField({type: 'person'}),
-    defineField({name: 'name', title: 'Nombre', type: 'string', group: 'main', validation: (rule) => rule.required()}),
+    defineField({
+      name: 'name',
+      title: 'Nombre',
+      type: 'string',
+      group: 'main',
+      description: 'Una persona (ej. "María Pérez") o una familia (ej. "Familia Rodríguez").',
+      validation: (rule) => rule.required(),
+    }),
+    defineField({
+      name: 'members',
+      title: 'Integrantes (si es una familia)',
+      type: 'array',
+      group: 'main',
+      description:
+        'Papás e hijos, en orden. Por seguridad, de los niños escribe SOLO el primer nombre (sin apellidos ni edades). Déjalo vacío si el perfil es de una sola persona.',
+      of: [
+        defineArrayMember({
+          type: 'object',
+          name: 'member',
+          title: 'Integrante',
+          fields: [
+            defineField({name: 'name', title: 'Nombre', type: 'string', validation: (rule) => rule.required()}),
+            defineField({
+              name: 'relation',
+              title: 'Es…',
+              type: 'string',
+              options: {
+                list: [
+                  {title: 'Adulto (papá, mamá, esposo/a)', value: 'adult'},
+                  {title: 'Hijo o hija', value: 'child'},
+                ],
+                layout: 'radio',
+                direction: 'horizontal',
+              },
+              initialValue: 'adult',
+              validation: (rule) => rule.required(),
+            }),
+          ],
+          preview: {
+            select: {title: 'name', relation: 'relation'},
+            prepare: ({title, relation}) => ({title, subtitle: relation === 'child' ? 'Hijo/a' : 'Adulto'}),
+          },
+        }),
+      ],
+    }),
     defineField({
       name: 'slug',
       title: 'Identificador para la dirección web',

@@ -231,6 +231,9 @@ function toPerson(d: Doc): PersonRaw {
   return {
     slug: d.slug,
     name: d.name,
+    members: (d.members ?? [])
+      .filter((m: Doc) => m.name)
+      .map((m: Doc) => ({ name: m.name, relation: m.relation === 'child' ? 'child' : 'adult' })),
     country: lx(d.country),
     support: {
       enabled: d.support?.enabled === true,

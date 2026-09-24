@@ -376,6 +376,7 @@ function resolvePerson(p: PersonRaw, locale: Locale): Person {
   return {
       slug: p.slug,
       name: p.name,
+      members: p.members,
       country: localizeMaybe(p.country, locale),
       support: { enabled: p.support.enabled, link: p.support.link, text: localizeMaybe(p.support.text, locale) },
       photo: resolveImageMaybe(p.photo, locale),
@@ -441,4 +442,14 @@ export async function getBaseSlugs(): Promise<string[]> {
 export async function getBase(slug: string, locale: Locale): Promise<Maybe<Base>> {
   const b = (await source()).bases.find((x) => x.slug === slug && x.active);
   return b ? resolveBase(b, locale) : null;
+}
+
+/**
+ * Une nombres en una frase natural: "Carlos y Ana", "Samuel, Sofía y Juan"
+ * (en inglés con "and"). Se usa para los integrantes de una familia.
+ */
+export function joinNames(names: string[], locale: Locale): string {
+  const and = locale === 'en' ? ' and ' : ' y ';
+  if (names.length <= 1) return names[0] ?? '';
+  return `${names.slice(0, -1).join(', ')}${and}${names[names.length - 1]}`;
 }

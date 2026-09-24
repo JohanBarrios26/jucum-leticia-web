@@ -170,6 +170,10 @@ const es = {
     supportText: 'Tu apoyo hace posible que siga sirviendo desde el Amazonas.',
     supportMessage: 'Hola, me gustaría apoyar a',
     supportBadge: 'Recibe apoyo',
+    family: 'Familia',
+    members: 'Integrantes',
+    children: 'Hijos',
+    withChildren: 'con sus hijos',
     pendingTeam: 'Aquí aparecerán las personas que sirven en JUCUM Leticia, con su historia y cómo apoyarlas.',
   },
 
@@ -388,6 +392,10 @@ const en: UIStrings = {
     supportText: 'Your support makes it possible for them to keep serving from the Amazon.',
     supportMessage: 'Hello, I would like to support',
     supportBadge: 'Receives support',
+    family: 'Family',
+    members: 'Members',
+    children: 'Children',
+    withChildren: 'with their children',
     pendingTeam: 'The people who serve at YWAM Leticia will appear here, with their stories and how to support them.',
   },
   form: {
