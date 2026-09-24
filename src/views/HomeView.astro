@@ -1,0 +1,77 @@
+---
+/**
+ * VISTA: PÁGINA DE INICIO
+ * ----------------------------------------------------------------------------
+ * La comparten /  (español) y /en/  (inglés). Carga todo el contenido y arma
+ * las secciones en el orden de la especificación §4:
+ *
+ *   1 Hero · 2 Sobre JUCUM · 3 Qué hacemos · 4 Ministerios · 5 Escuelas ·
+ *   6 OBT · 7 Historias · 8 Galería · 9 Cómo participar · 10 Corto plazo ·
+ *   11 Contacto · 12 Pie (en BaseLayout)
+ *
+ * ¿Reordenar o quitar una sección? Mueve o borra su línea en el HTML de abajo.
+ * Cada sección es un componente independiente en src/components/home/.
+ */
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import HomeHero from '@/components/home/HomeHero.astro';
+import HomeAbout from '@/components/home/HomeAbout.astro';
+import HomeActivities from '@/components/home/HomeActivities.astro';
+import HomeMinistries from '@/components/home/HomeMinistries.astro';
+import HomeSchools from '@/components/home/HomeSchools.astro';
+import HomeObt from '@/components/home/HomeObt.astro';
+import HomeStories from '@/components/home/HomeStories.astro';
+import HomeGallery from '@/components/home/HomeGallery.astro';
+import HomeJoin from '@/components/home/HomeJoin.astro';
+import HomeShortTerm from '@/components/home/HomeShortTerm.astro';
+import HomeContact from '@/components/home/HomeContact.astro';
+import { routes, type Locale } from '@/i18n/routes';
+import {
+  getGallery,
+  getHome,
+  getJoinPaths,
+  getMinistries,
+  getSchools,
+  getSiteSettings,
+  getStories,
+} from '@/lib/content';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+
+// Todo el contenido se pide en paralelo (importa cuando venga del CMS).
+const [home, settings, ministries, schools, stories, gallery, joinPaths] = await Promise.all([
+  getHome(locale),
+  getSiteSettings(locale),
+  getMinistries(locale),
+  getSchools(locale),
+  getStories(locale),
+  getGallery(locale),
+  getJoinPaths(locale),
+]);
+
+// OBT tiene su propia sección destacada (además de su tarjeta en Ministerios).
+const obt = ministries.find((m) => m.slug === 'obt');
+---
+
+<BaseLayout
+  locale={locale}
+  alternates={routes.home}
+  fullTitle={home.seo.title}
+  description={home.seo.description}
+  headerOverlay
+>
+  <HomeHero locale={locale} hero={home.hero} />
+  <HomeAbout locale={locale} about={home.about} />
+  <HomeActivities locale={locale} activities={home.activities} />
+  <HomeMinistries locale={locale} ministries={ministries} />
+  <HomeSchools locale={locale} schools={schools} />
+  <HomeObt locale={locale} obt={obt} />
+  <HomeStories locale={locale} stories={stories} />
+  <HomeGallery locale={locale} items={gallery} />
+  <HomeJoin locale={locale} paths={joinPaths} />
+  <HomeShortTerm locale={locale} shortTerm={home.shortTerm} settings={settings} />
+  <HomeContact locale={locale} settings={settings} />
+</BaseLayout>

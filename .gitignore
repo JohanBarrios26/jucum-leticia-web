@@ -1,0 +1,29 @@
+# Compilación
+dist/
+# Tipos generados por Astro
+.astro/
+
+# Dependencias
+node_modules/
+
+# Logs
+npm-debug.log*
+
+# Variables de entorno (nunca subir secretos)
+.env
+.env.*
+!.env.example
+
+# Documentos internos del cliente (no se publican en el repositorio)
+*.docx
+~$*.docx
+
+# Herramientas locales
+.claude/
+.vercel/
+.wrangler/
+
+# Sistema / editor
+.DS_Store
+Thumbs.db
+.idea/

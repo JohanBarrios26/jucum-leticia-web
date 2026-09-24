@@ -1,0 +1,50 @@
+---
+/**
+ * MARCA "PENDIENTE DE CONTENIDO"
+ * ----------------------------------------------------------------------------
+ * Se usa donde falta información que JUCUM todavía no ha confirmado, en vez de
+ * inventar datos (especificación §35).
+ *
+ * Se ve mientras el cliente revisa el sitio. Para ocultar TODAS las marcas en
+ * producción: variable de entorno PUBLIC_SHOW_PENDING=false (ver src/lib/config.ts).
+ *
+ * Uso:  <PendingContent locale={locale} what="Redes sociales" />
+ */
+import type { Locale } from '@/i18n/routes';
+import { t } from '@/i18n/ui';
+import { showPending } from '@/lib/config';
+
+interface Props {
+  locale: Locale;
+  /** Qué falta, ej. "Redes sociales oficiales". Opcional. */
+  what?: string;
+}
+
+const { locale, what } = Astro.props;
+---
+
+{
+  showPending && (
+    <span class="pending">
+      {t(locale).pending}
+      {what && <span class="pending__what">: {what}</span>}
+    </span>
+  )
+}
+
+<style>
+  .pending {
+    display: inline-block;
+    padding: var(--space-1) var(--space-3);
+    border: 1px dashed currentColor;
+    border-radius: var(--radius-sm);
+    font-size: var(--text-sm);
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    opacity: 0.75;
+  }
+
+  .pending__what {
+    font-weight: 400;
+  }
+</style>

@@ -1,0 +1,113 @@
+---
+/**
+ * INICIO · 2. SOBRE JUCUM LETICIA (especificación §6)
+ * ----------------------------------------------------------------------------
+ * Una sola frase grande (la descripción institucional confirmada) que se
+ * "ilumina" palabra por palabra a medida que se hace scroll. Explica quién es
+ * JUCUM Leticia sin obligar a leer mucho texto.
+ *
+ * Técnica: cada palabra es un <span> con una animación ligada al scroll
+ * (`animation-timeline: view()`). Sin soporte → la frase se ve normal.
+ */
+import RiverLine from '@/components/ui/RiverLine.astro';
+import { routes, type Locale } from '@/i18n/routes';
+import type { Home } from '@/lib/content';
+
+interface Props {
+  locale: Locale;
+  about: Home['about'];
+}
+
+const { locale, about } = Astro.props;
+const words = about.statement.split(' ');
+---
+
+<section class="about section" aria-labelledby="about-title">
+  <div class="container">
+    <RiverLine class="about__river" />
+
+    <div class="about__grid">
+      <div class="about__side">
+        <h2 class="eyebrow eyebrow--line about__eyebrow" id="about-title" data-reveal="left">{about.eyebrow}</h2>
+      </div>
+
+      <div>
+        <!-- aria-label con la frase completa: los lectores de pantalla no leen palabra por palabra. -->
+        <p class="about__statement" aria-label={about.statement}>
+          {words.map((word) => <span class="about__word" aria-hidden="true">{word} </span>)}
+        </p>
+
+        <a class="btn btn--dark about__cta" href={routes.about[locale]} data-reveal style="--reveal-delay: 100ms">
+          {about.cta} <span class="btn__arrow" aria-hidden="true">→</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .about {
+    position: relative;
+  }
+
+  .about__river {
+    margin-bottom: var(--space-8);
+  }
+
+  .about__grid {
+    display: grid;
+    gap: var(--space-6);
+  }
+
+  @media (min-width: 64rem) {
+    .about__grid {
+      grid-template-columns: 14rem 1fr;
+      gap: var(--space-8);
+    }
+  }
+
+  .about__eyebrow {
+    color: var(--color-green);
+    font-family: var(--font-body);
+    font-size: var(--text-xs);
+    line-height: 1.4;
+    padding-top: 0.9em;
+  }
+
+  .about__statement {
+    font-family: var(--font-display);
+    font-size: var(--text-statement);
+    line-height: 1.02;
+    letter-spacing: 0.005em;
+    text-transform: uppercase;
+    text-wrap: pretty;
+  }
+
+  /* Palabra por palabra: pasa de tenue a color pleno al entrar en pantalla. */
+  @supports (animation-timeline: view()) {
+    .about__word {
+      animation: word-light linear both;
+      animation-timeline: view();
+      animation-range: entry 30% cover 42%;
+    }
+  }
+
+  @keyframes word-light {
+    from {
+      opacity: 0.14;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .about__word {
+      animation: none;
+    }
+  }
+
+  .about__cta {
+    margin-top: var(--space-7);
+  }
+</style>

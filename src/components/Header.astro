@@ -1,0 +1,500 @@
+---
+/**
+ * ENCABEZADO DEL SITIO
+ * ----------------------------------------------------------------------------
+ * Logo + menú principal + selector de idioma. Aparece en todas las páginas.
+ *
+ * Comportamiento:
+ *   - Escritorio (≥ 1152px): menú horizontal; "Sé parte" se destaca como botón.
+ *   - Móvil y tablet: botón hamburguesa que abre un panel a pantalla completa.
+ *   - Modo `overlay` (página de inicio): el encabezado es transparente sobre la
+ *     foto principal y se vuelve sólido al bajar un poco.
+ *
+ * Los enlaces del menú salen de `mainNav` (src/i18n/routes.ts) y sus textos de
+ * src/i18n/ui.ts. Para agregar/quitar una opción del menú, edita esos archivos.
+ */
+import { locales, mainNav, routes, type Alternates, type Locale } from '@/i18n/routes';
+import { t } from '@/i18n/ui';
+import { whatsappUrl, type SiteSettings } from '@/lib/content';
+
+interface Props {
+  locale: Locale;
+  alternates: Alternates;
+  settings: SiteSettings;
+  /** Transparente sobre la foto del hero (solo en la página de inicio). */
+  overlay?: boolean;
+}
+
+const { locale, alternates, settings, overlay = false } = Astro.props;
+const ui = t(locale);
+
+// Ruta actual normalizada con "/" final, para marcar el enlace activo del menú.
+const current = Astro.url.pathname.replace(/\/?$/, '/');
+
+function isActive(href: string): boolean {
+  if (href === routes.home[locale]) return current === href;
+  return current.startsWith(href); // Ej. /ministerios/obt/ activa "Ministerios".
+}
+---
+
+<header class="site-header" data-header data-overlay={overlay ? '' : undefined}>
+  <div class="container site-header__inner">
+    <a class="brand" href={routes.home[locale]} aria-label={`${settings.organizationName}, ${ui.homeLinkLabel}`}>
+      <img src="/brand/logo-white.png" alt="" width="168" height="136" class="brand__logo" />
+      <span class="brand__name" aria-hidden="true">{settings.organizationName}</span>
+    </a>
+
+    <!-- Botón hamburguesa (solo móvil/tablet). El texto accesible cambia con JS. -->
+    <button
+      type="button"
+      class="menu-toggle"
+      aria-expanded="false"
+      aria-controls="site-menu"
+      data-menu-toggle
+      data-label-open={ui.openMenu}
+      data-label-close={ui.closeMenu}
+    >
+      <span class="visually-hidden" data-menu-label>{ui.openMenu}</span>
+      <span class="menu-toggle__bars" aria-hidden="true"><span></span><span></span><span></span></span>
+    </button>
+
+    <div class="site-menu" id="site-menu" data-menu>
+      <nav aria-label={ui.mainNavLabel}>
+        <ul role="list" class="nav-list">
+          {
+            mainNav.map((key, i) => {
+              const href = routes[key][locale];
+              return (
+                <li style={`--i: ${i}`}>
+                  <a
+                    href={href}
+                    class:list={['nav-link', { 'nav-link--cta': key === 'join' }]}
+                    aria-current={isActive(href) ? 'page' : undefined}
+                    data-event={key === 'join' ? 'cta_join_click' : undefined}
+                  >
+                    {ui.nav[key]}
+                  </a>
+                </li>
+              );
+            })
+          }
+        </ul>
+      </nav>
+
+      <!-- Selector de idioma: lleva a la MISMA página en el otro idioma. -->
+      <ul role="list" class="lang-switch" aria-label={ui.switchLanguage}>
+        {
+          locales.map((l) => (
+            <li>
+              <a
+                href={alternates[l]}
+                hreflang={l}
+                lang={l}
+                aria-current={l === locale ? 'true' : undefined}
+                title={t(l).languageName}
+              >
+                {l.toUpperCase()}
+                <span class="visually-hidden"> ({t(l).languageName})</span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+
+      {
+        settings.whatsapp && (
+          <a
+            class="menu-whatsapp"
+            href={whatsappUrl(settings.whatsapp, ui.contact.whatsappMessage)}
+            target="_blank"
+            rel="noopener"
+            data-event="whatsapp_click"
+          >
+            {ui.contact.writeWhatsapp} →
+          </a>
+        )
+      }
+    </div>
+  </div>
+</header>
+
+<script>
+  /*
+   * Lógica del encabezado:
+   *   1. Abrir/cerrar el menú móvil (botón, tecla Escape, clic en un enlace).
+   *   2. En modo overlay, volverlo sólido al hacer scroll.
+   */
+  const header = document.querySelector<HTMLElement>('[data-header]');
+  const toggle = header?.querySelector<HTMLButtonElement>('[data-menu-toggle]');
+  const label = header?.querySelector<HTMLElement>('[data-menu-label]');
+  // Debe coincidir con el breakpoint de escritorio del CSS de abajo (72rem).
+  const desktop = window.matchMedia('(min-width: 72rem)');
+
+  function setOpen(open: boolean) {
+    if (!header || !toggle || !label) return;
+    header.toggleAttribute('data-open', open);
+    toggle.setAttribute('aria-expanded', String(open));
+    label.textContent = (open ? toggle.dataset.labelClose : toggle.dataset.labelOpen) ?? '';
+    // Bloquea el scroll de la página mientras el menú está abierto.
+    document.documentElement.style.overflow = open ? 'hidden' : '';
+  }
+
+  toggle?.addEventListener('click', () => setOpen(!header?.hasAttribute('data-open')));
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && header?.hasAttribute('data-open')) {
+      setOpen(false);
+      toggle?.focus();
+    }
+  });
+
+  // Al tocar un enlace del menú (ej. un ancla en la misma página), se cierra.
+  header?.querySelector('[data-menu]')?.addEventListener('click', (e) => {
+    if ((e.target as HTMLElement).closest('a')) setOpen(false);
+  });
+
+  // Si se agranda la ventana a tamaño escritorio con el menú abierto, se cierra.
+  desktop.addEventListener('change', (e) => e.matches && setOpen(false));
+
+  // Modo overlay: marca `data-scrolled` al bajar más de 24px.
+  if (header?.hasAttribute('data-overlay')) {
+    let ticking = false;
+    const update = () => {
+      header.toggleAttribute('data-scrolled', window.scrollY > 24);
+      ticking = false;
+    };
+    window.addEventListener(
+      'scroll',
+      () => {
+        if (!ticking) {
+          ticking = true;
+          requestAnimationFrame(update);
+        }
+      },
+      { passive: true },
+    );
+    update();
+  }
+</script>
+
+<style>
+  /* ---------- Base ---------- */
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: var(--color-night);
+    color: var(--color-text-on-dark);
+    border-bottom: 1px solid var(--color-border-on-dark);
+    transition: border-color 400ms var(--ease);
+  }
+
+  /*
+   * Modo overlay: flota sobre el hero (el margen negativo evita que empuje el
+   * contenido). El fondo sólido con desenfoque va en ::before y no en el propio
+   * header: `backdrop-filter` en el header rompería el panel `position: fixed`
+   * del menú móvil (lo encerraría dentro del header).
+   */
+  .site-header[data-overlay] {
+    margin-bottom: calc(-1 * var(--header-height));
+    background: linear-gradient(to bottom, rgb(10 29 29 / 0.55), transparent);
+    border-bottom-color: transparent;
+  }
+
+  .site-header[data-overlay]::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: rgb(16 42 42 / 0.9);
+    backdrop-filter: blur(12px);
+    opacity: 0;
+    transition: opacity 400ms var(--ease);
+  }
+
+  .site-header[data-overlay][data-scrolled],
+  .site-header[data-overlay][data-open] {
+    border-bottom-color: var(--color-border-on-dark);
+  }
+
+  .site-header[data-overlay][data-scrolled]::before,
+  .site-header[data-overlay][data-open]::before {
+    opacity: 1;
+  }
+
+  .site-header__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-5);
+    height: var(--header-height);
+  }
+
+  .brand {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    color: var(--color-text-on-dark);
+    text-decoration: none;
+    flex-shrink: 0;
+  }
+
+  .brand__logo {
+    width: auto;
+    height: 2.25rem;
+    transition: transform 600ms var(--ease);
+  }
+
+  .brand:hover .brand__logo {
+    transform: rotate(-8deg) scale(1.05);
+  }
+
+  .brand__name {
+    font-family: var(--font-display);
+    font-size: 1.625rem;
+    letter-spacing: 0.04em;
+    line-height: 1;
+    padding-top: 0.15em;
+    text-transform: uppercase;
+  }
+
+  /* ---------- Móvil / tablet (por defecto) ---------- */
+  .menu-toggle {
+    position: relative;
+    z-index: 2;
+    display: grid;
+    place-items: center;
+    width: 3rem;
+    height: 3rem;
+    margin-right: calc(-1 * var(--space-3));
+    border: 0;
+    background: none;
+    color: var(--color-text-on-dark);
+  }
+
+  .menu-toggle__bars {
+    display: grid;
+    gap: 5px;
+    width: 1.5rem;
+  }
+
+  .menu-toggle__bars span {
+    height: 2px;
+    background: currentColor;
+    border-radius: 2px;
+    transition:
+      transform var(--duration) var(--ease),
+      opacity var(--duration) var(--ease);
+  }
+
+  /* Las tres barras se convierten en una X al abrir. */
+  [data-open] .menu-toggle__bars span:nth-child(1) {
+    transform: translateY(7px) rotate(45deg);
+  }
+
+  [data-open] .menu-toggle__bars span:nth-child(2) {
+    opacity: 0;
+  }
+
+  [data-open] .menu-toggle__bars span:nth-child(3) {
+    transform: translateY(-7px) rotate(-45deg);
+  }
+
+  /* Panel del menú móvil: ocupa toda la pantalla debajo del encabezado. */
+  .site-menu {
+    position: fixed;
+    inset: var(--header-height) 0 0 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+    padding: var(--space-6) var(--gutter) var(--space-7);
+    background: var(--color-night);
+    overflow-y: auto;
+    visibility: hidden;
+    opacity: 0;
+    transition:
+      opacity 300ms var(--ease),
+      visibility 0s linear 300ms;
+  }
+
+  [data-open] .site-menu {
+    visibility: visible;
+    opacity: 1;
+    transition-delay: 0s;
+  }
+
+  .nav-list {
+    display: grid;
+    gap: var(--space-1);
+  }
+
+  /* Los enlaces entran uno tras otro al abrir el menú (--i = posición). */
+  .nav-list li {
+    opacity: 0;
+    transform: translateY(1rem);
+    transition:
+      opacity 400ms var(--ease),
+      transform 400ms var(--ease);
+  }
+
+  [data-open] .nav-list li {
+    opacity: 1;
+    transform: none;
+    transition-delay: calc(var(--i) * 50ms + 80ms);
+  }
+
+  .nav-link {
+    display: block;
+    padding-block: var(--space-1);
+    color: var(--color-text-on-dark);
+    font-family: var(--font-display);
+    font-size: clamp(2.25rem, 1.5rem + 4vw, 3.25rem);
+    letter-spacing: var(--tracking-display);
+    line-height: 1.1;
+    text-decoration: none;
+    text-transform: uppercase;
+  }
+
+  .nav-link[aria-current='page'] {
+    color: var(--color-river);
+  }
+
+  .lang-switch {
+    display: flex;
+    gap: var(--space-2);
+  }
+
+  .lang-switch a {
+    display: grid;
+    place-items: center;
+    min-width: 2.75rem;
+    min-height: 2.75rem;
+    padding-inline: var(--space-2);
+    border: 1px solid var(--color-border-on-dark);
+    border-radius: var(--radius-pill);
+    color: var(--color-text-on-dark-muted);
+    font-size: var(--text-sm);
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-decoration: none;
+  }
+
+  .lang-switch a[aria-current] {
+    border-color: var(--color-river);
+    color: var(--color-text-on-dark);
+  }
+
+  .menu-whatsapp {
+    margin-top: auto;
+    color: var(--color-river);
+    font-weight: 700;
+    text-decoration: none;
+  }
+
+  /* ---------- Escritorio (≥ 1152px) ---------- */
+  @media (min-width: 72rem) {
+    .menu-toggle {
+      display: none;
+    }
+
+    .site-menu {
+      position: static;
+      flex-direction: row;
+      align-items: center;
+      gap: var(--space-5);
+      padding: 0;
+      background: none;
+      overflow: visible;
+      visibility: visible;
+      opacity: 1;
+      transition: none;
+    }
+
+    .nav-list {
+      display: flex;
+      align-items: center;
+      gap: var(--space-1);
+    }
+
+    .nav-list li {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+
+    .nav-link {
+      position: relative;
+      padding: var(--space-2) var(--space-3);
+      font-family: var(--font-body);
+      font-size: var(--text-sm);
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      white-space: nowrap;
+    }
+
+    /* Línea azul que crece debajo del enlace al pasar el mouse. */
+    .nav-link::after {
+      content: '';
+      position: absolute;
+      left: var(--space-3);
+      right: var(--space-3);
+      bottom: 0.2rem;
+      height: 2px;
+      background: var(--color-river);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform var(--duration) var(--ease);
+    }
+
+    .nav-link:hover::after,
+    .nav-link[aria-current='page']::after {
+      transform: scaleX(1);
+    }
+
+    .nav-link[aria-current='page'] {
+      color: var(--color-text-on-dark);
+    }
+
+    .nav-link--cta {
+      margin-left: var(--space-2);
+      padding: var(--space-2) var(--space-5);
+      border-radius: var(--radius-pill);
+      background: var(--color-river);
+      color: var(--color-night);
+      transition: background-color var(--duration) var(--ease);
+    }
+
+    .nav-link--cta[aria-current='page'] {
+      color: var(--color-night);
+    }
+
+    .nav-link--cta:hover {
+      background: var(--color-river-hover);
+    }
+
+    .nav-link--cta::after {
+      display: none;
+    }
+
+    .lang-switch {
+      gap: var(--space-1);
+    }
+
+    .lang-switch a {
+      min-width: 2.5rem;
+      min-height: 2.25rem;
+      font-size: 0.75rem;
+      border-color: transparent;
+    }
+
+    .lang-switch a:hover {
+      color: var(--color-text-on-dark);
+    }
+
+    .menu-whatsapp {
+      display: none;
+    }
+  }
+</style>

@@ -1,0 +1,67 @@
+---
+/**
+ * IMAGEN OPTIMIZADA
+ * ----------------------------------------------------------------------------
+ * Muestra cualquier imagen del contenido (`ImageRef`) de la forma más liviana:
+ *   - Archivo local (hoy): Astro genera varios tamaños en AVIF/WebP y el
+ *     navegador descarga solo el que necesita. Una foto de 6 MB queda en ~100 KB.
+ *   - URL del CMS (fase 3): se usa directamente; Sanity hace el recorte y la
+ *     compresión en su CDN.
+ *
+ * Props importantes:
+ *   sizes    → qué ancho ocupa la imagen en pantalla (ayuda a elegir el tamaño).
+ *   priority → true SOLO para la imagen principal visible al cargar (hero).
+ *              Las demás se cargan de forma diferida (lazy) al acercarse.
+ */
+import { Picture } from 'astro:assets';
+import type { ImageRef } from '@/lib/content';
+
+interface Props {
+  image: ImageRef;
+  sizes?: string;
+  widths?: number[];
+  priority?: boolean;
+  class?: string;
+  /** Texto alternativo vacío si la imagen es decorativa (ya la describe el texto cercano). */
+  decorative?: boolean;
+}
+
+const {
+  image,
+  sizes = '100vw',
+  widths = [480, 768, 1080, 1440, 1920],
+  priority = false,
+  class: className,
+  decorative = false,
+} = Astro.props;
+
+const alt = decorative ? '' : image.alt;
+const loading = priority ? 'eager' : 'lazy';
+const fetchpriority = priority ? 'high' : 'auto';
+---
+
+{
+  typeof image.src === 'string' ? (
+    <img
+      src={image.src}
+      alt={alt}
+      class={className}
+      loading={loading}
+      fetchpriority={fetchpriority}
+      decoding="async"
+    />
+  ) : (
+    <Picture
+      src={image.src}
+      alt={alt}
+      widths={widths.filter((w) => typeof image.src !== 'string' && w <= image.src.width)}
+      sizes={sizes}
+      formats={['avif', 'webp']}
+      quality={60}
+      class={className}
+      loading={loading}
+      fetchpriority={fetchpriority}
+      decoding="async"
+    />
+  )
+}

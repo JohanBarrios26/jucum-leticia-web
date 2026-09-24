@@ -1,0 +1,365 @@
+---
+/**
+ * INICIO · 4. MINISTERIOS (especificación §8)
+ * ----------------------------------------------------------------------------
+ * Tarjetas grandes con foto, número, nombre y resumen de cada ministerio.
+ * Cada tarjeta lleva a la página individual del ministerio.
+ *
+ * Comportamiento:
+ *   - Escritorio: la sección se "fija" en pantalla y, al hacer scroll hacia
+ *     abajo, las tarjetas avanzan en horizontal (scroll horizontal anclado).
+ *   - Móvil/tablet o "reducir movimiento": fila deslizable con el dedo
+ *     (scroll horizontal nativo con imanes / scroll-snap).
+ *
+ * El JavaScript de abajo SOLO calcula el desplazamiento en escritorio; si no
+ * carga, la fila deslizable nativa sigue funcionando.
+ *
+ * Los ministerios salen de getMinistries(): agregar, ocultar u ordenar uno en
+ * el panel se refleja aquí automáticamente.
+ */
+import ImagePlaceholder from '@/components/ui/ImagePlaceholder.astro';
+import SmartImage from '@/components/ui/SmartImage.astro';
+import PendingContent from '@/components/PendingContent.astro';
+import { ministryAlternates, routes, type Locale } from '@/i18n/routes';
+import { t } from '@/i18n/ui';
+import type { Ministry } from '@/lib/content';
+
+interface Props {
+  locale: Locale;
+  ministries: Ministry[];
+}
+
+const { locale, ministries } = Astro.props;
+const ui = t(locale);
+const pad = (n: number) => String(n).padStart(2, '0');
+---
+
+<section class="ministries surface-dark" aria-labelledby="ministries-title" data-hscroll>
+  <div class="ministries__sticky">
+    <div class="container ministries__head">
+      <div class="section-head">
+        <p class="eyebrow eyebrow--line">{ui.home.ministriesEyebrow}</p>
+        <h2 id="ministries-title">{ui.home.ministriesTitle}</h2>
+      </div>
+      <div class="ministries__aside">
+        <span class="ministries__hint" aria-hidden="true">{ui.home.ministriesHint} →</span>
+        <a class="link-arrow" href={routes.ministries[locale]}>{ui.home.allMinistries} <span aria-hidden="true">→</span></a>
+      </div>
+    </div>
+
+    <div class="ministries__viewport" data-hscroll-viewport>
+      <ul role="list" class="ministries__track" data-hscroll-track>
+        {
+          ministries.map((m, i) => (
+            <li class="m-card">
+              <a class="m-card__link" href={ministryAlternates(m.slug)[locale]}>
+                <div class="m-card__media">
+                  {m.image ? (
+                    <SmartImage image={m.image} decorative sizes="(min-width: 64rem) 30rem, 80vw" widths={[480, 768, 1080]} />
+                  ) : (
+                    <ImagePlaceholder label={pad(i + 1)} />
+                  )}
+                </div>
+                <div class="m-card__body">
+                  <span class="m-card__num">{pad(i + 1)}</span>
+                  <h3 class="m-card__title">{m.name}</h3>
+                  {m.shortDescription ? (
+                    <p class="m-card__text">{m.shortDescription}</p>
+                  ) : (
+                    <p class="m-card__text">
+                      <PendingContent locale={locale} />
+                    </p>
+                  )}
+                  <span class="m-card__arrow" aria-hidden="true">→</span>
+                </div>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+
+    <!-- Barra de progreso del recorrido horizontal (solo escritorio). -->
+    <div class="container" aria-hidden="true">
+      <div class="ministries__progress"><span data-hscroll-progress></span></div>
+    </div>
+  </div>
+</section>
+
+<script>
+  /*
+   * Scroll horizontal anclado (solo escritorio y sin "reducir movimiento").
+   * La sección se hace tan alta como el recorrido horizontal necesario; mientras
+   * su contenido está fijo (position: sticky), el avance vertical del scroll se
+   * traduce en desplazamiento horizontal de la fila de tarjetas.
+   */
+  const section = document.querySelector<HTMLElement>('[data-hscroll]');
+  const viewport = section?.querySelector<HTMLElement>('[data-hscroll-viewport]');
+  const track = section?.querySelector<HTMLElement>('[data-hscroll-track]');
+  const progressBar = section?.querySelector<HTMLElement>('[data-hscroll-progress]');
+  const media = window.matchMedia('(min-width: 64rem) and (prefers-reduced-motion: no-preference)');
+
+  let distance = 0; // Cuántos px debe moverse la fila en total.
+  let ticking = false;
+
+  function measure() {
+    if (!section || !viewport || !track) return;
+    if (!media.matches) {
+      section.removeAttribute('data-pinned');
+      section.style.height = '';
+      track.style.transform = '';
+      return;
+    }
+    section.setAttribute('data-pinned', '');
+    distance = Math.max(0, track.scrollWidth - viewport.clientWidth);
+    // Alto = una pantalla + el recorrido horizontal (1px de scroll = 1px horizontal).
+    section.style.height = `${window.innerHeight + distance}px`;
+    update();
+  }
+
+  function update() {
+    ticking = false;
+    if (!section || !track || !media.matches) return;
+    const start = section.offsetTop;
+    const progress = Math.min(1, Math.max(0, (window.scrollY - start) / Math.max(1, distance)));
+    track.style.transform = `translate3d(${-progress * distance}px, 0, 0)`;
+    if (progressBar) progressBar.style.transform = `scaleX(${progress})`;
+  }
+
+  window.addEventListener(
+    'scroll',
+    () => {
+      if (!ticking) {
+        ticking = true;
+        requestAnimationFrame(update);
+      }
+    },
+    { passive: true },
+  );
+  window.addEventListener('resize', measure);
+  media.addEventListener('change', measure);
+  // Las imágenes pueden cambiar el ancho de la fila al cargar.
+  window.addEventListener('load', measure);
+  measure();
+
+  /*
+   * Accesibilidad con teclado: si se navega con Tab a una tarjeta que está
+   * fuera de la vista, se desplaza la página para que esa tarjeta quede visible.
+   */
+  track?.addEventListener('focusin', (e) => {
+    if (!section || !viewport || !media.matches) return;
+    const card = (e.target as HTMLElement).closest('li');
+    if (!card) return;
+    const target = Math.min(distance, Math.max(0, card.offsetLeft - viewport.clientWidth / 2 + card.clientWidth / 2));
+    window.scrollTo({ top: section.offsetTop + target, behavior: 'instant' as ScrollBehavior });
+  });
+</script>
+
+<style>
+  .ministries {
+    position: relative;
+    padding-top: var(--space-section);
+    padding-bottom: var(--space-8);
+  }
+
+  /* En escritorio (data-pinned) el contenido queda fijo mientras se recorre. */
+  .ministries[data-pinned] {
+    padding: 0;
+  }
+
+  .ministries[data-pinned] .ministries__sticky {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding-top: var(--header-height);
+    overflow: hidden;
+  }
+
+  .ministries__head {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: end;
+    gap: var(--space-4) var(--space-6);
+    margin-bottom: var(--space-6);
+  }
+
+  .ministries__head .section-head {
+    margin-bottom: 0;
+  }
+
+  .ministries__aside {
+    display: flex;
+    align-items: center;
+    gap: var(--space-6);
+  }
+
+  .ministries__hint {
+    display: none;
+    color: var(--color-text-on-dark-muted);
+    font-size: var(--text-xs);
+    font-weight: 600;
+    letter-spacing: var(--tracking-eyebrow);
+    text-transform: uppercase;
+  }
+
+  .ministries[data-pinned] .ministries__hint {
+    display: inline;
+  }
+
+  /* ---------- Fila de tarjetas ---------- */
+  .ministries__viewport {
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: var(--gutter);
+    scrollbar-width: none;
+  }
+
+  .ministries__viewport::-webkit-scrollbar {
+    display: none;
+  }
+
+  .ministries[data-pinned] .ministries__viewport {
+    overflow: visible;
+  }
+
+  .ministries__track {
+    display: flex;
+    gap: clamp(1rem, 2vw, 1.75rem);
+    width: max-content;
+    padding-inline: var(--gutter);
+    will-change: transform;
+  }
+
+  /* Alinea la primera tarjeta con el contenedor en pantallas muy anchas. */
+  @media (min-width: 90rem) {
+    .ministries__track {
+      padding-inline: calc((100vw - var(--container-max)) / 2);
+    }
+  }
+
+  /* ---------- Tarjeta ---------- */
+  .m-card {
+    flex: 0 0 auto;
+    width: min(80vw, 26rem);
+    scroll-snap-align: start;
+  }
+
+  @media (min-width: 64rem) {
+    .m-card {
+      width: clamp(22rem, 30vw, 30rem);
+    }
+  }
+
+  .m-card__link {
+    position: relative;
+    display: block;
+    height: clamp(26rem, 62vh, 36rem);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    color: var(--color-text-on-dark);
+    text-decoration: none;
+    isolation: isolate;
+  }
+
+  .m-card__media {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+  }
+
+  .m-card__media :global(img),
+  .m-card__media :global(picture) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 900ms var(--ease);
+  }
+
+  .m-card__link:hover .m-card__media :global(img) {
+    transform: scale(1.06);
+  }
+
+  /* Degradado inferior para que el texto sea legible. */
+  .m-card__media::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgb(10 29 29 / 0.95) 0%, rgb(10 29 29 / 0.55) 45%, rgb(10 29 29 / 0.05) 75%);
+  }
+
+  .m-card__body {
+    position: absolute;
+    inset: auto 0 0 0;
+    display: grid;
+    gap: var(--space-3);
+    padding: var(--space-6);
+  }
+
+  .m-card__num {
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+    color: var(--color-river);
+  }
+
+  .m-card__title {
+    font-size: clamp(2rem, 1.5rem + 1.5vw, 2.75rem);
+    line-height: 0.95;
+  }
+
+  .m-card__text {
+    color: var(--color-text-on-dark-muted);
+    font-size: var(--text-sm);
+    line-height: 1.5;
+    max-width: 24rem;
+  }
+
+  /* Flecha en círculo que se llena de azul al pasar el mouse. */
+  .m-card__arrow {
+    position: absolute;
+    top: calc(-1 * var(--space-6));
+    right: var(--space-6);
+    display: grid;
+    place-items: center;
+    width: 3rem;
+    height: 3rem;
+    border: 1px solid rgb(255 255 255 / 0.4);
+    border-radius: 50%;
+    font-size: 1.125rem;
+    transition:
+      background-color var(--duration) var(--ease),
+      border-color var(--duration) var(--ease),
+      color var(--duration) var(--ease),
+      transform 400ms var(--ease);
+  }
+
+  .m-card__link:hover .m-card__arrow {
+    background: var(--color-river);
+    border-color: var(--color-river);
+    color: var(--color-night);
+    transform: rotate(-45deg);
+  }
+
+  /* ---------- Barra de progreso ---------- */
+  .ministries__progress {
+    display: none;
+    height: 2px;
+    margin-top: var(--space-6);
+    background: var(--color-border-on-dark);
+  }
+
+  .ministries[data-pinned] .ministries__progress {
+    display: block;
+  }
+
+  .ministries__progress span {
+    display: block;
+    height: 100%;
+    background: var(--color-river);
+    transform: scaleX(0);
+    transform-origin: left;
+  }
+</style>

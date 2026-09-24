@@ -1,0 +1,272 @@
+---
+/**
+ * VISTA: PÁGINA INDIVIDUAL DE UNA ESCUELA (especificación §11)
+ * ----------------------------------------------------------------------------
+ * Una sola plantilla para todas las escuelas. URL: /escuelas/[slug]/
+ *
+ * Incluye la ficha (duración, fechas, lugar, requisitos, costo, inscripción)
+ * y las PERSONAS ENCARGADAS de esa escuela (pedido del cliente), cada una con
+ * sus propios datos de contacto.
+ *
+ * Para agregar un dato nuevo a la ficha: añádelo al tipo School (types.ts) y a
+ * la lista `facts` de abajo.
+ */
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import ImagePlaceholder from '@/components/ui/ImagePlaceholder.astro';
+import SmartImage from '@/components/ui/SmartImage.astro';
+import PendingContent from '@/components/PendingContent.astro';
+import { routes, schoolAlternates, type Locale } from '@/i18n/routes';
+import { t } from '@/i18n/ui';
+import { whatsappUrl, type School } from '@/lib/content';
+
+interface Props {
+  locale: Locale;
+  school: School;
+}
+
+const { locale, school } = Astro.props;
+const ui = t(locale);
+
+// Ficha técnica: etiqueta + valor (null = pendiente).
+const facts = [
+  { label: ui.detail.duration, value: school.duration },
+  { label: ui.detail.dates, value: school.dates },
+  { label: ui.detail.location, value: school.location },
+  { label: ui.detail.audience, value: school.audience },
+  { label: ui.detail.requirements, value: school.requirements },
+  { label: ui.detail.cost, value: school.cost },
+  { label: ui.detail.enrollment, value: school.enrollment },
+];
+---
+
+<BaseLayout
+  locale={locale}
+  alternates={schoolAlternates(school.slug)}
+  title={school.fullName ? `${school.name} · ${school.fullName}` : school.name}
+  description={school.description ?? school.fullName ?? undefined}
+  headerOverlay
+>
+  <!-- Portada -->
+  <section class="cover on-photo">
+    <div class="cover__media">
+      {school.image ? <SmartImage image={school.image} priority sizes="100vw" /> : <ImagePlaceholder />}
+    </div>
+    <div class="container cover__content">
+      <a class="link-arrow cover__back" href={routes.schools[locale]}><span aria-hidden="true">←</span> {ui.nav.schools}</a>
+      <h1 class="cover__title">{school.name}</h1>
+      {school.fullName && <p class="lead cover__lead">{school.fullName}</p>}
+    </div>
+  </section>
+
+  <!-- Descripción + ficha -->
+  <section class="section">
+    <div class="container detail-grid">
+      <div data-reveal>
+        <h2 class="eyebrow eyebrow--line detail-label">{ui.detail.about}</h2>
+        {school.description ? <p class="lead">{school.description}</p> : <PendingContent locale={locale} />}
+      </div>
+
+      <div data-reveal style="--reveal-delay: 100ms">
+        <h2 class="eyebrow eyebrow--line detail-label">{ui.detail.info}</h2>
+        <dl class="facts">
+          {
+            facts.map((f) => (
+              <div class="facts__row">
+                <dt>{f.label}</dt>
+                <dd>{f.value ?? <PendingContent locale={locale} />}</dd>
+              </div>
+            ))
+          }
+        </dl>
+      </div>
+    </div>
+  </section>
+
+  <!-- Personas encargadas de la escuela -->
+  <section class="section surface-sand">
+    <div class="container">
+      <h2 class="eyebrow eyebrow--line detail-label">{ui.detail.contacts}</h2>
+      {
+        school.contacts.length > 0 ? (
+          <ul role="list" class="contacts">
+            {school.contacts.map((c, i) => (
+              <li class="person" data-reveal style={`--reveal-delay: ${i * 90}ms`}>
+                <div class="person__photo">
+                  {c.photo ? <SmartImage image={c.photo} sizes="6rem" widths={[240]} /> : <ImagePlaceholder label={c.name.charAt(0)} />}
+                </div>
+                <div class="person__info">
+                  <p class="person__name">{c.name}</p>
+                  {c.role && <p class="person__role">{c.role}</p>}
+                  <ul role="list" class="person__links">
+                    {c.whatsapp && (
+                      <li>
+                        <a href={whatsappUrl(c.whatsapp, `${ui.contact.whatsappMessage} (${school.name})`)} target="_blank" rel="noopener" data-event="whatsapp_click">
+                          {ui.contact.whatsapp}
+                        </a>
+                      </li>
+                    )}
+                    {c.email && <li><a href={`mailto:${c.email}`} data-event="email_click">{c.email}</a></li>}
+                    {c.phone && <li><a href={`tel:${c.phone.replace(/[^\d+]/g, '')}`} data-event="phone_click">{c.phone}</a></li>}
+                  </ul>
+                </div>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <PendingContent locale={locale} />
+        )
+      }
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  /* ---------- Portada (mismo patrón que MinistryView) ---------- */
+  .cover {
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    min-height: min(44rem, 85svh);
+    padding-top: calc(var(--header-height) + var(--space-8));
+    padding-bottom: var(--space-8);
+    color: var(--color-text-on-dark);
+    background: var(--color-night-deep);
+    overflow: hidden;
+    isolation: isolate;
+  }
+
+  .cover__media {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+  }
+
+  .cover__media :global(img),
+  .cover__media :global(picture) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .cover__media::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgb(10 29 29 / 0.92), rgb(10 29 29 / 0.25) 60%, rgb(10 29 29 / 0.55));
+  }
+
+  .cover__back {
+    color: var(--color-river);
+  }
+
+  .cover__title {
+    margin-top: var(--space-5);
+    font-size: var(--text-display);
+    line-height: 0.88;
+  }
+
+  .cover__lead {
+    max-width: 40rem;
+    margin-top: var(--space-5);
+    opacity: 0.9;
+  }
+
+  /* ---------- Contenido ---------- */
+  .detail-grid {
+    display: grid;
+    gap: var(--space-8);
+  }
+
+  @media (min-width: 64rem) {
+    .detail-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  .detail-label {
+    margin-bottom: var(--space-5);
+    color: var(--color-green);
+    font-family: var(--font-body);
+    font-size: var(--text-xs);
+    line-height: 1.4;
+  }
+
+  .facts {
+    border-top: 1px solid var(--color-border);
+  }
+
+  .facts__row {
+    display: grid;
+    grid-template-columns: minmax(8rem, 1fr) 2fr;
+    gap: var(--space-4);
+    padding-block: var(--space-4);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .facts dt {
+    font-size: var(--text-sm);
+    font-weight: 700;
+    color: var(--color-text-muted);
+  }
+
+  .facts dd {
+    margin: 0;
+  }
+
+  /* ---------- Encargados ---------- */
+  .contacts {
+    display: grid;
+    gap: var(--space-5);
+  }
+
+  @media (min-width: 48rem) {
+    .contacts {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  .person {
+    display: flex;
+    gap: var(--space-5);
+    align-items: center;
+    padding: var(--space-5);
+    border-radius: var(--radius);
+    background: var(--color-cloud);
+  }
+
+  .person__photo {
+    flex-shrink: 0;
+    width: 5.5rem;
+    height: 5.5rem;
+    border-radius: 50%;
+    overflow: hidden;
+  }
+
+  .person__photo :global(img),
+  .person__photo :global(picture) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .person__name {
+    font-family: var(--font-display);
+    font-size: var(--text-2xl);
+    line-height: 1;
+    text-transform: uppercase;
+  }
+
+  .person__role {
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+  }
+
+  .person__links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1) var(--space-4);
+    margin-top: var(--space-2);
+    font-size: var(--text-sm);
+    font-weight: 600;
+  }
+</style>

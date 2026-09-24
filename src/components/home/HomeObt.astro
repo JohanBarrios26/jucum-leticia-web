@@ -1,0 +1,156 @@
+---
+/**
+ * INICIO · 6. OBT – TRADUCCIÓN BÍBLICA ORAL (especificación §8.7)
+ * ----------------------------------------------------------------------------
+ * Sección destacada con la foto del ministerio y una onda de audio animada:
+ * representa que la traducción es ORAL (grabada y escuchada).
+ *
+ * Los detalles oficiales (metodología, comunidades, idiomas, resultados) están
+ * pendientes: se muestra la marca de pendiente hasta que JUCUM los confirme.
+ * Los textos fijos de la sección están en ui.ts (home.obt*); el nombre, la foto
+ * y la descripción del ministerio vienen del contenido (ministerio "obt").
+ */
+import ImagePlaceholder from '@/components/ui/ImagePlaceholder.astro';
+import SmartImage from '@/components/ui/SmartImage.astro';
+import PendingContent from '@/components/PendingContent.astro';
+import { ministryAlternates, type Locale } from '@/i18n/routes';
+import { t } from '@/i18n/ui';
+import type { Ministry } from '@/lib/content';
+
+interface Props {
+  locale: Locale;
+  obt: Ministry | undefined;
+}
+
+const { locale, obt } = Astro.props;
+const ui = t(locale);
+
+// Alturas de las barras de la onda (patrón fijo para que se vea "natural").
+const bars = [30, 55, 80, 45, 95, 60, 35, 70, 100, 50, 25, 65, 85, 40, 75, 55, 90, 35, 60, 45, 80, 30, 55, 70, 40, 95, 50, 65, 30, 85, 45, 60];
+---
+
+<section class="obt section surface-deep" aria-labelledby="obt-title">
+  <div class="container obt__grid">
+    <div class="obt__media" data-reveal="scale">
+      {obt?.image ? <SmartImage image={obt.image} sizes="(min-width: 64rem) 45vw, 100vw" /> : <ImagePlaceholder label="OBT" />}
+
+      <!-- Onda de audio decorativa -->
+      <div class="obt__wave" aria-hidden="true">
+        {bars.map((h, i) => <span style={`--h: ${h}%; --i: ${i}`} />)}
+      </div>
+    </div>
+
+    <div class="obt__text">
+      <p class="eyebrow eyebrow--line obt__eyebrow" data-reveal>{ui.home.obtEyebrow}</p>
+      <h2 id="obt-title" data-reveal style="--reveal-delay: 80ms">{ui.home.obtTitle}</h2>
+      <p class="lead obt__lead" data-reveal style="--reveal-delay: 160ms">{ui.home.obtText}</p>
+      <p class="obt__pending" data-reveal style="--reveal-delay: 200ms">
+        <PendingContent locale={locale} what={ui.home.obtPending} />
+      </p>
+      {
+        obt && (
+          <a class="btn btn--primary obt__cta" href={ministryAlternates(obt.slug)[locale]} data-reveal style="--reveal-delay: 240ms">
+            {ui.home.obtCta} <span class="btn__arrow" aria-hidden="true">→</span>
+          </a>
+        )
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  .obt__grid {
+    display: grid;
+    gap: var(--space-8);
+    align-items: center;
+  }
+
+  @media (min-width: 64rem) {
+    .obt__grid {
+      grid-template-columns: 1.1fr 1fr;
+      gap: var(--space-9);
+    }
+  }
+
+  .obt__media {
+    position: relative;
+    aspect-ratio: 4 / 5;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+  }
+
+  @media (min-width: 40rem) and (max-width: 63.99rem) {
+    .obt__media {
+      aspect-ratio: 16 / 10;
+    }
+  }
+
+  .obt__media :global(img),
+  .obt__media :global(picture) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .obt__media::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgb(10 29 29 / 0.85), transparent 45%);
+  }
+
+  /* ---------- Onda de audio ---------- */
+  .obt__wave {
+    position: absolute;
+    inset: auto var(--space-6) var(--space-6);
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    height: 4.5rem;
+  }
+
+  .obt__wave span {
+    flex: 1;
+    height: var(--h);
+    border-radius: 2px;
+    background: var(--color-river);
+    transform-origin: center;
+    animation: wave 1.6s var(--ease-in-out) infinite alternate;
+    animation-delay: calc(var(--i) * -70ms);
+  }
+
+  @keyframes wave {
+    from {
+      transform: scaleY(0.25);
+      opacity: 0.55;
+    }
+    to {
+      transform: scaleY(1);
+      opacity: 1;
+    }
+  }
+
+  /* ---------- Texto ---------- */
+  .obt__eyebrow {
+    color: var(--color-river);
+  }
+
+  .obt__text h2 {
+    margin-top: var(--space-4);
+  }
+
+  .obt__lead {
+    margin-top: var(--space-5);
+    color: var(--color-text-on-dark-muted);
+  }
+
+  .obt__pending {
+    margin-top: var(--space-5);
+    color: var(--color-text-on-dark-muted);
+  }
+
+  .obt__cta {
+    margin-top: var(--space-6);
+  }
+</style>

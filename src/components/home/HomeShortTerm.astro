@@ -1,0 +1,128 @@
+---
+/**
+ * INICIO · 10. CORTO PLAZO MISIONERO (especificación §2.2 y §15.3)
+ * ----------------------------------------------------------------------------
+ * Franja a pantalla completa con foto y la pregunta textual de la
+ * documentación: "¿Te gustaría venir a un corto plazo de misiones?".
+ * El botón abre WhatsApp con un mensaje ya escrito.
+ *
+ * Efecto: la foto se desplaza más lento que la página (parallax suave) usando
+ * scroll-driven animations de CSS. Sin soporte → foto fija normal.
+ *
+ * Los detalles (duración, fechas, costos, requisitos...) van en la página
+ * "Sé parte" cuando JUCUM los confirme; aquí solo se invita a conversar.
+ */
+import SmartImage from '@/components/ui/SmartImage.astro';
+import { routes, type Locale } from '@/i18n/routes';
+import { t } from '@/i18n/ui';
+import { whatsappUrl, type Home, type SiteSettings } from '@/lib/content';
+
+interface Props {
+  locale: Locale;
+  shortTerm: Home['shortTerm'];
+  settings: SiteSettings;
+}
+
+const { locale, shortTerm, settings } = Astro.props;
+const ui = t(locale);
+const href = settings.whatsapp ? whatsappUrl(settings.whatsapp, shortTerm.question) : routes.contact[locale];
+---
+
+<section class="short-term on-photo" aria-labelledby="short-term-title">
+  <div class="short-term__media">
+    <SmartImage image={shortTerm.image} decorative sizes="100vw" />
+  </div>
+
+  <div class="container short-term__content">
+    <h2 id="short-term-title" class="short-term__question" data-reveal>{shortTerm.question}</h2>
+    <p class="lead short-term__text" data-reveal style="--reveal-delay: 120ms">{shortTerm.text}</p>
+    <div class="short-term__actions" data-reveal style="--reveal-delay: 200ms">
+      <a class="btn btn--primary" href={href} target={settings.whatsapp ? '_blank' : undefined} rel="noopener" data-event="cta_come_click">
+        {shortTerm.cta} <span class="btn__arrow" aria-hidden="true">→</span>
+      </a>
+      <a class="btn btn--outline" href={routes.join[locale]}>{ui.nav.join}</a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .short-term {
+    position: relative;
+    display: grid;
+    align-items: center;
+    min-height: min(52rem, 100svh);
+    padding-block: var(--space-section);
+    color: var(--color-text-on-dark);
+    background: var(--color-night-deep);
+    overflow: hidden;
+    isolation: isolate;
+  }
+
+  .short-term__media {
+    position: absolute;
+    inset: -12% 0;
+    z-index: -1;
+  }
+
+  .short-term__media :global(img),
+  .short-term__media :global(picture) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .short-term__media::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(to right, rgb(10 29 29 / 0.88) 0%, rgb(10 29 29 / 0.55) 55%, rgb(10 29 29 / 0.25) 100%);
+  }
+
+  /* Parallax: la foto se mueve un 20% más lento que el scroll. */
+  @supports (animation-timeline: view()) {
+    .short-term__media {
+      animation: parallax linear both;
+      animation-timeline: view();
+    }
+  }
+
+  @keyframes parallax {
+    from {
+      transform: translateY(-8%);
+    }
+    to {
+      transform: translateY(8%);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .short-term__media {
+      animation: none;
+    }
+  }
+
+  .short-term__question {
+    max-width: 16ch;
+    font-size: var(--text-h1);
+  }
+
+  .short-term__text {
+    max-width: 34rem;
+    margin-top: var(--space-5);
+    opacity: 0.9;
+  }
+
+  .short-term__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    margin-top: var(--space-6);
+  }
+
+  @media (max-width: 40rem) {
+    .short-term__actions .btn {
+      flex: 1 1 100%;
+    }
+  }
+</style>

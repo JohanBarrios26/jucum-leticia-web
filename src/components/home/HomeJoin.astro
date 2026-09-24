@@ -1,0 +1,222 @@
+---
+/**
+ * INICIO · 9. CÓMO PARTICIPAR (especificación §15)
+ * ----------------------------------------------------------------------------
+ * Los cuatro caminos: ORAR · SERVIR · VENIR · APOYAR. Es una de las conversiones
+ * principales del sitio, por eso son paneles grandes y fáciles de tocar.
+ *
+ * Escritorio: cuatro columnas; la que tiene el mouse (o el foco) se ensancha y
+ * muestra su texto. Móvil: tarjetas apiladas con todo visible.
+ * Cada panel lleva a su sección dentro de la página "Sé parte".
+ */
+import type { Locale } from '@/i18n/routes';
+import { t } from '@/i18n/ui';
+import type { JoinPathItem } from '@/lib/content';
+
+interface Props {
+  locale: Locale;
+  paths: JoinPathItem[];
+}
+
+const { locale, paths } = Astro.props;
+const ui = t(locale);
+const eventName: Record<JoinPathItem['key'], string> = {
+  pray: 'cta_pray_click',
+  serve: 'cta_serve_click',
+  come: 'cta_come_click',
+  support: 'cta_support_click',
+};
+---
+
+<section class="join section surface-dark" aria-labelledby="join-title">
+  <div class="container">
+    <div class="section-head join__head" data-reveal>
+      <p class="eyebrow eyebrow--line">{ui.home.joinEyebrow}</p>
+      <h2 id="join-title">{ui.home.joinTitle}</h2>
+    </div>
+
+    <ul role="list" class="join__panels">
+      {
+        paths.map((p, i) => (
+          <li class="join__panel" data-reveal style={`--reveal-delay: ${i * 90}ms`}>
+            <a href={p.href} data-event={eventName[p.key]}>
+              <span class="join__num">0{i + 1}</span>
+              <span class="join__bignum" aria-hidden="true">0{i + 1}</span>
+              <span class="join__title">{p.title}</span>
+              <span class="join__text">{p.text}</span>
+              <span class="join__arrow" aria-hidden="true">→</span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>
+
+<style>
+  .join {
+    background:
+      radial-gradient(ellipse at 100% 0%, rgb(31 111 91 / 0.55), transparent 55%),
+      var(--color-night);
+  }
+
+  .join__head {
+    max-width: 52rem;
+  }
+
+  .join__panels {
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  .join__panel a {
+    position: relative;
+    display: grid;
+    gap: var(--space-3);
+    height: 100%;
+    padding: var(--space-6);
+    border: 1px solid var(--color-border-on-dark);
+    border-radius: var(--radius-lg);
+    color: var(--color-text-on-dark);
+    text-decoration: none;
+    overflow: hidden;
+    isolation: isolate;
+    transition: border-color 400ms var(--ease);
+  }
+
+  /* Relleno azul que sube desde abajo al activar el panel. */
+  .join__panel a::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: var(--color-river);
+    transform: translateY(101%);
+    transition: transform 600ms var(--ease);
+  }
+
+  .join__panel a:hover::before,
+  .join__panel a:focus-visible::before {
+    transform: none;
+  }
+
+  .join__panel a:hover,
+  .join__panel a:focus-visible {
+    border-color: var(--color-river);
+    color: var(--color-night);
+  }
+
+  .join__num {
+    font-size: var(--text-xs);
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    color: var(--color-river);
+    transition: color var(--duration) var(--ease);
+  }
+
+  .join__panel a:hover .join__num,
+  .join__panel a:focus-visible .join__num {
+    color: var(--color-night);
+  }
+
+  /* Número grande en contorno de fondo (solo escritorio). */
+  .join__bignum {
+    display: none;
+  }
+
+  .join__title {
+    font-family: var(--font-display);
+    font-size: clamp(3rem, 2rem + 4vw, 5.5rem);
+    line-height: 0.9;
+    text-transform: uppercase;
+  }
+
+  .join__text {
+    max-width: 22rem;
+    font-size: var(--text-base);
+    opacity: 0.85;
+  }
+
+  .join__arrow {
+    position: absolute;
+    top: var(--space-6);
+    right: var(--space-6);
+    font-size: 1.5rem;
+    transition: transform 400ms var(--ease);
+  }
+
+  .join__panel a:hover .join__arrow {
+    transform: rotate(-45deg);
+  }
+
+  /* ---------- Escritorio: columnas que se expanden ---------- */
+  @media (min-width: 64rem) {
+    .join__panels {
+      display: flex;
+      height: 30rem;
+    }
+
+    .join__panel {
+      flex: 1;
+      min-width: 0;
+      /* Incluye también la animación de aparición (data-reveal), que si no se pisaría. */
+      transition:
+        flex-grow 700ms var(--ease),
+        opacity var(--duration-reveal) var(--ease) var(--reveal-delay, 0ms),
+        transform var(--duration-reveal) var(--ease) var(--reveal-delay, 0ms);
+    }
+
+    .join__panel:hover,
+    .join__panel:focus-within {
+      flex-grow: 2.2;
+    }
+
+    .join__panel a {
+      align-content: end;
+    }
+
+    .join__num {
+      position: absolute;
+      top: var(--space-6);
+      left: var(--space-6);
+    }
+
+    .join__bignum {
+      display: block;
+      position: absolute;
+      top: var(--space-8);
+      left: var(--space-5);
+      font-family: var(--font-display);
+      font-size: 11rem;
+      line-height: 1;
+      color: transparent;
+      -webkit-text-stroke: 1px rgb(255 255 255 / 0.12);
+      transition:
+        -webkit-text-stroke-color 400ms var(--ease),
+        transform 700ms var(--ease);
+    }
+
+    .join__panel a:hover .join__bignum,
+    .join__panel a:focus-visible .join__bignum {
+      -webkit-text-stroke-color: rgb(16 42 42 / 0.25);
+      transform: translateY(-0.5rem);
+    }
+
+    /* El texto aparece solo en el panel expandido. */
+    .join__text {
+      max-height: 0;
+      opacity: 0;
+      overflow: hidden;
+      transition:
+        opacity 400ms var(--ease),
+        max-height 600ms var(--ease);
+    }
+
+    .join__panel:hover .join__text,
+    .join__panel:focus-within .join__text {
+      max-height: 6rem;
+      opacity: 0.85;
+      transition-delay: 150ms;
+    }
+  }
+</style>

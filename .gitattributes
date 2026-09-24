@@ -1,0 +1,5 @@
+# Saltos de línea LF en el repositorio (evita diferencias entre Windows y Linux/Mac).
+* text=auto eol=lf
+*.png binary
+*.jpg binary
+*.woff2 binary

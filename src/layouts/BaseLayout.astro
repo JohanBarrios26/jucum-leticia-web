@@ -1,0 +1,114 @@
+---
+/**
+ * PLANTILLA BASE DE TODAS LAS PÁGINAS
+ * ----------------------------------------------------------------------------
+ * Arma el <html> completo: etiquetas SEO del <head>, encabezado, contenido de
+ * la página (<slot />) y pie. Toda página del sitio se envuelve en este layout.
+ *
+ * Uso:
+ *   <BaseLayout locale="es" alternates={routes.about} title="Quiénes somos">
+ *     ...contenido de la página...
+ *   </BaseLayout>
+ *
+ * SEO (especificación §25): título, descripción, URL canónica, versiones en
+ * otros idiomas (hreflang) e imagen para redes sociales (Open Graph).
+ */
+import '@fontsource/bebas-neue';
+import '@fontsource-variable/inter';
+import '@/styles/global.css';
+
+import Header from '@/components/Header.astro';
+import Footer from '@/components/Footer.astro';
+import { defaultLocale, locales, type Alternates, type Locale } from '@/i18n/routes';
+import { t } from '@/i18n/ui';
+import { getSiteSettings } from '@/lib/content';
+
+interface Props {
+  locale: Locale;
+  /** URL de ESTA página en cada idioma (para hreflang y el selector de idioma). */
+  alternates: Alternates;
+  /** Título de la página; se le agrega " | JUCUM Leticia". Omitir en el inicio. */
+  title?: string;
+  /** Título completo sin agregados (lo usa la página de inicio). */
+  fullTitle?: string;
+  description?: string;
+  /** Imagen al compartir en redes (ruta dentro de /public o URL). */
+  ogImage?: string;
+  /** true = pedir a Google que no indexe esta página (ej. 404). */
+  noindex?: boolean;
+  /** Encabezado transparente sobre una foto a pantalla completa (inicio). */
+  headerOverlay?: boolean;
+}
+
+const {
+  locale,
+  alternates,
+  title,
+  fullTitle,
+  description,
+  ogImage = '/brand/logo-original.png',
+  noindex = false,
+  headerOverlay = false,
+} = Astro.props;
+
+const settings = await getSiteSettings(locale);
+const ui = t(locale);
+
+const pageTitle = fullTitle ?? (title ? `${title} | ${settings.organizationName}` : settings.organizationName);
+const metaDescription = description ?? settings.shortDescription;
+// `site` viene de astro.config.mjs (dominio final del sitio).
+const site = Astro.site ?? Astro.url;
+const canonical = new URL(alternates[locale], site).href;
+const ogImageUrl = new URL(ogImage, site).href;
+const ogLocale = { es: 'es_CO', en: 'en_US' } satisfies Record<Locale, string>;
+---
+
+<!doctype html>
+<html lang={locale}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!--
+      Marca que JavaScript está disponible. Las animaciones de aparición solo
+      ocultan contenido si esta clase existe (ver global.css, sección 5).
+    -->
+    <script is:inline>document.documentElement.classList.add('js');</script>
+    <title>{pageTitle}</title>
+    <meta name="description" content={metaDescription} />
+    <link rel="canonical" href={canonical} />
+    {noindex && <meta name="robots" content="noindex" />}
+
+    <!-- Versiones de esta página en otros idiomas -->
+    {locales.map((l) => <link rel="alternate" hreflang={l} href={new URL(alternates[l], site).href} />)}
+    <link rel="alternate" hreflang="x-default" href={new URL(alternates[defaultLocale], site).href} />
+
+    <!-- Vista previa al compartir en redes sociales / WhatsApp -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={settings.organizationName} />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={metaDescription} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImageUrl} />
+    <meta property="og:locale" content={ogLocale[locale]} />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <meta name="theme-color" content="#102a2a" />
+    <link rel="icon" type="image/png" href="/brand/logo-dark.png" />
+    <link rel="apple-touch-icon" href="/brand/logo-original.png" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <meta name="generator" content={Astro.generator} />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">{ui.skipToContent}</a>
+    <Header locale={locale} alternates={alternates} settings={settings} overlay={headerOverlay} />
+    <main id="main" tabindex="-1">
+      <slot />
+    </main>
+    <Footer locale={locale} settings={settings} />
+
+    <!-- Activa las animaciones de aparición (data-reveal) en toda la página. -->
+    <script>
+      import '@/scripts/reveal';
+    </script>
+  </body>
+</html>

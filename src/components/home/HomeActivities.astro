@@ -1,0 +1,107 @@
+---
+/**
+ * INICIO · 3. QUÉ HACEMOS
+ * ----------------------------------------------------------------------------
+ * Cinta en movimiento continuo con las actividades confirmadas (evangelización,
+ * plantación de iglesias, traducción oral...). Da energía visual y resume de un
+ * vistazo todo el trabajo antes de entrar a los ministerios.
+ *
+ * Técnica: la lista se repite dos veces y se desplaza -50% en bucle, así el
+ * salto de reinicio es invisible. La copia está oculta a lectores de pantalla.
+ * Se pausa al pasar el mouse y se detiene con "reducir movimiento".
+ */
+import type { Locale } from '@/i18n/routes';
+import { t } from '@/i18n/ui';
+
+interface Props {
+  locale: Locale;
+  activities: string[];
+}
+
+const { locale, activities } = Astro.props;
+const ui = t(locale);
+---
+
+<section class="activities surface-dark" aria-labelledby="activities-title">
+  <h2 class="visually-hidden" id="activities-title">{ui.home.whatWeDo}</h2>
+  <div class="activities__track">
+    {
+      [0, 1].map((copy) => (
+        <ul role="list" class="activities__list" aria-hidden={copy === 1 ? 'true' : undefined}>
+          {activities.map((activity) => (
+            <li>{activity}</li>
+          ))}
+        </ul>
+      ))
+    }
+  </div>
+</section>
+
+<style>
+  .activities {
+    padding-block: var(--space-6);
+    overflow: hidden;
+    border-block: 1px solid var(--color-border-on-dark);
+  }
+
+  .activities__track {
+    display: flex;
+    width: max-content;
+    animation: marquee 45s linear infinite;
+  }
+
+  .activities:hover .activities__track {
+    animation-play-state: paused;
+  }
+
+  .activities__list {
+    display: flex;
+    flex-shrink: 0;
+  }
+
+  .activities__list li {
+    display: flex;
+    align-items: center;
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 1.2rem + 3vw, 3.75rem);
+    line-height: 1;
+    letter-spacing: 0.01em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  /* Separador: un punto azul entre actividades. */
+  .activities__list li::after {
+    content: '';
+    width: 0.6rem;
+    height: 0.6rem;
+    margin-inline: clamp(1.25rem, 3vw, 2.5rem);
+    border-radius: 50%;
+    background: var(--color-river);
+  }
+
+  /* Palabras alternas en contorno para dar ritmo. */
+  .activities__list li:nth-child(even) {
+    color: transparent;
+    -webkit-text-stroke: 1px var(--color-text-on-dark);
+  }
+
+  @keyframes marquee {
+    to {
+      transform: translateX(-50%);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .activities__track {
+      animation: none;
+      flex-wrap: wrap;
+      width: auto;
+      padding-inline: var(--gutter);
+    }
+
+    .activities__list[aria-hidden] {
+      display: none;
+    }
+  }
+</style>

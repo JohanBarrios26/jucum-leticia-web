@@ -1,0 +1,19 @@
+---
+/**
+ * Página dinámica: genera una página por cada ministerio activo (una por slug).
+ * El diseño está en src/views/MinistryView.astro (compartido con el otro idioma).
+ */
+import MinistryView from '@/views/MinistryView.astro';
+import { getMinistry, getMinistrySlugs } from '@/lib/content';
+
+export async function getStaticPaths() {
+  const slugs = await getMinistrySlugs();
+  return slugs.map((slug) => ({ params: { slug } }));
+}
+
+const ministry = await getMinistry(Astro.params.slug!, 'es');
+// getStaticPaths solo genera slugs existentes, así que esto no debería ocurrir.
+if (!ministry) throw new Error(`Contenido no encontrado: ${Astro.params.slug}`);
+---
+
+<MinistryView locale="es" ministry={ministry} />

@@ -1,0 +1,133 @@
+---
+/**
+ * INICIO · 7. PERSONAS / TESTIMONIOS (especificación §12 y §13)
+ * ----------------------------------------------------------------------------
+ * Muestra historias SOLO si tienen todas las autorizaciones (nombre, foto e
+ * historia). getStories() ya hace ese filtro.
+ *
+ * Si todavía no hay historias:
+ *   - Mientras el cliente revisa (showPending): se muestran 3 tarjetas vacías
+ *     marcadas como pendientes, para que se entienda dónde irán.
+ *   - En producción (PUBLIC_SHOW_PENDING=false): la sección no se muestra.
+ */
+import ImagePlaceholder from '@/components/ui/ImagePlaceholder.astro';
+import SmartImage from '@/components/ui/SmartImage.astro';
+import PendingContent from '@/components/PendingContent.astro';
+import type { Locale } from '@/i18n/routes';
+import { t } from '@/i18n/ui';
+import { showPending } from '@/lib/config';
+import type { Story } from '@/lib/content';
+
+interface Props {
+  locale: Locale;
+  stories: Story[];
+}
+
+const { locale, stories } = Astro.props;
+const ui = t(locale);
+const visible = stories.length > 0 || showPending;
+---
+
+{
+  visible && (
+    <section class="stories section" aria-labelledby="stories-title">
+      <div class="container">
+        <div class="section-head stories__head" data-reveal>
+          <p class="eyebrow eyebrow--line">{ui.home.storiesEyebrow}</p>
+          <h2 id="stories-title">{ui.home.storiesTitle}</h2>
+          <p class="lead stories__subtitle">{ui.home.storiesSubtitle}</p>
+        </div>
+
+        <ul role="list" class="stories__grid">
+          {stories.length > 0
+            ? stories.slice(0, 3).map((s, i) => (
+                <li class="story" data-reveal style={`--reveal-delay: ${i * 100}ms`}>
+                  <div class="story__photo">
+                    {s.photo ? <SmartImage image={s.photo} sizes="(min-width: 64rem) 30vw, 90vw" /> : <ImagePlaceholder />}
+                  </div>
+                  <blockquote class="story__quote">“{s.quote}”</blockquote>
+                  <p class="story__name">{s.name}</p>
+                  <p class="story__title">{s.title}</p>
+                </li>
+              ))
+            : [1, 2, 3].map((n, i) => (
+                <li class="story story--pending" data-reveal style={`--reveal-delay: ${i * 100}ms`}>
+                  <div class="story__photo">
+                    <ImagePlaceholder label={String(n).padStart(2, '0')} />
+                  </div>
+                  <PendingContent locale={locale} />
+                </li>
+              ))}
+        </ul>
+      </div>
+    </section>
+  )
+}
+
+<style>
+  .stories__subtitle {
+    color: var(--color-text-muted);
+  }
+
+  .stories__grid {
+    display: grid;
+    gap: var(--space-6);
+  }
+
+  @media (min-width: 48rem) {
+    .stories__grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    /* La tarjeta del centro baja un poco: ritmo editorial. */
+    .story:nth-child(2) {
+      margin-top: var(--space-8);
+    }
+  }
+
+  .story {
+    display: grid;
+    gap: var(--space-4);
+    align-content: start;
+  }
+
+  .story__photo {
+    aspect-ratio: 3 / 4;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+  }
+
+  .story__photo :global(img),
+  .story__photo :global(picture) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .story__quote {
+    font-family: var(--font-display);
+    font-size: var(--text-2xl);
+    line-height: 1.1;
+    text-transform: uppercase;
+  }
+
+  .story__name {
+    font-weight: 700;
+  }
+
+  .story__title {
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+  }
+
+  .story--pending {
+    color: var(--color-text-muted);
+  }
+
+  /* En móvil, las tarjetas pendientes son más bajas para no ocupar tanto. */
+  @media (max-width: 47.99rem) {
+    .story--pending .story__photo {
+      aspect-ratio: 16 / 7;
+    }
+  }
+</style>

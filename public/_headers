@@ -1,0 +1,9 @@
+# Encabezados HTTP de seguridad y caché (los leen Cloudflare Pages y Netlify; en Vercel ver vercel.json).
+/*
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=()
+
+/_astro/*
+  Cache-Control: public, max-age=31536000, immutable

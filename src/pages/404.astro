@@ -1,0 +1,48 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { routes } from '@/i18n/routes';
+import { t } from '@/i18n/ui';
+
+// Página de error 404. Los hostings estáticos sirven una sola página 404 para
+// todo el sitio, por eso muestra el mensaje en ambos idiomas.
+const es = t('es').notFound;
+const en = t('en').notFound;
+---
+
+<BaseLayout locale="es" alternates={routes.home} title={es.title} noindex>
+  <section class="section">
+    <div class="container container--narrow not-found">
+      <p class="display not-found__code">404</p>
+      <h1>{es.title}</h1>
+      <p>{es.text}</p>
+      <p lang="en" class="not-found__en">{en.title}. {en.text}</p>
+      <div class="not-found__actions">
+        <a class="btn btn--primary" href={routes.home.es}>{es.back}</a>
+        <a class="btn btn--outline" href={routes.home.en} lang="en">{en.back}</a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .not-found {
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  .not-found__code {
+    color: var(--color-green);
+    font-size: var(--text-display);
+  }
+
+  .not-found__en {
+    color: var(--color-text-muted);
+  }
+
+  .not-found__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    margin-top: var(--space-4);
+  }
+</style>

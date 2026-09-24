@@ -1,0 +1,81 @@
+---
+/**
+ * LÍNEA DE RÍO (elemento distintivo del diseño)
+ * ----------------------------------------------------------------------------
+ * Un meandro dibujado en SVG que "se dibuja" a medida que la persona hace
+ * scroll. Representa el concepto del sitio: el río que conecta mundos.
+ *
+ * Técnica: CSS scroll-driven animations (`animation-timeline: view()`), sin
+ * JavaScript. En navegadores que no la soportan, la línea se ve completa.
+ *
+ * Uso: <RiverLine />  o  <RiverLine tone="light" /> sobre fondos oscuros.
+ */
+interface Props {
+  tone?: 'dark' | 'light';
+  class?: string;
+}
+
+const { tone = 'dark', class: className } = Astro.props;
+---
+
+<svg
+  class:list={['river-line', `river-line--${tone}`, className]}
+  viewBox="0 0 1200 120"
+  preserveAspectRatio="none"
+  aria-hidden="true"
+  focusable="false"
+>
+  <path
+    pathLength="1"
+    d="M0 60 C 120 10, 200 110, 320 60 S 520 5, 640 55 S 860 115, 980 60 S 1140 20, 1200 50"
+  />
+</svg>
+
+<style>
+  .river-line {
+    display: block;
+    width: 100%;
+    height: clamp(3rem, 6vw, 5.5rem);
+    overflow: visible;
+  }
+
+  .river-line path {
+    fill: none;
+    stroke-width: 2;
+    stroke-linecap: round;
+    vector-effect: non-scaling-stroke;
+    stroke-dasharray: 1;
+    stroke-dashoffset: 0;
+  }
+
+  .river-line--dark path {
+    stroke: var(--color-green);
+  }
+
+  .river-line--light path {
+    stroke: var(--color-river);
+  }
+
+  @supports (animation-timeline: view()) {
+    .river-line path {
+      animation: draw linear both;
+      animation-timeline: view();
+      animation-range: entry 0% cover 55%;
+    }
+  }
+
+  @keyframes draw {
+    from {
+      stroke-dashoffset: 1;
+    }
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .river-line path {
+      animation: none;
+    }
+  }
+</style>

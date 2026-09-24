@@ -1,0 +1,19 @@
+---
+/**
+ * Página dinámica: genera una página por cada escuela activa (una por slug).
+ * El diseño está en src/views/SchoolView.astro (compartido con el otro idioma).
+ */
+import SchoolView from '@/views/SchoolView.astro';
+import { getSchool, getSchoolSlugs } from '@/lib/content';
+
+export async function getStaticPaths() {
+  const slugs = await getSchoolSlugs();
+  return slugs.map((slug) => ({ params: { slug } }));
+}
+
+const school = await getSchool(Astro.params.slug!, 'es');
+// getStaticPaths solo genera slugs existentes, así que esto no debería ocurrir.
+if (!school) throw new Error(`Contenido no encontrado: ${Astro.params.slug}`);
+---
+
+<SchoolView locale="es" school={school} />

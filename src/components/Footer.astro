@@ -1,0 +1,249 @@
+---
+/**
+ * PIE DE PÁGINA
+ * ----------------------------------------------------------------------------
+ * Aparece en todas las páginas (especificación §17). Columnas:
+ *   marca · navegación · cómo participar · contacto · redes sociales
+ * y cierra con el nombre de la organización en tamaño gigante.
+ *
+ * Los datos de contacto y redes salen de la configuración global
+ * (getSiteSettings): si JUCUM cambia un teléfono en el panel, cambia aquí solo.
+ */
+import PendingContent from './PendingContent.astro';
+import { joinPathUrl, joinPaths, mainNav, routes, type Locale } from '@/i18n/routes';
+import { t } from '@/i18n/ui';
+import { whatsappUrl, type SiteSettings, type SocialLinks } from '@/lib/content';
+
+interface Props {
+  locale: Locale;
+  settings: SiteSettings;
+}
+
+const { locale, settings } = Astro.props;
+const ui = t(locale);
+const year = new Date().getFullYear();
+
+// Nombre visible de cada red. Solo se muestran las que tienen URL cargada.
+const socialNames: Record<keyof SocialLinks, string> = {
+  instagram: 'Instagram',
+  facebook: 'Facebook',
+  youtube: 'YouTube',
+  tiktok: 'TikTok',
+};
+const socials = (Object.keys(socialNames) as (keyof SocialLinks)[])
+  .filter((key) => settings.social[key])
+  .map((key) => ({ name: socialNames[key], href: settings.social[key]! }));
+---
+
+<footer class="site-footer surface-deep">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a class="footer-brand__link" href={routes.home[locale]}>
+          <img src="/brand/logo-white.png" alt="" width="168" height="136" loading="lazy" />
+          <span class="display">{settings.organizationName}</span>
+        </a>
+        <p>{settings.tagline}</p>
+      </div>
+
+      <nav class="footer-col" aria-labelledby="footer-nav-title">
+        <h2 class="footer-col__title" id="footer-nav-title">{ui.footer.navigation}</h2>
+        <ul role="list">
+          {mainNav.map((key) => <li><a href={routes[key][locale]}>{ui.nav[key]}</a></li>)}
+        </ul>
+      </nav>
+
+      <nav class="footer-col" aria-labelledby="footer-join-title">
+        <h2 class="footer-col__title" id="footer-join-title">{ui.footer.participate}</h2>
+        <ul role="list">
+          {joinPaths.map((path) => <li><a href={joinPathUrl(path, locale)}>{ui.joinPaths[path]}</a></li>)}
+        </ul>
+      </nav>
+
+      <div class="footer-col">
+        <h2 class="footer-col__title">{ui.footer.contact}</h2>
+        <ul role="list">
+          <li>
+            <span class="visually-hidden">{ui.contact.email}: </span>
+            <a href={`mailto:${settings.email}`} data-event="email_click">{settings.email}</a>
+          </li>
+          {
+            settings.phones.map((phone) => (
+              <li>
+                <span class="footer-label">{phone.label}</span>
+                <a href={phone.href} data-event="phone_click">{phone.number}</a>
+              </li>
+            ))
+          }
+          {
+            settings.whatsapp && (
+              <li>
+                <a
+                  href={whatsappUrl(settings.whatsapp, ui.contact.whatsappMessage)}
+                  target="_blank"
+                  rel="noopener"
+                  data-event="whatsapp_click"
+                >
+                  {ui.contact.whatsapp} →
+                </a>
+              </li>
+            )
+          }
+          <li>
+            <span class="visually-hidden">{ui.contact.location}: </span>
+            {settings.location ?? <PendingContent locale={locale} what={ui.contact.location} />}
+          </li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h2 class="footer-col__title">{ui.footer.social}</h2>
+        {
+          socials.length > 0 ? (
+            <ul role="list">
+              {socials.map((s) => (
+                <li>
+                  <a href={s.href} target="_blank" rel="noopener" data-event="social_click">
+                    {s.name}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <PendingContent locale={locale} />
+          )
+        }
+      </div>
+    </div>
+
+    <!-- Nombre gigante de cierre: decorativo (aria-hidden), el nombre ya está arriba. -->
+    <p class="footer-wordmark" aria-hidden="true">{settings.organizationName}</p>
+
+    <div class="footer-bottom">
+      <p>© {year} {settings.organizationName}. {ui.footer.rights}</p>
+      <p>{settings.tagline}</p>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    /* Permite medir el ancho del contenedor (unidades cqi) para el nombre gigante. */
+    container-type: inline-size;
+    padding-top: var(--space-9);
+    font-size: var(--text-sm);
+    overflow: hidden;
+  }
+
+  /* 1 columna en móvil → 2 en tablet → 5 en escritorio. */
+  .footer-grid {
+    display: grid;
+    gap: var(--space-7) var(--space-6);
+    grid-template-columns: 1fr;
+  }
+
+  @media (min-width: 36rem) {
+    .footer-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .footer-brand {
+      grid-column: 1 / -1;
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .footer-grid {
+      grid-template-columns: 1.6fr repeat(4, 1fr);
+    }
+
+    .footer-brand {
+      grid-column: auto;
+    }
+  }
+
+  .footer-brand__link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-3);
+    color: var(--color-text-on-dark);
+    text-decoration: none;
+  }
+
+  .footer-brand__link img {
+    width: auto;
+    height: 2.75rem;
+  }
+
+  .footer-brand__link .display {
+    font-size: 2rem;
+    padding-top: 0.15em;
+  }
+
+  .footer-brand p {
+    max-width: 22rem;
+    margin-top: var(--space-4);
+    color: var(--color-text-on-dark-muted);
+    font-size: var(--text-base);
+  }
+
+  .footer-col__title {
+    margin-bottom: var(--space-4);
+    color: var(--color-river);
+    font-family: var(--font-body);
+    font-size: var(--text-xs);
+    font-weight: 700;
+    letter-spacing: var(--tracking-eyebrow);
+    line-height: 1.4;
+  }
+
+  .footer-col ul {
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  .footer-col a {
+    color: var(--color-text-on-dark);
+    text-decoration: none;
+    overflow-wrap: anywhere;
+    transition: color var(--duration) var(--ease);
+  }
+
+  .footer-col a:hover {
+    color: var(--color-river);
+  }
+
+  .footer-label {
+    display: block;
+    color: var(--color-text-on-dark-muted);
+    font-size: var(--text-xs);
+  }
+
+  /*
+   * Nombre gigante: ocupa todo el ancho del pie, solo con el contorno.
+   * `cqi` = % del ancho del contenedor: se ajusta a cualquier pantalla.
+   */
+  .footer-wordmark {
+    margin-top: var(--space-9);
+    font-family: var(--font-display);
+    font-size: min(19.5cqi, 19rem);
+    line-height: 0.8;
+    letter-spacing: 0.01em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    color: transparent;
+    -webkit-text-stroke: 1px rgb(255 255 255 / 0.18);
+    user-select: none;
+  }
+
+  .footer-bottom {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: var(--space-2) var(--space-5);
+    margin-top: var(--space-6);
+    padding-block: var(--space-5);
+    border-top: 1px solid var(--color-border-on-dark);
+    color: var(--color-text-on-dark-muted);
+  }
+</style>
