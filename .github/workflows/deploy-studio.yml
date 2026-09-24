@@ -1,0 +1,46 @@
+# PUBLICA EL PANEL DE ADMINISTRACIÓN (Sanity Studio) AUTOMÁTICAMENTE
+# -----------------------------------------------------------------------------
+# Cada vez que se suben cambios dentro de studio/ a la rama main, GitHub
+# publica el panel en https://jucum-leticia.sanity.studio. También se puede
+# ejecutar a mano desde la pestaña "Actions" del repositorio.
+#
+# Usa el secreto SANITY_AUTH_TOKEN (Settings → Secrets → Actions): un token de
+# Sanity con rol "Deploy Studio" (solo puede publicar el panel, no toca el
+# contenido). Si se pierde, se crea otro en sanity.io/manage → API → Tokens.
+name: Publicar panel (Sanity Studio)
+
+on:
+  push:
+    branches: [main]
+    paths: ['studio/**']
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-studio
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: studio
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: studio/package-lock.json
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      - name: Validar esquemas
+        run: npx sanity schema validate
+
+      - name: Publicar el panel
+        run: npx sanity deploy -y
+        env:
+          SANITY_AUTH_TOKEN: ${{ secrets.SANITY_AUTH_TOKEN }}
