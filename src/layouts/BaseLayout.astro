@@ -74,6 +74,10 @@ const pageTitle = fullTitle ?? (title ? `${title} | ${settings.organizationName}
 const metaDescription = description ?? settings.shortDescription;
 // `site` viene de astro.config.mjs (dominio final del sitio).
 const site = Astro.site ?? Astro.url;
+// La analítica solo se activa en el dominio publicado (no en localhost), y
+// Umami solo cuenta visitas de ese dominio (data-domains).
+const siteHost = new URL(site).hostname;
+const analyticsEnabled = Boolean(umamiWebsiteId) && siteHost !== 'localhost';
 const canonical = new URL(alternates[locale], site).href;
 const ogImageFinal = ogImage ?? ogImageUrl(home.hero.image) ?? new URL('/brand/logo-original.png', site).href;
 const ogLocale = { es: 'es_CO', en: 'en_US' } satisfies Record<Locale, string>;
@@ -146,8 +150,15 @@ if (breadcrumbs && breadcrumbs.length > 0) {
 
     <!-- Analítica sin cookies (solo si está configurada) -->
     {
-      umamiWebsiteId && (
-        <script is:inline defer data-umami src="https://cloud.umami.is/script.js" data-website-id={umamiWebsiteId} />
+      analyticsEnabled && (
+        <script
+          is:inline
+          defer
+          data-umami
+          src="https://cloud.umami.is/script.js"
+          data-website-id={umamiWebsiteId}
+          data-domains={siteHost}
+        />
       )
     }
 

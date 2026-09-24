@@ -23,7 +23,7 @@ export const web3formsKey = import.meta.env.PUBLIC_WEB3FORMS_KEY || '356dbef5-14
 
 /**
  * ID del sitio en Umami (analítica sin cookies). Público por diseño.
- * Se obtiene en https://cloud.umami.is y se define como PUBLIC_UMAMI_WEBSITE_ID.
- * Sin ID, no se carga ningún script de analítica.
+ * Sitio registrado en https://cloud.umami.is. Se puede cambiar con la variable
+ * de entorno PUBLIC_UMAMI_WEBSITE_ID. Sin ID, no se carga ningún script de analítica.
  */
-export const umamiWebsiteId = import.meta.env.PUBLIC_UMAMI_WEBSITE_ID ?? '';
+export const umamiWebsiteId = import.meta.env.PUBLIC_UMAMI_WEBSITE_ID || '6d24ce5c-e732-4292-aaf3-ee12a1c91a04';
