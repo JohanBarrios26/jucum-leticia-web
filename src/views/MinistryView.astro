@@ -45,6 +45,7 @@ const contactHref = settings.whatsapp
   title={ministry.name}
   description={ministry.shortDescription ?? undefined}
   ogImage={ogImageUrl(ministry.image)}
+  preloadImage={ministry.image}
   breadcrumbs={[
     { name: ui.nav.home, url: routes.home[locale] },
     { name: ui.nav.ministries, url: routes.ministries[locale] },

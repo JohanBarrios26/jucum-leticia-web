@@ -48,6 +48,7 @@ const facts = [
   title={school.fullName ? `${school.name} · ${school.fullName}` : school.name}
   description={school.description ?? school.fullName ?? undefined}
   ogImage={ogImageUrl(school.image)}
+  preloadImage={school.image}
   breadcrumbs={[
     { name: ui.nav.home, url: routes.home[locale] },
     { name: ui.nav.schools, url: routes.schools[locale] },

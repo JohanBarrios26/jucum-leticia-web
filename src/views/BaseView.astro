@@ -46,6 +46,7 @@ const mediaTitle =
   title={base.name}
   description={base.description ?? base.tagline ?? undefined}
   ogImage={ogImageUrl(base.image)}
+  preloadImage={base.image}
   breadcrumbs={[
     { name: ui.nav.home, url: routes.home[locale] },
     { name: ui.nav.bases, url: routes.bases[locale] },

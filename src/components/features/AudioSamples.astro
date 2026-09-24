@@ -225,9 +225,21 @@ const bars = [30, 55, 80, 45, 95, 60, 35, 70, 100, 50, 25, 65, 85, 40, 75, 55, 9
     background: rgb(0 173 239 / 0.08);
   }
 
+  /* Tarjetas de ejemplo: tenues, pero con texto de contraste suficiente. */
   .audio-card--ghost {
-    opacity: 0.45;
     border-style: dashed;
+  }
+
+  .audio-card--ghost .audio-card__lang {
+    border: 1px solid var(--color-river);
+    background: transparent;
+    color: var(--color-text-on-dark-muted);
+  }
+
+  .audio-card--ghost .audio-card__ref,
+  .audio-card--ghost .audio-card__wave,
+  .audio-card--ghost .audio-card__play {
+    opacity: 0.35;
   }
 
   .audio-card__top {

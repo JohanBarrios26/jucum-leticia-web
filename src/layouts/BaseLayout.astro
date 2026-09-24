@@ -30,7 +30,8 @@ import Footer from '@/components/Footer.astro';
 import { defaultLocale, locales, type Alternates, type Locale } from '@/i18n/routes';
 import { t } from '@/i18n/ui';
 import { umamiWebsiteId } from '@/lib/config';
-import { getHome, getSiteSettings, ogImageUrl } from '@/lib/content';
+import { getHome, getSiteSettings, ogImageUrl, type ImageRef } from '@/lib/content';
+import { remoteSrcset } from '@/lib/images';
 
 interface Props {
   locale: Locale;
@@ -54,6 +55,8 @@ interface Props {
   /** Evento de analítica al abrir la página (ej. 'ministry_view') y su elemento. */
   pageEvent?: string;
   pageItem?: string;
+  /** Foto de portada a precargar (la primera que se ve): acelera la carga. */
+  preloadImage?: ImageRef | null;
 }
 
 const {
@@ -69,7 +72,11 @@ const {
   organizationSchema = false,
   pageEvent,
   pageItem,
+  preloadImage,
 } = Astro.props;
+
+// Precarga de la portada (solo fotos del panel; mismo srcset que SmartImage).
+const preloadSrcset = preloadImage && typeof preloadImage.src === 'string' ? remoteSrcset(preloadImage) : null;
 
 const [settings, home] = await Promise.all([getSiteSettings(locale), getHome(locale)]);
 const ui = t(locale);
@@ -128,6 +135,13 @@ if (breadcrumbs && breadcrumbs.length > 0) {
       ocultan contenido si esta clase existe (ver global.css, sección 5).
     -->
     <script is:inline>document.documentElement.classList.add('js');</script>
+    <!-- Conexión temprana con el CDN de imágenes de Sanity. -->
+    <link rel="preconnect" href="https://cdn.sanity.io" />
+    {
+      preloadSrcset && (
+        <link rel="preload" as="image" imagesrcset={preloadSrcset} imagesizes="100vw" fetchpriority="high" />
+      )
+    }
     <!-- Precarga de tipografías: el título grande aparece sin saltos. -->
     <link rel="preload" href={bebasLatin} as="font" type="font/woff2" crossorigin />
     <link rel="preload" href={interLatin} as="font" type="font/woff2" crossorigin />
