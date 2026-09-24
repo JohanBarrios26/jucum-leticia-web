@@ -14,10 +14,13 @@ Todo se hace desde el **panel de administración**, una página web con usuario 
 | Sección | Qué se cambia ahí |
 |---|---|
 | **Configuración del sitio** | Nombre, frase principal, correo, teléfonos, WhatsApp, ubicación y redes sociales. Aparecen en todo el sitio. |
+| **Textos de las páginas** | La frase bajo el título de Ministerios, Escuelas, Sé parte y Contacto. |
 | **Página de inicio** | Foto y textos de la portada, frase "Sobre JUCUM", actividades, sección de corto plazo y cómo se ve el sitio en Google. |
-| **Ministerios** | Cada ministerio con su foto, descripción y actividades. |
-| **Escuelas** | Cada escuela, su ficha (fechas, costos, requisitos…) y las **personas encargadas**. |
-| **Cómo participar** | Los textos de Orar, Servir, Venir y Apoyar. |
+| **Quiénes somos** | Introducción, misión, visión, valores e historia. |
+| **Ministerios** | Cada ministerio con su foto, descripción, actividades, **motivo visual** y **bloques especiales**. |
+| **Escuelas** | Cada escuela, su ficha (fechas, costos, requisitos…), las **personas encargadas** y sus bloques especiales. |
+| **Cómo participar** | Orar, Servir, Venir y Apoyar: textos, preguntas frecuentes y el mensaje de WhatsApp. |
+| **Personas** | El equipo que sirve en JUCUM Leticia (aparece en Quiénes somos y en su ministerio). |
 | **Galería** | Las fotos de la galería. |
 | **Historias** | Testimonios de personas. |
 
@@ -71,6 +74,26 @@ Para volver a mostrarlo, actívalo de nuevo.
 - Escribe siempre la **descripción de la foto** (qué se ve). Sirve para personas ciegas y para Google.
 - Después de subirla, haz clic en el ícono del **lápiz / recorte** y marca el **punto de interés** (por ejemplo, la cara de una persona). El sitio nunca recortará ese punto.
 - Las fotos marcadas como **"Foto temporal"** son provisionales: reemplázalas por fotos de JUCUM y desmarca la casilla.
+
+### Bloques especiales (lo que hace única a cada página)
+En un ministerio o escuela, pestaña **Bloques especiales**:
+- **Motivo visual:** elige el dibujo animado que lo identifica (río, puente, onda de audio…).
+- **Bloques:** agrega los que quieras y ordénalos arrastrando:
+  - **Audios de la Palabra:** pasajes grabados en lenguas de las comunidades (ideal para OBT).
+  - **Ruta por el río:** comunidades que se visitan, en orden.
+  - **Etapas:** fases de una escuela o momentos de un ministerio.
+  - **Versículo destacado**, **Video** (enlace de YouTube), **Lista** (ej. "Qué llevar") y **Cifras** (solo datos verificados).
+
+### Subir un audio (OBT)
+1. Abre el ministerio **OBT** → **Bloques especiales** → **Audios de la Palabra** → agregar audio.
+2. Escribe la **lengua** (ej. "Tikuna"), la **comunidad** (opcional) y la **cita bíblica** (ej. "Juan 3:16").
+3. En **Qué dice**, escribe el texto del pasaje en español (y en inglés si puedes): así quien escucha entiende lo que oye.
+4. Sube el archivo. Recomendado: **MP3 de menos de 1 MB** (voz en mono a 64 kbps es suficiente). El sitio no descarga el audio hasta que alguien presiona reproducir.
+5. Marca **"Autorizado para publicar"** solo si quienes grabaron y la comunidad dieron permiso. **Publicar.**
+
+### Agregar una persona del equipo
+**Personas** → botón **+**. Nombre, foto, rol, ministerio, desde cuándo sirve, frase, historia y petición de oración.
+Marca **"Autorizó publicar su nombre, foto e historia"** solo con permiso. **Publicar.**
 
 ### Publicar una historia o foto de personas
 Por respeto y por ley, **solo publica con autorización**:

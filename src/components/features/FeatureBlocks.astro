@@ -1,0 +1,76 @@
+---
+/**
+ * BLOQUES ESPECIALES: organizador
+ * ----------------------------------------------------------------------------
+ * Recibe la lista de bloques de un ministerio o escuela (en el orden que el
+ * editor definió en el panel) y dibuja cada uno con su componente, dentro de
+ * una sección con el fondo que mejor le queda.
+ *
+ * ¿Agregar un bloque nuevo? Crea su componente en esta carpeta y añádelo a
+ * `surfaces`, a `isVisible` y al bloque de condiciones del HTML.
+ */
+import AudioSamples from './AudioSamples.astro';
+import Checklist from './Checklist.astro';
+import LiteVideo from './LiteVideo.astro';
+import RiverRoute from './RiverRoute.astro';
+import Stats from './Stats.astro';
+import Timeline from './Timeline.astro';
+import Verse from './Verse.astro';
+import type { Locale } from '@/i18n/routes';
+import { showPending } from '@/lib/config';
+import type { FeatureBlock } from '@/lib/content';
+
+interface Props {
+  locale: Locale;
+  blocks: FeatureBlock[];
+}
+
+const { locale, blocks } = Astro.props;
+
+// Fondo de la sección según el tipo de bloque.
+const surfaces: Record<FeatureBlock['type'], string> = {
+  audioSamples: 'surface-deep',
+  verse: 'surface-dark',
+  video: 'surface-dark',
+  riverRoute: 'surface-sand',
+  timeline: '',
+  checklist: '',
+  stats: 'surface-sand',
+};
+
+// Un bloque vacío solo se muestra (como "pendiente") mientras se revisa el sitio.
+function isVisible(b: FeatureBlock): boolean {
+  switch (b.type) {
+    case 'audioSamples':
+      return b.samples.length > 0 || showPending;
+    case 'riverRoute':
+      return b.stops.length > 0 || showPending;
+    case 'timeline':
+      return b.steps.length > 0 || showPending;
+    case 'checklist':
+      return b.items.length > 0 || showPending;
+    case 'stats':
+      return b.items.length > 0;
+    default:
+      return true;
+  }
+}
+
+const visible = blocks.map((block, i) => ({ block, id: `feature-${i}-title` })).filter(({ block }) => isVisible(block));
+---
+
+{
+  visible.map(({ block, id }) => (
+    <section class:list={['section', 'feature', surfaces[block.type]]} aria-labelledby={id}>
+      <div class="container">
+        {block.type === 'audioSamples' && <AudioSamples locale={locale} block={block} titleId={id} />}
+        {block.type === 'riverRoute' && <RiverRoute locale={locale} block={block} titleId={id} />}
+        {block.type === 'timeline' && <Timeline locale={locale} block={block} titleId={id} />}
+        {block.type === 'verse' && <Verse block={block} titleId={id} />}
+        {block.type === 'video' && <LiteVideo locale={locale} block={block} titleId={id} />}
+        {block.type === 'checklist' && <Checklist locale={locale} block={block} titleId={id} />}
+        {block.type === 'stats' && <Stats locale={locale} block={block} titleId={id} />}
+      </div>
+    </section>
+  ))
+}

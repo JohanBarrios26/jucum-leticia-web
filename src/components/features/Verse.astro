@@ -1,0 +1,47 @@
+---
+/**
+ * BLOQUE: VERSÍCULO DESTACADO
+ * ----------------------------------------------------------------------------
+ * Un pasaje en tipografía grande, con su cita. Lo elige JUCUM en el panel.
+ */
+import type { FeatureBlock } from '@/lib/content';
+
+interface Props {
+  block: Extract<FeatureBlock, { type: 'verse' }>;
+  titleId: string;
+}
+
+const { block, titleId } = Astro.props;
+---
+
+<figure class="verse" data-reveal>
+  <blockquote>
+    <p id={titleId} class="verse__text">“{block.text}”</p>
+  </blockquote>
+  <figcaption class="verse__ref">{block.reference}</figcaption>
+</figure>
+
+<style>
+  .verse {
+    max-width: 60rem;
+    margin-inline: auto;
+    text-align: center;
+  }
+
+  .verse__text {
+    font-family: var(--font-display);
+    font-size: var(--text-h2);
+    line-height: 1;
+    text-transform: uppercase;
+    text-wrap: balance;
+  }
+
+  .verse__ref {
+    margin-top: var(--space-5);
+    color: var(--color-river);
+    font-size: var(--text-sm);
+    font-weight: 700;
+    letter-spacing: var(--tracking-eyebrow);
+    text-transform: uppercase;
+  }
+</style>

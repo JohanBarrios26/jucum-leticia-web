@@ -1,0 +1,102 @@
+---
+/**
+ * VISTA: LISTADO DE MINISTERIOS (/ministerios/)
+ * ----------------------------------------------------------------------------
+ * Todos los ministerios activos en una cuadrícula de tarjetas (el mismo diseño
+ * de tarjeta del inicio: MinistryCard.astro), en el orden del panel.
+ * Cierra con una invitación a "Sé parte".
+ */
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import MinistryCard from '@/components/MinistryCard.astro';
+import PageHero from '@/components/PageHero.astro';
+import { routes, type Locale } from '@/i18n/routes';
+import { t } from '@/i18n/ui';
+import { getMinistries, getPageTexts, getSiteSettings } from '@/lib/content';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const ui = t(locale);
+const [ministries, texts, settings] = await Promise.all([
+  getMinistries(locale),
+  getPageTexts(locale),
+  getSiteSettings(locale),
+]);
+---
+
+<BaseLayout
+  locale={locale}
+  alternates={routes.ministries}
+  title={ui.nav.ministries}
+  description={texts.ministriesIntro ?? undefined}
+  headerOverlay
+>
+  <PageHero title={ui.nav.ministries} eyebrow={settings.organizationName} lead={texts.ministriesIntro} motif="river" />
+
+  <section class="section surface-dark" aria-labelledby="list-title">
+    <div class="container">
+      <h2 class="visually-hidden" id="list-title">{ui.lists.ministriesTitle}</h2>
+      <ul role="list" class="ministry-grid">
+        {
+          ministries.map((m, i) => (
+            <li data-reveal style={`--reveal-delay: ${(i % 3) * 90}ms`}>
+              <MinistryCard
+                locale={locale}
+                ministry={m}
+                number={i + 1}
+                sizes="(min-width: 64rem) 30vw, (min-width: 40rem) 45vw, 90vw"
+              />
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <section class="section cta-band">
+    <div class="container cta-band__inner">
+      <h2 data-reveal>{ui.home.joinTitle}</h2>
+      <a class="btn btn--dark" href={routes.join[locale]} data-event="cta_join_click" data-reveal>
+        {ui.nav.join} <span class="btn__arrow" aria-hidden="true">→</span>
+      </a>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .ministry-grid {
+    display: grid;
+    gap: var(--space-5);
+  }
+
+  @media (min-width: 40rem) {
+    .ministry-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .ministry-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    /* Ritmo: la columna del medio baja un poco. */
+    .ministry-grid li:nth-child(3n + 2) {
+      margin-top: var(--space-8);
+    }
+  }
+
+  .cta-band__inner {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: end;
+    gap: var(--space-6);
+  }
+
+  .cta-band h2 {
+    max-width: 16ch;
+  }
+</style>

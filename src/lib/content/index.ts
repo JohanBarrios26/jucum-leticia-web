@@ -13,6 +13,9 @@
 import { joinPathUrl, joinPaths as joinPathOrder, type Locale } from '@/i18n/routes';
 import { fetchCmsContent, type CmsContent } from '@/lib/sanity/fetch';
 import type {
+  About,
+  FeatureBlock,
+  FeatureBlockRaw,
   GalleryItem,
   Home,
   ImageRawRef,
@@ -22,6 +25,8 @@ import type {
   Maybe,
   Ministry,
   MinistryRaw,
+  PageTexts,
+  Person,
   School,
   SchoolRaw,
   SiteSettings,
@@ -81,6 +86,67 @@ export function whatsappUrl(number: string, message?: string): string {
 
 const byOrder = (a: { order: number }, b: { order: number }) => a.order - b.order;
 
+/** Extrae el ID de un enlace de YouTube (youtu.be/ID, watch?v=ID, shorts/ID, embed/ID). */
+function youtubeId(url: string): Maybe<string> {
+  const m = url.match(/(?:youtu\.be\/|v=|shorts\/|embed\/)([\w-]{11})/);
+  return m ? m[1] : null;
+}
+
+/** Resuelve los bloques especiales al idioma pedido. */
+function resolveFeatures(list: FeatureBlockRaw[], locale: Locale): FeatureBlock[] {
+  return list.map((b): FeatureBlock => {
+    switch (b.type) {
+      case 'audioSamples':
+        return {
+          type: b.type,
+          title: localizeMaybe(b.title, locale),
+          intro: localizeMaybe(b.intro, locale),
+          // Solo audios autorizados para publicar.
+          samples: b.samples
+            .filter((a) => a.authorized)
+            .map((a) => ({
+              language: a.language,
+              community: a.community,
+              reference: a.reference,
+              text: localize(a.text, locale),
+              audioUrl: a.audioUrl,
+              mimeType: a.mimeType,
+            })),
+        };
+      case 'riverRoute':
+        return {
+          type: b.type,
+          title: localizeMaybe(b.title, locale),
+          intro: localizeMaybe(b.intro, locale),
+          stops: b.stops.map((x) => ({ name: x.name, note: localizeMaybe(x.note, locale) })),
+        };
+      case 'timeline':
+        return {
+          type: b.type,
+          title: localizeMaybe(b.title, locale),
+          intro: localizeMaybe(b.intro, locale),
+          steps: b.steps.map((x) => ({
+            label: localizeMaybe(x.label, locale),
+            title: localize(x.title, locale),
+            text: localizeMaybe(x.text, locale),
+          })),
+        };
+      case 'verse':
+        return { type: b.type, text: localize(b.text, locale), reference: b.reference };
+      case 'video':
+        return { type: b.type, title: localizeMaybe(b.title, locale), url: b.url, youtubeId: youtubeId(b.url) };
+      case 'checklist':
+        return { type: b.type, title: localizeMaybe(b.title, locale), items: localize(b.items, locale) };
+      case 'stats':
+        return {
+          type: b.type,
+          title: localizeMaybe(b.title, locale),
+          items: b.items.map((x) => ({ value: x.value, label: localize(x.label, locale) })),
+        };
+    }
+  });
+}
+
 /* ------------------------------------------------------ Configuración global */
 
 export async function getSiteSettings(locale: Locale): Promise<SiteSettings> {
@@ -137,6 +203,8 @@ function resolveMinistry(m: MinistryRaw, locale: Locale): Ministry {
     activities: localize(m.activities, locale),
     image: resolveImageMaybe(m.image, locale),
     order: m.order,
+    motif: m.motif,
+    features: resolveFeatures(m.features, locale),
   };
 }
 
@@ -185,6 +253,8 @@ function resolveSchool(s: SchoolRaw, locale: Locale): School {
     })),
     image: resolveImageMaybe(s.image, locale),
     order: s.order,
+    motif: s.motif,
+    features: resolveFeatures(s.features, locale),
   };
 }
 
@@ -215,6 +285,9 @@ export async function getJoinPaths(locale: Locale): Promise<JoinPathItem[]> {
     title: localize(p.title, locale),
     text: localize(p.text, locale),
     href: joinPathUrl(p.key, locale),
+    body: localizeMaybe(p.body, locale),
+    details: p.details.map((d) => ({ label: localize(d.label, locale), value: localizeMaybe(d.value, locale) })),
+    whatsappMessage: localizeMaybe(p.whatsappMessage, locale),
   }));
 }
 
@@ -242,4 +315,57 @@ export async function getStories(locale: Locale): Promise<Story[]> {
       photo: resolveImageMaybe(s.photo, locale),
       ministrySlug: s.ministrySlug,
     }));
+}
+
+/* ------------------------------------------------------------ Quiénes somos */
+
+export async function getAbout(locale: Locale): Promise<About> {
+  const a = (await source()).about;
+  return {
+    image: resolveImageMaybe(a.image, locale),
+    intro: localize(a.intro, locale),
+    mission: localizeMaybe(a.mission, locale),
+    vision: localizeMaybe(a.vision, locale),
+    values: a.values.map((v) => ({ title: localize(v.title, locale), text: localizeMaybe(v.text, locale) })),
+    history: a.history.map((h) => ({
+      year: h.year,
+      title: localize(h.title, locale),
+      text: localizeMaybe(h.text, locale),
+      image: resolveImageMaybe(h.image, locale),
+    })),
+    teamIntro: localizeMaybe(a.teamIntro, locale),
+  };
+}
+
+/* ----------------------------------------------------------------- Personas */
+
+/**
+ * Personas del equipo que autorizaron publicar sus datos, en el orden del panel.
+ * Con `ministrySlug` devuelve solo las de ese ministerio.
+ */
+export async function getPeople(locale: Locale, ministrySlug?: string): Promise<Person[]> {
+  return (await source()).people
+    .filter((p) => p.authorized && (!ministrySlug || p.ministrySlug === ministrySlug))
+    .map((p) => ({
+      name: p.name,
+      photo: resolveImageMaybe(p.photo, locale),
+      role: localizeMaybe(p.role, locale),
+      ministrySlug: p.ministrySlug,
+      since: p.since,
+      quote: localizeMaybe(p.quote, locale),
+      bio: localizeMaybe(p.bio, locale),
+      prayerRequest: localizeMaybe(p.prayerRequest, locale),
+    }));
+}
+
+/* ------------------------------------------------------- Textos de las páginas */
+
+export async function getPageTexts(locale: Locale): Promise<PageTexts> {
+  const t = (await source()).pageTexts;
+  return {
+    ministriesIntro: localizeMaybe(t.ministriesIntro, locale),
+    schoolsIntro: localizeMaybe(t.schoolsIntro, locale),
+    joinIntro: localizeMaybe(t.joinIntro, locale),
+    contactIntro: localizeMaybe(t.contactIntro, locale),
+  };
 }

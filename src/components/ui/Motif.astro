@@ -1,0 +1,276 @@
+---
+/**
+ * MOTIVO VISUAL DE CADA MINISTERIO / ESCUELA ("detalle diferencial")
+ * ----------------------------------------------------------------------------
+ * Un dibujo de líneas en SVG que identifica a cada ministerio o escuela. El
+ * editor elige cuál en el panel (campo "Motivo visual").
+ *
+ *   river  → río con paradas (Comunidades ribereñas)
+ *   burst  → estallido (Ministerio Explosión)
+ *   book   → páginas abiertas (Erradicando la pobreza bíblica)
+ *   crown  → corona (Kings Kids / Hijos del Rey)
+ *   bridge → puente (JUCUM El Puente)
+ *   wave   → onda de audio (OBT, traducción oral)
+ *   pulse  → pulso (Brigadas médicas)
+ *   path   → ruta (escuelas)
+ *
+ * Animación: las líneas se "dibujan" al cargar y luego tienen un movimiento
+ * sutil propio (la onda vibra, el pulso late, el río fluye). Todo con CSS;
+ * se desactiva con "reducir movimiento".
+ *
+ * ¿Agregar un motivo? Añade su nombre en types.ts (motifNames), en el esquema
+ * del panel (studio/schemaTypes/objects/features.ts) y su dibujo abajo.
+ */
+import type { MotifName } from '@/lib/content';
+
+interface Props {
+  name: MotifName | null;
+  class?: string;
+}
+
+const { name, class: className } = Astro.props;
+const motif: MotifName = name ?? 'path';
+
+// Alturas de las barras del motivo "wave".
+const bars = [20, 42, 64, 36, 80, 54, 28, 70, 90, 46, 24, 60, 76, 38, 58, 30];
+---
+
+<svg
+  class:list={['motif', `motif--${motif}`, className]}
+  viewBox="0 0 200 120"
+  aria-hidden="true"
+  focusable="false"
+>
+  {
+    motif === 'river' && (
+      <g>
+        <path class="draw flow" pathLength="1" d="M4 70 C 40 20, 70 110, 104 64 S 160 18, 196 52" />
+        <path class="draw soft" pathLength="1" d="M4 82 C 40 32, 70 122, 104 76 S 160 30, 196 64" />
+        <circle class="dot" cx="38" cy="47" r="5" style="--i: 1" />
+        <circle class="dot" cx="104" cy="64" r="5" style="--i: 2" />
+        <circle class="dot" cx="166" cy="36" r="5" style="--i: 3" />
+      </g>
+    )
+  }
+  {
+    motif === 'burst' && (
+      <g class="spin">
+        <circle class="draw" pathLength="1" cx="100" cy="60" r="14" />
+        {Array.from({ length: 12 }, (_, i) => {
+          const a = (i * Math.PI * 2) / 12;
+          const r1 = 24;
+          const r2 = i % 2 ? 44 : 54;
+          return (
+            <line
+              class="draw"
+              pathLength="1"
+              style={`--i: ${i}`}
+              x1={(100 + Math.cos(a) * r1).toFixed(1)}
+              y1={(60 + Math.sin(a) * r1).toFixed(1)}
+              x2={(100 + Math.cos(a) * r2).toFixed(1)}
+              y2={(60 + Math.sin(a) * r2).toFixed(1)}
+            />
+          );
+        })}
+      </g>
+    )
+  }
+  {
+    motif === 'book' && (
+      <g>
+        <path class="draw" pathLength="1" d="M100 28 C 80 16, 48 16, 26 24 L 26 96 C 48 88, 80 88, 100 100 Z" />
+        <path class="draw" pathLength="1" d="M100 28 C 120 16, 152 16, 174 24 L 174 96 C 152 88, 120 88, 100 100 Z" />
+        <path class="draw soft" pathLength="1" d="M40 42 C 58 36, 76 36, 88 42 M40 56 C 58 50, 76 50, 88 56 M40 70 C 58 64, 76 64, 88 70" />
+        <path class="draw soft" pathLength="1" d="M112 42 C 124 36, 142 36, 160 42 M112 56 C 124 50, 142 50, 160 56 M112 70 C 124 64, 142 64, 160 70" />
+      </g>
+    )
+  }
+  {
+    motif === 'crown' && (
+      <g class="bob">
+        <path class="draw" pathLength="1" d="M44 90 L 36 34 L 72 62 L 100 22 L 128 62 L 164 34 L 156 90 Z" />
+        <path class="draw soft" pathLength="1" d="M48 102 L 152 102" />
+        <circle class="dot" cx="36" cy="34" r="5" style="--i: 1" />
+        <circle class="dot" cx="100" cy="22" r="5" style="--i: 2" />
+        <circle class="dot" cx="164" cy="34" r="5" style="--i: 3" />
+      </g>
+    )
+  }
+  {
+    motif === 'bridge' && (
+      <g>
+        <path class="draw" pathLength="1" d="M8 70 L 192 70" />
+        <path class="draw" pathLength="1" d="M20 70 C 60 14, 140 14, 180 70" />
+        <path
+          class="draw soft"
+          pathLength="1"
+          d="M52 70 L 52 40 M76 70 L 76 30 M100 70 L 100 28 M124 70 L 124 30 M148 70 L 148 40"
+        />
+        <path class="draw soft flow" pathLength="1" d="M8 94 C 30 86, 50 102, 72 94 S 116 86, 138 94 S 176 102, 192 94" />
+      </g>
+    )
+  }
+  {
+    motif === 'wave' && (
+      <g>
+        {bars.map((h, i) => (
+          <rect class="bar" x={14 + i * 11.2} y={60 - h / 2} width="6" height={h} rx="3" style={`--i: ${i}`} />
+        ))}
+      </g>
+    )
+  }
+  {
+    motif === 'pulse' && (
+      <g>
+        <path class="draw soft" pathLength="1" d="M4 60 L 196 60" />
+        <path class="draw beat" pathLength="1" d="M4 60 L 58 60 L 70 38 L 84 92 L 100 18 L 114 78 L 124 60 L 196 60" />
+      </g>
+    )
+  }
+  {
+    motif === 'path' && (
+      <g>
+        <path class="draw dashed" pathLength="1" d="M16 96 C 50 96, 50 60, 90 60 S 130 24, 184 24" />
+        <circle class="dot" cx="16" cy="96" r="6" style="--i: 0" />
+        <circle class="dot" cx="90" cy="60" r="5" style="--i: 1" />
+        <path class="draw" pathLength="1" d="M184 24 L 184 4 L 170 10 L 184 16" />
+      </g>
+    )
+  }
+</svg>
+
+<style>
+  .motif {
+    display: block;
+    width: 100%;
+    height: auto;
+    overflow: visible;
+    color: var(--color-river);
+  }
+
+  .motif :is(path, line, circle:not(.dot)) {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .motif .soft {
+    stroke-width: 1.5;
+    opacity: 0.55;
+  }
+
+  .motif .dot,
+  .motif .bar {
+    fill: currentColor;
+  }
+
+  /* ---------- Dibujo inicial (las líneas se trazan) ---------- */
+  .draw {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    animation: motif-draw 1.6s var(--ease) forwards;
+    animation-delay: calc(200ms + var(--i, 0) * 60ms);
+  }
+
+  .dashed {
+    stroke-dasharray: 0.03 0.025;
+    stroke-dashoffset: 0;
+    animation: motif-march 6s linear infinite;
+  }
+
+  .dot {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: motif-pop 600ms var(--ease) both;
+    animation-delay: calc(700ms + var(--i, 0) * 180ms);
+  }
+
+  @keyframes motif-draw {
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+
+  @keyframes motif-pop {
+    from {
+      transform: scale(0);
+    }
+  }
+
+  @keyframes motif-march {
+    to {
+      stroke-dashoffset: -1;
+    }
+  }
+
+  /* ---------- Movimiento sutil propio de cada motivo ---------- */
+  .motif--wave .bar {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: motif-bar 1.4s var(--ease-in-out) infinite alternate;
+    animation-delay: calc(var(--i) * -90ms);
+  }
+
+  @keyframes motif-bar {
+    from {
+      transform: scaleY(0.3);
+    }
+  }
+
+  .motif--pulse .beat {
+    stroke-dasharray: 0.35 0.65;
+    animation: motif-beat 2.4s linear infinite;
+  }
+
+  @keyframes motif-beat {
+    from {
+      stroke-dashoffset: 1;
+    }
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+
+  .motif .flow {
+    animation:
+      motif-draw 1.6s var(--ease) forwards,
+      motif-flow 5s var(--ease-in-out) 1.8s infinite alternate;
+  }
+
+  @keyframes motif-flow {
+    to {
+      transform: translateX(4px);
+    }
+  }
+
+  .motif .spin {
+    transform-origin: 100px 60px;
+    animation: motif-spin 40s linear infinite;
+  }
+
+  @keyframes motif-spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  .motif .bob {
+    animation: motif-bob 4s var(--ease-in-out) infinite alternate;
+  }
+
+  @keyframes motif-bob {
+    to {
+      transform: translateY(-4px);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .motif *,
+    .motif {
+      animation: none !important;
+      stroke-dashoffset: 0 !important;
+    }
+  }
+</style>

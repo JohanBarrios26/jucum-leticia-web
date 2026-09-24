@@ -154,6 +154,10 @@ export interface MinistryRaw {
   active: boolean;
   /** Posición en las listas (1, 2, 3…). */
   order: number;
+  /** Dibujo animado que lo identifica (ver components/ui/Motif.astro). */
+  motif: Maybe<MotifName>;
+  /** Bloques especiales: audios, ruta, etapas… */
+  features: FeatureBlockRaw[];
 }
 
 export interface Ministry {
@@ -164,6 +168,8 @@ export interface Ministry {
   activities: string[];
   image: Maybe<ImageRef>;
   order: number;
+  motif: Maybe<MotifName>;
+  features: FeatureBlock[];
 }
 
 /* ------------------------------------------------------------------ Escuelas */
@@ -210,6 +216,8 @@ export interface SchoolRaw {
   image: Maybe<ImageRawRef>;
   active: boolean;
   order: number;
+  motif: Maybe<MotifName>;
+  features: FeatureBlockRaw[];
 }
 
 export interface School {
@@ -228,6 +236,8 @@ export interface School {
   contacts: SchoolContact[];
   image: Maybe<ImageRef>;
   order: number;
+  motif: Maybe<MotifName>;
+  features: FeatureBlock[];
 }
 
 /* ------------------------------------------------------ Caminos para participar */
@@ -237,6 +247,11 @@ export interface JoinPathRaw {
   key: 'pray' | 'serve' | 'come' | 'support';
   title: Localized;
   text: Localized;
+  /** Explicación larga (página "Sé parte"). */
+  body: Maybe<Localized>;
+  /** Preguntas frecuentes; `value` null = pendiente. */
+  details: { label: Localized; value: Maybe<Localized> }[];
+  whatsappMessage: Maybe<Localized>;
 }
 
 export interface JoinPathItem {
@@ -244,6 +259,9 @@ export interface JoinPathItem {
   title: string;
   text: string;
   href: string;
+  body: Maybe<string>;
+  details: { label: string; value: Maybe<string> }[];
+  whatsappMessage: Maybe<string>;
 }
 
 /* ------------------------------------------------------------------- Galería */
@@ -300,3 +318,122 @@ export interface Story {
   photo: Maybe<ImageRef>;
   ministrySlug: Maybe<string>;
 }
+
+/* ------------------------------------------------------------ Quiénes somos */
+
+export interface AboutRaw {
+  image: Maybe<ImageRawRef>;
+  intro: Localized;
+  mission: Maybe<Localized>;
+  vision: Maybe<Localized>;
+  values: { title: Localized; text: Maybe<Localized> }[];
+  history: { year: string; title: Localized; text: Maybe<Localized>; image: Maybe<ImageRawRef> }[];
+  teamIntro: Maybe<Localized>;
+}
+
+export interface About {
+  image: Maybe<ImageRef>;
+  intro: string;
+  mission: Maybe<string>;
+  vision: Maybe<string>;
+  values: { title: string; text: Maybe<string> }[];
+  history: { year: string; title: string; text: Maybe<string>; image: Maybe<ImageRef> }[];
+  teamIntro: Maybe<string>;
+}
+
+/* ----------------------------------------------------------------- Personas */
+
+export interface PersonRaw {
+  name: string;
+  photo: Maybe<ImageRawRef>;
+  role: Maybe<Localized>;
+  ministrySlug: Maybe<string>;
+  since: Maybe<string>;
+  quote: Maybe<Localized>;
+  bio: Maybe<Localized>;
+  prayerRequest: Maybe<Localized>;
+  /** Solo se publica si la persona lo autorizó. */
+  authorized: boolean;
+}
+
+export interface Person {
+  name: string;
+  photo: Maybe<ImageRef>;
+  role: Maybe<string>;
+  ministrySlug: Maybe<string>;
+  since: Maybe<string>;
+  quote: Maybe<string>;
+  bio: Maybe<string>;
+  prayerRequest: Maybe<string>;
+}
+
+/* ------------------------------------------------------- Textos de las páginas */
+
+export interface PageTextsRaw {
+  ministriesIntro: Maybe<Localized>;
+  schoolsIntro: Maybe<Localized>;
+  joinIntro: Maybe<Localized>;
+  contactIntro: Maybe<Localized>;
+}
+
+export type PageTexts = { [K in keyof PageTextsRaw]: Maybe<string> };
+
+/* -------------------------------------------- Detalle diferencial: motivos y bloques */
+
+export const motifNames = ['river', 'burst', 'book', 'crown', 'bridge', 'wave', 'pulse', 'path'] as const;
+export type MotifName = (typeof motifNames)[number];
+
+/** Bloques especiales tal como vienen del panel (textos en ambos idiomas). */
+export type FeatureBlockRaw =
+  | {
+      type: 'audioSamples';
+      title: Maybe<Localized>;
+      intro: Maybe<Localized>;
+      samples: {
+        language: string;
+        community: Maybe<string>;
+        reference: string;
+        text: Localized;
+        audioUrl: string;
+        mimeType: Maybe<string>;
+        authorized: boolean;
+      }[];
+    }
+  | { type: 'riverRoute'; title: Maybe<Localized>; intro: Maybe<Localized>; stops: { name: string; note: Maybe<Localized> }[] }
+  | {
+      type: 'timeline';
+      title: Maybe<Localized>;
+      intro: Maybe<Localized>;
+      steps: { label: Maybe<Localized>; title: Localized; text: Maybe<Localized> }[];
+    }
+  | { type: 'verse'; text: Localized; reference: string }
+  | { type: 'video'; title: Maybe<Localized>; url: string }
+  | { type: 'checklist'; title: Maybe<Localized>; items: Localized<string[]> }
+  | { type: 'stats'; title: Maybe<Localized>; items: { value: string; label: Localized }[] };
+
+/** Los mismos bloques ya resueltos a un idioma (lo que reciben los componentes). */
+export type FeatureBlock =
+  | {
+      type: 'audioSamples';
+      title: Maybe<string>;
+      intro: Maybe<string>;
+      samples: {
+        language: string;
+        community: Maybe<string>;
+        reference: string;
+        text: string;
+        audioUrl: string;
+        mimeType: Maybe<string>;
+      }[];
+    }
+  | { type: 'riverRoute'; title: Maybe<string>; intro: Maybe<string>; stops: { name: string; note: Maybe<string> }[] }
+  | {
+      type: 'timeline';
+      title: Maybe<string>;
+      intro: Maybe<string>;
+      steps: { label: Maybe<string>; title: string; text: Maybe<string> }[];
+    }
+  | { type: 'verse'; text: string; reference: string }
+  | { type: 'video'; title: Maybe<string>; url: string; youtubeId: Maybe<string> }
+  | { type: 'checklist'; title: Maybe<string>; items: string[] }
+  | { type: 'stats'; title: Maybe<string>; items: { value: string; label: string }[] };

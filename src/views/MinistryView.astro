@@ -5,17 +5,21 @@
  * UNA sola plantilla para todos los ministerios: se alimenta con los datos de
  * cada uno (no se diseñan 7 páginas distintas). URL: /ministerios/[slug]/
  *
- * Estructura: foto grande + nombre → descripción → qué hacemos (actividades)
- * → cómo participar → otros ministerios.
- * Las partes sin información confirmada muestran "Pendiente de contenido".
+ * Estructura:
+ *   portada (foto + motivo visual propio) → descripción y actividades →
+ *   BLOQUES ESPECIALES (audios, ruta por el río, etapas… lo que el editor
+ *   haya agregado: es lo que hace única a cada página) → quiénes sirven aquí →
+ *   cómo participar → otros ministerios.
  */
 import BaseLayout from '@/layouts/BaseLayout.astro';
-import ImagePlaceholder from '@/components/ui/ImagePlaceholder.astro';
-import SmartImage from '@/components/ui/SmartImage.astro';
+import MinistryCard from '@/components/MinistryCard.astro';
+import PageHero from '@/components/PageHero.astro';
 import PendingContent from '@/components/PendingContent.astro';
+import PersonCard from '@/components/PersonCard.astro';
+import FeatureBlocks from '@/components/features/FeatureBlocks.astro';
 import { ministryAlternates, routes, type Locale } from '@/i18n/routes';
 import { t } from '@/i18n/ui';
-import { getMinistries, getSiteSettings, whatsappUrl, type Ministry } from '@/lib/content';
+import { getMinistries, getPeople, getSiteSettings, whatsappUrl, type Ministry } from '@/lib/content';
 
 interface Props {
   locale: Locale;
@@ -24,7 +28,11 @@ interface Props {
 
 const { locale, ministry } = Astro.props;
 const ui = t(locale);
-const [settings, all] = await Promise.all([getSiteSettings(locale), getMinistries(locale)]);
+const [settings, all, people] = await Promise.all([
+  getSiteSettings(locale),
+  getMinistries(locale),
+  getPeople(locale, ministry.slug),
+]);
 const others = all.filter((m) => m.slug !== ministry.slug).slice(0, 3);
 const contactHref = settings.whatsapp
   ? whatsappUrl(settings.whatsapp, `${ui.contact.whatsappMessage} (${ministry.name})`)
@@ -38,17 +46,13 @@ const contactHref = settings.whatsapp
   description={ministry.shortDescription ?? undefined}
   headerOverlay
 >
-  <!-- Portada -->
-  <section class="cover on-photo">
-    <div class="cover__media">
-      {ministry.image ? <SmartImage image={ministry.image} priority sizes="100vw" /> : <ImagePlaceholder />}
-    </div>
-    <div class="container cover__content">
-      <a class="link-arrow cover__back" href={routes.ministries[locale]}><span aria-hidden="true">←</span> {ui.nav.ministries}</a>
-      <h1 class="cover__title">{ministry.name}</h1>
-      {ministry.shortDescription && <p class="lead cover__lead">{ministry.shortDescription}</p>}
-    </div>
-  </section>
+  <PageHero
+    title={ministry.name}
+    lead={ministry.shortDescription}
+    image={ministry.image}
+    motif={ministry.motif}
+    back={{ href: routes.ministries[locale], label: ui.nav.ministries }}
+  />
 
   <!-- Descripción + actividades -->
   <section class="section">
@@ -78,12 +82,43 @@ const contactHref = settings.whatsapp
     </div>
   </section>
 
+  <!-- Bloques especiales de este ministerio -->
+  <FeatureBlocks locale={locale} blocks={ministry.features} />
+
+  <!-- Quiénes sirven aquí -->
+  {
+    people.length > 0 && (
+      <section class="section" aria-labelledby="ministry-team-title">
+        <div class="container">
+          <h2 id="ministry-team-title" class="detail-team-title" data-reveal>
+            {ui.detail.team}
+          </h2>
+          <ul role="list" class="team">
+            {people.map((p) => (
+              <li data-reveal>
+                <PersonCard locale={locale} person={p} />
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+    )
+  }
+
   <!-- Cómo participar -->
-  <section class="section surface-dark participate">
-    <div class="container participate__inner">
+  <section class="section surface-dark">
+    <div class="container participate">
       <h2 data-reveal>{ui.detail.participate}</h2>
       <p class="lead participate__text" data-reveal style="--reveal-delay: 80ms">{ui.detail.participateText}</p>
-      <a class="btn btn--primary" href={contactHref} target="_blank" rel="noopener" data-event="whatsapp_click" data-reveal style="--reveal-delay: 160ms">
+      <a
+        class="btn btn--primary"
+        href={contactHref}
+        target="_blank"
+        rel="noopener"
+        data-event="whatsapp_click"
+        data-reveal
+        style="--reveal-delay: 160ms"
+      >
         {ui.home.contactTitle} <span class="btn__arrow" aria-hidden="true">→</span>
       </a>
     </div>
@@ -92,18 +127,18 @@ const contactHref = settings.whatsapp
   <!-- Otros ministerios -->
   {
     others.length > 0 && (
-      <section class="section">
+      <section class="section surface-dark others-section">
         <div class="container">
-          <h2 class="eyebrow eyebrow--line detail-label">{ui.detail.otherMinistries}</h2>
+          <h2 class="eyebrow eyebrow--line others-label">{ui.detail.otherMinistries}</h2>
           <ul role="list" class="others">
-            {others.map((m, i) => (
-              <li data-reveal style={`--reveal-delay: ${i * 90}ms`}>
-                <a href={ministryAlternates(m.slug)[locale]} class="other">
-                  <div class="other__media">
-                    {m.image ? <SmartImage image={m.image} decorative sizes="(min-width: 48rem) 30vw, 90vw" widths={[480, 768]} /> : <ImagePlaceholder />}
-                  </div>
-                  <span class="other__name">{m.name}</span>
-                </a>
+            {others.map((m) => (
+              <li data-reveal>
+                <MinistryCard
+                  locale={locale}
+                  ministry={m}
+                  number={all.indexOf(m) + 1}
+                  sizes="(min-width: 64rem) 30vw, (min-width: 40rem) 45vw, 90vw"
+                />
               </li>
             ))}
           </ul>
@@ -114,57 +149,6 @@ const contactHref = settings.whatsapp
 </BaseLayout>
 
 <style>
-  /* ---------- Portada ---------- */
-  .cover {
-    position: relative;
-    display: flex;
-    align-items: flex-end;
-    min-height: min(44rem, 85svh);
-    padding-top: calc(var(--header-height) + var(--space-8));
-    padding-bottom: var(--space-8);
-    color: var(--color-text-on-dark);
-    background: var(--color-night-deep);
-    overflow: hidden;
-    isolation: isolate;
-  }
-
-  .cover__media {
-    position: absolute;
-    inset: 0;
-    z-index: -1;
-  }
-
-  .cover__media :global(img),
-  .cover__media :global(picture) {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-
-  .cover__media::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(to top, rgb(10 29 29 / 0.92), rgb(10 29 29 / 0.25) 60%, rgb(10 29 29 / 0.55));
-  }
-
-  .cover__back {
-    color: var(--color-river);
-  }
-
-  .cover__title {
-    margin-top: var(--space-5);
-    font-size: var(--text-display);
-    line-height: 0.88;
-  }
-
-  .cover__lead {
-    max-width: 40rem;
-    margin-top: var(--space-5);
-    opacity: 0.9;
-  }
-
-  /* ---------- Contenido ---------- */
   .detail-grid {
     display: grid;
     gap: var(--space-8);
@@ -177,6 +161,7 @@ const contactHref = settings.whatsapp
   }
 
   .detail-label {
+    display: flex;
     margin-bottom: var(--space-5);
     color: var(--color-green);
     font-family: var(--font-body);
@@ -204,7 +189,17 @@ const contactHref = settings.whatsapp
     color: var(--color-green);
   }
 
-  .participate__inner {
+  .detail-team-title {
+    margin-bottom: var(--space-7);
+  }
+
+  .team {
+    display: grid;
+    gap: var(--space-7) var(--space-5);
+    grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+  }
+
+  .participate {
     display: grid;
     justify-items: start;
     gap: var(--space-5);
@@ -215,45 +210,32 @@ const contactHref = settings.whatsapp
     color: var(--color-text-on-dark-muted);
   }
 
+  .others-section {
+    padding-top: 0;
+  }
+
+  .others-label {
+    margin-bottom: var(--space-6);
+    color: var(--color-river);
+    font-family: var(--font-body);
+    font-size: var(--text-xs);
+    line-height: 1.4;
+  }
+
   .others {
     display: grid;
     gap: var(--space-5);
   }
 
-  @media (min-width: 48rem) {
+  @media (min-width: 40rem) {
     .others {
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(2, 1fr);
     }
   }
 
-  .other {
-    display: grid;
-    gap: var(--space-3);
-    color: var(--color-night);
-    text-decoration: none;
-  }
-
-  .other__media {
-    aspect-ratio: 4 / 3;
-    border-radius: var(--radius);
-    overflow: hidden;
-  }
-
-  .other__media :global(img),
-  .other__media :global(picture) {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: transform 900ms var(--ease);
-  }
-
-  .other:hover .other__media :global(img) {
-    transform: scale(1.05);
-  }
-
-  .other__name {
-    font-family: var(--font-display);
-    font-size: var(--text-2xl);
-    text-transform: uppercase;
+  @media (min-width: 64rem) {
+    .others {
+      grid-template-columns: repeat(3, 1fr);
+    }
   }
 </style>

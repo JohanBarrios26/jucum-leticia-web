@@ -1,0 +1,132 @@
+---
+/**
+ * BLOQUE: VIDEO (YouTube liviano)
+ * ----------------------------------------------------------------------------
+ * Muestra solo la miniatura del video y un botón de reproducir. El reproductor
+ * de YouTube (~1 MB de JavaScript) se carga recién al hacer clic, usando el
+ * dominio "youtube-nocookie" (sin cookies de seguimiento hasta reproducir).
+ */
+import type { Locale } from '@/i18n/routes';
+import { t } from '@/i18n/ui';
+import type { FeatureBlock } from '@/lib/content';
+
+interface Props {
+  locale: Locale;
+  block: Extract<FeatureBlock, { type: 'video' }>;
+  titleId: string;
+}
+
+const { locale, block, titleId } = Astro.props;
+const ui = t(locale).features;
+const title = block.title ?? ui.videoTitle;
+---
+
+<div class="video">
+  <h2 id={titleId} class="video__title" data-reveal>{title}</h2>
+  {
+    block.youtubeId ? (
+      <div class="video__frame" data-reveal="scale">
+        <button type="button" class="video__button" data-youtube-id={block.youtubeId} data-title={title} data-event="video_play">
+          <img
+            src={`https://i.ytimg.com/vi/${block.youtubeId}/hqdefault.jpg`}
+            alt=""
+            loading="lazy"
+            decoding="async"
+            width="480"
+            height="360"
+          />
+          <span class="video__play" aria-hidden="true">
+            <svg viewBox="0 0 24 24">
+              <path d="M8 5v14l11-7z" />
+            </svg>
+          </span>
+          <span class="visually-hidden">
+            {ui.videoPlay}: {title}
+          </span>
+        </button>
+      </div>
+    ) : (
+      <p>
+        <a href={block.url} target="_blank" rel="noopener">
+          {ui.videoPlay} →
+        </a>
+      </p>
+    )
+  }
+</div>
+
+<script>
+  // Al hacer clic, reemplaza la miniatura por el reproductor real de YouTube.
+  document.querySelectorAll<HTMLButtonElement>('button[data-youtube-id]').forEach((button) => {
+    button.addEventListener('click', () => {
+      const iframe = document.createElement('iframe');
+      iframe.src = `https://www.youtube-nocookie.com/embed/${button.dataset.youtubeId}?autoplay=1&rel=0`;
+      iframe.title = button.dataset.title ?? 'Video';
+      iframe.allow = 'accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture; fullscreen';
+      iframe.allowFullscreen = true;
+      button.replaceWith(iframe);
+    });
+  });
+</script>
+
+<style>
+  .video__title {
+    margin-bottom: var(--space-6);
+  }
+
+  .video__frame {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    background: var(--color-night-deep);
+  }
+
+  .video__button,
+  .video__frame :global(iframe) {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+    padding: 0;
+    background: none;
+  }
+
+  .video__button img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.8;
+    transition: opacity 400ms var(--ease);
+  }
+
+  .video__button:hover img {
+    opacity: 1;
+  }
+
+  .video__play {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    display: grid;
+    place-items: center;
+    width: 5rem;
+    height: 5rem;
+    border-radius: 50%;
+    background: var(--color-river);
+    color: var(--color-night);
+    transform: translate(-50%, -50%);
+    transition: transform 400ms var(--ease);
+  }
+
+  .video__button:hover .video__play {
+    transform: translate(-50%, -50%) scale(1.08);
+  }
+
+  .video__play svg {
+    width: 2rem;
+    height: 2rem;
+    fill: currentColor;
+  }
+</style>

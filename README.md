@@ -35,6 +35,7 @@
 - **Escuelas** como lista editorial, con una foto que sigue al cursor.
 - **OBT** (traducción bíblica oral) con una onda de audio animada.
 - **Cuatro caminos para participar** en paneles que se expanden.
+- **Un detalle propio por ministerio y escuela:** un motivo SVG animado (río, puente, onda de audio, pulso…) y bloques especiales editables. Entre ellos, **audios de la Palabra en lenguas del Amazonas** (OBT), con un reproductor propio que no descarga nada hasta que se presiona reproducir.
 
 Paleta *Amazon Night · Amazon Green · River Blue · Sand · Cloud*; tipografías **Bebas Neue** e **Inter**, alojadas en el propio sitio.
 
@@ -47,6 +48,7 @@ src/
 ├── views/            Diseño de cada página (compartido entre idiomas).
 ├── components/
 │   ├── home/         Secciones de la página de inicio (una por archivo).
+│   ├── features/     Bloques especiales: audios, ruta por el río, etapas, video…
 │   └── ui/           Piezas reutilizables (imagen optimizada, línea de río…).
 ├── layouts/          Plantilla base: <head> SEO, encabezado y pie.
 ├── lib/content/      Capa de contenido: tipos y funciones get* que usan las páginas.
@@ -107,7 +109,7 @@ Guía para quienes editan el contenido: [docs/MANUAL-ADMINISTRADORES.md](docs/MA
 - [x] **Fase 1:** base, sistema visual, encabezado, pie y responsive
 - [x] **Fase 2:** página de inicio completa y plantillas de ministerio y escuela
 - [x] **Fase 3:** panel de administración (Sanity) para el equipo de JUCUM
-- [ ] **Fase 4:** páginas Quiénes somos, Ministerios, Escuelas y Sé parte
+- [x] **Fase 4:** páginas Quiénes somos, Ministerios, Escuelas, Sé parte y Contacto, y detalle diferencial por ministerio/escuela
 - [ ] **Fase 5:** formulario de contacto, analítica y SEO final
 - [ ] **Fase 6:** pruebas de accesibilidad y rendimiento, y publicación
 

@@ -1,0 +1,176 @@
+---
+/**
+ * BLOQUE: RUTA POR EL RÍO (pensado para Comunidades ribereñas)
+ * ----------------------------------------------------------------------------
+ * Las comunidades que se visitan, en orden, sobre un río que se dibuja al
+ * hacer scroll. En escritorio el río es horizontal; en móvil, vertical.
+ * Sin paradas cargadas: se muestra el río con una marca de pendiente.
+ */
+import PendingContent from '@/components/PendingContent.astro';
+import type { Locale } from '@/i18n/routes';
+import { t } from '@/i18n/ui';
+import { showPending } from '@/lib/config';
+import type { FeatureBlock } from '@/lib/content';
+
+interface Props {
+  locale: Locale;
+  block: Extract<FeatureBlock, { type: 'riverRoute' }>;
+  titleId: string;
+}
+
+const { locale, block, titleId } = Astro.props;
+const ui = t(locale).features;
+const hasStops = block.stops.length > 0;
+---
+
+{
+  (hasStops || showPending) && (
+    <div class="route">
+      <div class="route__head" data-reveal>
+        <h2 id={titleId}>{block.title ?? ui.routeTitle}</h2>
+        {block.intro && <p class="lead">{block.intro}</p>}
+      </div>
+
+      <div class="route__map">
+        <svg class="route__river" viewBox="0 0 1200 160" preserveAspectRatio="none" aria-hidden="true">
+          <path pathLength="1" d="M0 80 C 150 20, 250 140, 400 80 S 650 20, 800 80 S 1050 140, 1200 70" />
+          <path class="route__river-bank" pathLength="1" d="M0 96 C 150 36, 250 156, 400 96 S 650 36, 800 96 S 1050 156, 1200 86" />
+        </svg>
+
+        {hasStops ? (
+          <ol class="route__stops" style={`--count: ${block.stops.length}`}>
+            {block.stops.map((stop, i) => (
+              <li data-reveal style={`--reveal-delay: ${i * 120}ms`}>
+                <span class="route__dot" aria-hidden="true" />
+                <span class="route__num">{String(i + 1).padStart(2, '0')}</span>
+                <span class="route__name">{stop.name}</span>
+                {stop.note && <span class="route__note">{stop.note}</span>}
+              </li>
+            ))}
+          </ol>
+        ) : (
+          <p class="route__pending">
+            {ui.routePending} <PendingContent locale={locale} />
+          </p>
+        )}
+      </div>
+    </div>
+  )
+}
+
+<style>
+  .route__head {
+    display: grid;
+    gap: var(--space-4);
+    max-width: 44rem;
+    margin-bottom: var(--space-7);
+  }
+
+  .route__head .lead {
+    color: var(--color-text-muted);
+  }
+
+  .route__map {
+    position: relative;
+  }
+
+  .route__river {
+    width: 100%;
+    height: 8rem;
+  }
+
+  .route__river path {
+    fill: none;
+    stroke: var(--color-green);
+    stroke-width: 3;
+    stroke-linecap: round;
+    vector-effect: non-scaling-stroke;
+    stroke-dasharray: 1;
+  }
+
+  .route__river .route__river-bank {
+    stroke: var(--color-river);
+    stroke-width: 1.5;
+    opacity: 0.6;
+  }
+
+  @supports (animation-timeline: view()) {
+    .route__river path {
+      animation: route-draw linear both;
+      animation-timeline: view();
+      animation-range: entry 10% cover 50%;
+    }
+  }
+
+  @keyframes route-draw {
+    from {
+      stroke-dashoffset: 1;
+    }
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+
+  /* ---------- Paradas ---------- */
+  .route__stops {
+    display: grid;
+    gap: var(--space-5);
+    margin-top: var(--space-5);
+    padding: 0;
+    list-style: none;
+  }
+
+  @media (min-width: 48rem) {
+    .route__stops {
+      grid-template-columns: repeat(min(var(--count), 4), 1fr);
+    }
+  }
+
+  .route__stops li {
+    display: grid;
+    gap: var(--space-1);
+    padding-left: var(--space-5);
+    border-left: 2px solid var(--color-green);
+  }
+
+  .route__dot {
+    width: 0.9rem;
+    height: 0.9rem;
+    margin-left: calc(-1 * var(--space-5) - 0.5rem);
+    margin-bottom: var(--space-2);
+    border: 3px solid var(--color-cloud);
+    border-radius: 50%;
+    background: var(--color-river);
+    box-shadow: 0 0 0 2px var(--color-green);
+  }
+
+  .route__num {
+    color: var(--color-green);
+    font-size: var(--text-xs);
+    font-weight: 700;
+    letter-spacing: 0.1em;
+  }
+
+  .route__name {
+    font-family: var(--font-display);
+    font-size: var(--text-2xl);
+    line-height: 1;
+    text-transform: uppercase;
+  }
+
+  .route__note {
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+  }
+
+  .route__pending {
+    margin-top: var(--space-5);
+    color: var(--color-text-muted);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .route__river path {
+      animation: none;
+    }
+  }
+</style>

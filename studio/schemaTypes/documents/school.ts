@@ -9,6 +9,7 @@
 import {BookIcon} from '@sanity/icons/Book'
 import {orderRankField, orderRankOrdering} from '../../lib/orderRank'
 import {defineArrayMember, defineField, defineType} from 'sanity'
+import {featuresField, motifField} from '../objects/features'
 
 export const school = defineType({
   name: 'school',
@@ -20,6 +21,7 @@ export const school = defineType({
     {name: 'main', title: 'General', default: true},
     {name: 'details', title: 'Ficha'},
     {name: 'contacts', title: 'Encargados'},
+    {name: 'features', title: 'Bloques especiales'},
   ],
   fields: [
     orderRankField({type: 'school'}),
@@ -116,6 +118,8 @@ export const school = defineType({
         }),
       ],
     }),
+    motifField('features'),
+    featuresField('features'),
   ],
   preview: {
     select: {title: 'name.es', subtitle: 'fullName.es', media: 'image', active: 'active'},

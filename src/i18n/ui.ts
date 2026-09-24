@@ -66,6 +66,57 @@ const es = {
     contactText: '¿Quieres conocer más, estudiar, servir, venir o apoyar? Escríbenos por el canal que prefieras.',
   },
 
+
+  /* Página "Quiénes somos" */
+  about: {
+    eyebrow: 'Quiénes somos',
+    mission: 'Misión',
+    vision: 'Visión',
+    values: 'Valores',
+    history: 'Historia',
+    historyPending: 'Aquí aparecerán los momentos importantes de la historia de JUCUM Leticia.',
+    team: 'Equipo',
+    teamTitle: 'Personas que sirven',
+    since: 'Sirviendo desde',
+    prayFor: 'Petición de oración',
+  },
+
+  /* Listados de ministerios y escuelas */
+  lists: {
+    viewMinistry: 'Ver ministerio',
+    viewSchool: 'Ver escuela',
+    ministriesTitle: 'Nuestros ministerios',
+    schoolsTitle: 'Escuelas y programas',
+  },
+
+  /* Página "Sé parte" */
+  join: {
+    eyebrow: 'Sé parte',
+    info: 'Información',
+    cta: 'Escríbenos por WhatsApp',
+    pathsNav: 'Caminos para participar',
+  },
+
+  /* Bloques especiales de ministerios y escuelas */
+  features: {
+    audioTitle: 'Escucha la Palabra',
+    audioPending: 'Aquí se podrán escuchar pasajes bíblicos grabados en las lenguas de las comunidades.',
+    audioLanguage: 'Lengua',
+    audioPlay: 'Reproducir',
+    audioPause: 'Pausar',
+    audioListening: 'Estás escuchando',
+    audioMeaning: 'Qué dice',
+    routeTitle: 'Ruta por el río',
+    routePending: 'Aquí aparecerán las comunidades que se visitan a lo largo del río.',
+    timelineTitle: 'Etapas',
+    timelinePending: 'Aquí aparecerán las etapas del programa.',
+    checklistTitle: 'Qué llevar',
+    checklistPending: 'Aquí aparecerá la lista de lo que se necesita.',
+    videoTitle: 'Video',
+    videoPlay: 'Reproducir video',
+    statsTitle: 'Cifras',
+  },
+
   /* Plantillas de ministerio y escuela */
   detail: {
     activities: 'Qué hacemos',
@@ -82,6 +133,7 @@ const es = {
     enrollment: 'Inscripción',
     contacts: 'Encargados de la escuela',
     otherMinistries: 'Otros ministerios',
+    team: 'Quiénes sirven aquí',
     back: 'Volver',
   },
 
@@ -102,7 +154,6 @@ const es = {
   },
   pending: 'Pendiente de contenido',
   temporaryPhoto: 'Foto temporal',
-  underConstruction: 'Esta página se construirá en la siguiente fase del proyecto.',
   notFound: {
     title: 'Página no encontrada',
     text: 'La página que buscas no existe o fue movida.',
@@ -162,6 +213,48 @@ const en: UIStrings = {
     contactTitle: 'Start a conversation',
     contactText: 'Want to learn more, study, serve, come or support? Write to us through the channel you prefer.',
   },
+  about: {
+    eyebrow: 'About us',
+    mission: 'Mission',
+    vision: 'Vision',
+    values: 'Values',
+    history: 'History',
+    historyPending: 'The key moments in the history of YWAM Leticia will appear here.',
+    team: 'Team',
+    teamTitle: 'People who serve',
+    since: 'Serving since',
+    prayFor: 'Prayer request',
+  },
+  lists: {
+    viewMinistry: 'View ministry',
+    viewSchool: 'View school',
+    ministriesTitle: 'Our ministries',
+    schoolsTitle: 'Schools and programs',
+  },
+  join: {
+    eyebrow: 'Get involved',
+    info: 'Information',
+    cta: 'Message us on WhatsApp',
+    pathsNav: 'Ways to take part',
+  },
+  features: {
+    audioTitle: 'Listen to the Word',
+    audioPending: 'Here you will be able to listen to Bible passages recorded in the languages of the communities.',
+    audioLanguage: 'Language',
+    audioPlay: 'Play',
+    audioPause: 'Pause',
+    audioListening: 'You are listening to',
+    audioMeaning: 'What it says',
+    routeTitle: 'Route along the river',
+    routePending: 'The communities visited along the river will appear here.',
+    timelineTitle: 'Stages',
+    timelinePending: 'The stages of the program will appear here.',
+    checklistTitle: 'What to bring',
+    checklistPending: 'The list of what you need will appear here.',
+    videoTitle: 'Video',
+    videoPlay: 'Play video',
+    statsTitle: 'Figures',
+  },
   detail: {
     activities: 'What we do',
     participate: 'How can you take part?',
@@ -177,6 +270,7 @@ const en: UIStrings = {
     enrollment: 'Enrollment',
     contacts: 'School leaders',
     otherMinistries: 'Other ministries',
+    team: 'Who serves here',
     back: 'Back',
   },
   footer: {
@@ -196,7 +290,6 @@ const en: UIStrings = {
   },
   pending: 'Content pending',
   temporaryPhoto: 'Temporary photo',
-  underConstruction: 'This page will be built in the next phase of the project.',
   notFound: {
     title: 'Page not found',
     text: 'The page you are looking for does not exist or has moved.',

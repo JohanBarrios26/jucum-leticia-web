@@ -11,6 +11,8 @@
  */
 import { createClient } from '@sanity/client';
 import type {
+  AboutRaw,
+  FeatureBlockRaw,
   GalleryCategory,
   GalleryItemRaw,
   HomeRaw,
@@ -18,6 +20,9 @@ import type {
   JoinPathRaw,
   Localized,
   MinistryRaw,
+  MotifName,
+  PageTextsRaw,
+  PersonRaw,
   SchoolRaw,
   SiteSettingsRaw,
   StoryRaw,
@@ -44,6 +49,12 @@ const photo = `{
   hotspot, alt, temporary
 }`;
 
+// Bloques especiales: para los audios se trae la URL del archivo.
+const features = `features[]{
+  ...,
+  samples[]{..., "audioUrl": audio.asset->url, "mimeType": audio.asset->mimeType}
+}`;
+
 const query = `{
   "siteSettings": *[_id == "siteSettings"][0],
   "home": *[_id == "home"][0]{
@@ -52,12 +63,15 @@ const query = `{
     shortTerm{..., image${photo}}
   },
   "ministries": *[_type == "ministry"] | order(orderRank){
-    ..., "slug": slug.current, image${photo}
+    ..., "slug": slug.current, image${photo}, ${features}
   },
   "schools": *[_type == "school"] | order(orderRank){
     ..., "slug": slug.current, image${photo},
-    contacts[]{..., photo${photo}}
+    contacts[]{..., photo${photo}}, ${features}
   },
+  "about": *[_id == "about"][0]{..., image${photo}, history[]{..., image${photo}}},
+  "pageTexts": *[_id == "pageTexts"][0],
+  "people": *[_type == "person"] | order(orderRank){..., photo${photo}, "ministrySlug": ministry->slug.current},
   "joinPaths": *[_type == "joinPath"],
   "gallery": *[_type == "galleryItem"] | order(orderRank){..., image${photo}},
   "stories": *[_type == "story"] | order(orderRank){
@@ -85,6 +99,9 @@ type Doc = Record<string, any>;
 
 export interface CmsContent {
   siteSettings: SiteSettingsRaw;
+  about: AboutRaw;
+  pageTexts: PageTextsRaw;
+  people: PersonRaw[];
   home: HomeRaw;
   ministries: MinistryRaw[];
   schools: SchoolRaw[];
@@ -114,6 +131,104 @@ function toRequiredImage(p: SanityPhoto | null | undefined, where: string): Imag
   const image = toImage(p);
   if (!image) throw new Error(`Falta la foto obligatoria en Sanity: ${where}`);
   return image;
+}
+
+const lx = <T,>(value: L<T>): Localized<T> | null => value ?? null;
+
+function toMotif(value: unknown): MotifName | null {
+  const valid = ['river', 'burst', 'book', 'crown', 'bridge', 'wave', 'pulse', 'path'];
+  return typeof value === 'string' && valid.includes(value) ? (value as MotifName) : null;
+}
+
+/** Convierte los bloques especiales; descarta los que están incompletos. */
+function toFeatures(list: Doc[] | null | undefined): FeatureBlockRaw[] {
+  const out: FeatureBlockRaw[] = [];
+  for (const b of list ?? []) {
+    switch (b._type) {
+      case 'audioSamples':
+        out.push({
+          type: 'audioSamples',
+          title: lx(b.title),
+          intro: lx(b.intro),
+          samples: (b.samples ?? [])
+            .filter((a: Doc) => a.audioUrl && a.reference && a.text)
+            .map((a: Doc) => ({
+              language: a.language,
+              community: a.community ?? null,
+              reference: a.reference,
+              text: a.text,
+              audioUrl: a.audioUrl,
+              mimeType: a.mimeType ?? null,
+              authorized: a.authorized === true,
+            })),
+        });
+        break;
+      case 'riverRoute':
+        out.push({
+          type: 'riverRoute',
+          title: lx(b.title),
+          intro: lx(b.intro),
+          stops: (b.stops ?? []).filter((x: Doc) => x.name).map((x: Doc) => ({ name: x.name, note: lx(x.note) })),
+        });
+        break;
+      case 'timeline':
+        out.push({
+          type: 'timeline',
+          title: lx(b.title),
+          intro: lx(b.intro),
+          steps: (b.steps ?? [])
+            .filter((x: Doc) => x.title)
+            .map((x: Doc) => ({ label: lx(x.label), title: x.title, text: lx(x.text) })),
+        });
+        break;
+      case 'verse':
+        if (b.text && b.reference) out.push({ type: 'verse', text: b.text, reference: b.reference });
+        break;
+      case 'video':
+        if (b.url) out.push({ type: 'video', title: lx(b.title), url: b.url });
+        break;
+      case 'checklist':
+        out.push({ type: 'checklist', title: lx(b.title), items: orEmpty(b.items, []) });
+        break;
+      case 'stats':
+        out.push({
+          type: 'stats',
+          title: lx(b.title),
+          items: (b.items ?? []).filter((x: Doc) => x.value && x.label).map((x: Doc) => ({ value: x.value, label: x.label })),
+        });
+        break;
+    }
+  }
+  return out;
+}
+
+function toAbout(d: Doc | null): AboutRaw {
+  if (!d) throw new Error('Falta el documento "Quiénes somos" en Sanity.');
+  return {
+    image: toImage(d.image),
+    intro: d.intro,
+    mission: lx(d.mission),
+    vision: lx(d.vision),
+    values: (d.values ?? []).filter((v: Doc) => v.title).map((v: Doc) => ({ title: v.title, text: lx(v.text) })),
+    history: (d.history ?? [])
+      .filter((h: Doc) => h.year && h.title)
+      .map((h: Doc) => ({ year: h.year, title: h.title, text: lx(h.text), image: toImage(h.image) })),
+    teamIntro: lx(d.teamIntro),
+  };
+}
+
+function toPerson(d: Doc): PersonRaw {
+  return {
+    name: d.name,
+    photo: toImage(d.photo),
+    role: lx(d.role),
+    ministrySlug: d.ministrySlug ?? null,
+    since: d.since ?? null,
+    quote: lx(d.quote),
+    bio: lx(d.bio),
+    prayerRequest: lx(d.prayerRequest),
+    authorized: d.authorized === true,
+  };
 }
 
 function toSiteSettings(d: Doc | null): SiteSettingsRaw {
@@ -172,6 +287,8 @@ function toMinistry(d: Doc, i: number): MinistryRaw {
     image: toImage(d.image),
     active: d.active !== false,
     order: i,
+    motif: toMotif(d.motif),
+    features: toFeatures(d.features),
   };
 }
 
@@ -201,6 +318,8 @@ function toSchool(d: Doc, i: number): SchoolRaw {
     image: toImage(d.image),
     active: d.active !== false,
     order: i,
+    motif: toMotif(d.motif),
+    features: toFeatures(d.features),
   };
 }
 
@@ -230,12 +349,29 @@ let cache: Promise<CmsContent> | undefined;
 export function fetchCmsContent(): Promise<CmsContent> {
   cache ??= client.fetch<Record<string, any>>(query).then((r) => ({
     siteSettings: toSiteSettings(r.siteSettings),
+    about: toAbout(r.about),
+    pageTexts: {
+      ministriesIntro: lx(r.pageTexts?.ministriesIntro),
+      schoolsIntro: lx(r.pageTexts?.schoolsIntro),
+      joinIntro: lx(r.pageTexts?.joinIntro),
+      contactIntro: lx(r.pageTexts?.contactIntro),
+    },
+    people: (r.people ?? []).filter((x: Doc) => x.name).map(toPerson),
     home: toHome(r.home),
     ministries: (r.ministries ?? []).map(toMinistry),
     schools: (r.schools ?? []).map(toSchool),
     joinPaths: (r.joinPaths ?? [])
       .filter((p: Doc) => p.key)
-      .map((p: Doc) => ({ key: p.key, title: p.title, text: p.text })),
+      .map((p: Doc) => ({
+        key: p.key,
+        title: p.title,
+        text: p.text,
+        body: lx(p.body),
+        details: (p.details ?? [])
+          .filter((d: Doc) => d.label)
+          .map((d: Doc) => ({ label: d.label, value: lx(d.value) })),
+        whatsappMessage: lx(p.whatsappMessage),
+      })),
     gallery: (r.gallery ?? [])
       .map((g: Doc) => ({
         image: toImage(g.image),

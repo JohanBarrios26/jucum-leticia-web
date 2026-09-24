@@ -1,0 +1,89 @@
+---
+/**
+ * BLOQUE: LISTA (ej. "Qué llevar", requisitos, qué incluye)
+ * ----------------------------------------------------------------------------
+ * Elementos con una marca de verificación, en columnas.
+ */
+import PendingContent from '@/components/PendingContent.astro';
+import type { Locale } from '@/i18n/routes';
+import { t } from '@/i18n/ui';
+import { showPending } from '@/lib/config';
+import type { FeatureBlock } from '@/lib/content';
+
+interface Props {
+  locale: Locale;
+  block: Extract<FeatureBlock, { type: 'checklist' }>;
+  titleId: string;
+}
+
+const { locale, block, titleId } = Astro.props;
+const ui = t(locale).features;
+const hasItems = block.items.length > 0;
+---
+
+{
+  (hasItems || showPending) && (
+    <div class="checklist">
+      <h2 id={titleId} class="checklist__title" data-reveal>
+        {block.title ?? ui.checklistTitle}
+      </h2>
+      {hasItems ? (
+        <ul role="list" class="checklist__list">
+          {block.items.map((item, i) => (
+            <li data-reveal style={`--reveal-delay: ${(i % 6) * 60}ms`}>
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M5 12.5l4.5 4.5L19 7.5" />
+              </svg>
+              {item}
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p class="checklist__pending">
+          {ui.checklistPending} <PendingContent locale={locale} />
+        </p>
+      )}
+    </div>
+  )
+}
+
+<style>
+  .checklist__title {
+    margin-bottom: var(--space-6);
+  }
+
+  .checklist__list {
+    display: grid;
+    gap: var(--space-3) var(--space-6);
+  }
+
+  @media (min-width: 48rem) {
+    .checklist__list {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  .checklist__list li {
+    display: flex;
+    gap: var(--space-3);
+    align-items: flex-start;
+    padding-block: var(--space-3);
+    border-bottom: 1px solid var(--color-border);
+    font-size: var(--text-lg);
+  }
+
+  .checklist__list svg {
+    flex-shrink: 0;
+    width: 1.5rem;
+    height: 1.5rem;
+    fill: none;
+    stroke: var(--color-green);
+    stroke-width: 2.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .checklist__pending {
+    color: var(--color-text-muted);
+  }
+</style>

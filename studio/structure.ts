@@ -2,8 +2,8 @@
  * MENÚ LATERAL DEL PANEL
  * ----------------------------------------------------------------------------
  * Define qué ve el equipo de JUCUM al entrar al panel y en qué orden:
- *   Configuración · Página de inicio · Ministerios · Escuelas · Cómo participar
- *   · Galería · Historias
+ *   Configuración · Textos de páginas · Inicio · Quiénes somos · Ministerios ·
+ *   Escuelas · Cómo participar · Personas · Galería · Historias
  *
  * Las listas "ordenables" permiten cambiar el orden arrastrando los elementos.
  * El complemento que lo hace (@sanity/orderable-document-list) se carga recién
@@ -17,6 +17,9 @@ import {HeartIcon} from '@sanity/icons/Heart'
 import {BookIcon} from '@sanity/icons/Book'
 import {ImagesIcon} from '@sanity/icons/Images'
 import {CommentIcon} from '@sanity/icons/Comment'
+import {DocumentTextIcon} from '@sanity/icons/DocumentText'
+import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
+import {UserIcon} from '@sanity/icons/User'
 import type {ComponentType} from 'react'
 import type {ConfigContext} from 'sanity'
 import type {ItemChild, StructureBuilder, StructureResolver} from 'sanity/structure'
@@ -50,9 +53,18 @@ export const structure: StructureResolver = (S, context) =>
         .icon(CogIcon)
         .child(S.document().schemaType('siteSettings').documentId('siteSettings').title('Configuración del sitio')),
       S.listItem()
+        .title('Textos de las páginas')
+        .icon(DocumentTextIcon)
+        .child(S.document().schemaType('pageTexts').documentId('pageTexts').title('Textos de las páginas')),
+      S.divider(),
+      S.listItem()
         .title('Página de inicio')
         .icon(HomeIcon)
         .child(S.document().schemaType('home').documentId('home').title('Página de inicio')),
+      S.listItem()
+        .title('Quiénes somos')
+        .icon(InfoOutlineIcon)
+        .child(S.document().schemaType('about').documentId('about').title('Quiénes somos')),
       S.divider(),
       orderableList(S, context, 'ministry', 'Ministerios', HeartIcon),
       orderableList(S, context, 'school', 'Escuelas', BookIcon),
@@ -60,6 +72,7 @@ export const structure: StructureResolver = (S, context) =>
         .title('Cómo participar')
         .icon(UsersIcon)
         .child(S.documentTypeList('joinPath').title('Cómo participar')),
+      orderableList(S, context, 'person', 'Personas', UserIcon),
       S.divider(),
       orderableList(S, context, 'galleryItem', 'Galería', ImagesIcon),
       orderableList(S, context, 'story', 'Historias', CommentIcon),

@@ -1,0 +1,185 @@
+---
+/**
+ * PORTADA DE PÁGINA INTERIOR
+ * ----------------------------------------------------------------------------
+ * Abre todas las páginas internas (Quiénes somos, Ministerios, un ministerio…).
+ * Va con `headerOverlay` en BaseLayout: el encabezado flota encima.
+ *
+ * Variantes:
+ *   - Con `image`: foto a pantalla completa detrás del texto.
+ *   - Con `motif`: el dibujo animado del ministerio/escuela a la derecha.
+ *   - Sin nada: fondo oscuro con degradado.
+ * `back` agrega un enlace de regreso sobre el título (ej. "← Ministerios").
+ */
+import Motif from '@/components/ui/Motif.astro';
+import RiverLine from '@/components/ui/RiverLine.astro';
+import SmartImage from '@/components/ui/SmartImage.astro';
+import type { ImageRef, Maybe, MotifName } from '@/lib/content';
+
+interface Props {
+  title: string;
+  eyebrow?: string;
+  lead?: Maybe<string>;
+  image?: Maybe<ImageRef>;
+  motif?: Maybe<MotifName>;
+  back?: { href: string; label: string };
+}
+
+const { title, eyebrow, lead, image, motif, back } = Astro.props;
+---
+
+<section class:list={['page-hero', 'on-photo', { 'page-hero--image': image, 'page-hero--motif': motif }]}>
+  {
+    image && (
+      <div class="page-hero__media">
+        <SmartImage image={image} priority sizes="100vw" />
+      </div>
+    )
+  }
+
+  <div class="container page-hero__inner">
+    <div class="page-hero__text">
+      {
+        back && (
+          <a class="link-arrow page-hero__back" href={back.href}>
+            <span aria-hidden="true">←</span> {back.label}
+          </a>
+        )
+      }
+      {eyebrow && <p class="eyebrow eyebrow--line page-hero__eyebrow">{eyebrow}</p>}
+      <h1 class="page-hero__title">{title}</h1>
+      {lead && <p class="lead page-hero__lead">{lead}</p>}
+      <slot />
+    </div>
+
+    {
+      motif && (
+        <div class="page-hero__motif">
+          <Motif name={motif} />
+        </div>
+      )
+    }
+  </div>
+
+  <div class="container page-hero__river" aria-hidden="true">
+    <RiverLine tone="light" />
+  </div>
+</section>
+
+<style>
+  .page-hero {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    min-height: min(40rem, 78svh);
+    padding-top: calc(var(--header-height) + var(--space-8));
+    color: var(--color-text-on-dark);
+    background:
+      radial-gradient(ellipse at 85% 10%, rgb(0 173 239 / 0.16), transparent 50%),
+      radial-gradient(ellipse at 0% 100%, rgb(31 111 91 / 0.5), transparent 60%),
+      var(--color-night);
+    overflow: hidden;
+    isolation: isolate;
+  }
+
+  .page-hero--image {
+    min-height: min(46rem, 88svh);
+  }
+
+  .page-hero__media {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+  }
+
+  .page-hero__media :global(img),
+  .page-hero__media :global(picture) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .page-hero__media :global(img) {
+    animation: hero-zoom 16s var(--ease) both;
+  }
+
+  @keyframes hero-zoom {
+    from {
+      transform: scale(1.1);
+    }
+  }
+
+  .page-hero__media::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(to top, rgb(10 29 29 / 0.92), rgb(10 29 29 / 0.3) 55%, rgb(10 29 29 / 0.55)),
+      linear-gradient(to right, rgb(10 29 29 / 0.5), transparent 70%);
+  }
+
+  .page-hero__inner {
+    display: grid;
+    gap: var(--space-7);
+    align-items: end;
+  }
+
+  @media (min-width: 64rem) {
+    .page-hero--motif .page-hero__inner {
+      grid-template-columns: 1.4fr 1fr;
+    }
+  }
+
+  .page-hero__back {
+    margin-bottom: var(--space-5);
+    color: var(--color-river);
+  }
+
+  .page-hero__eyebrow {
+    color: var(--color-river);
+  }
+
+  .page-hero__title {
+    margin-top: var(--space-4);
+    font-size: var(--text-display);
+    line-height: 0.88;
+    animation: hero-rise 1000ms var(--ease) both;
+  }
+
+  .page-hero__lead {
+    max-width: 38rem;
+    margin-top: var(--space-5);
+    color: var(--color-text-on-dark);
+    opacity: 0.88;
+    animation: hero-rise 1000ms var(--ease) 150ms both;
+  }
+
+  @keyframes hero-rise {
+    from {
+      opacity: 0;
+      transform: translateY(1.5rem);
+    }
+  }
+
+  .page-hero__motif {
+    max-width: 22rem;
+    width: 100%;
+    justify-self: end;
+    opacity: 0.95;
+  }
+
+  @media (max-width: 63.99rem) {
+    .page-hero__motif {
+      max-width: 12rem;
+      justify-self: start;
+      order: -1;
+    }
+  }
+
+  .page-hero__river {
+    margin-top: var(--space-6);
+    padding-bottom: var(--space-4);
+    opacity: 0.6;
+  }
+</style>

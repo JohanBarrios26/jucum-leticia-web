@@ -1,0 +1,227 @@
+---
+/**
+ * VISTA: QUIÉNES SOMOS (especificación §7)
+ * ----------------------------------------------------------------------------
+ * Portada · introducción · misión y visión · valores · historia · equipo.
+ * Todo viene del documento "Quiénes somos" y de "Personas" en el panel.
+ * Lo no confirmado por JUCUM se muestra como "Pendiente de contenido".
+ */
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHero from '@/components/PageHero.astro';
+import PendingContent from '@/components/PendingContent.astro';
+import PersonCard from '@/components/PersonCard.astro';
+import Timeline from '@/components/features/Timeline.astro';
+import ImagePlaceholder from '@/components/ui/ImagePlaceholder.astro';
+import { routes, type Locale } from '@/i18n/routes';
+import { t } from '@/i18n/ui';
+import { showPending } from '@/lib/config';
+import { getAbout, getPeople, getSiteSettings } from '@/lib/content';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const ui = t(locale);
+const [about, people, settings] = await Promise.all([getAbout(locale), getPeople(locale), getSiteSettings(locale)]);
+
+// La historia se dibuja con el mismo componente de "Etapas".
+const historyBlock = {
+  type: 'timeline' as const,
+  title: ui.about.history,
+  intro: null,
+  steps: about.history.map((h) => ({ label: h.year, title: h.title, text: h.text })),
+};
+---
+
+<BaseLayout locale={locale} alternates={routes.about} title={ui.nav.about} description={about.intro} headerOverlay>
+  <PageHero title={ui.nav.about} eyebrow={settings.organizationName} image={about.image} />
+
+  <!-- Introducción -->
+  <section class="section">
+    <div class="container">
+      <p class="about-intro" data-reveal>{about.intro}</p>
+    </div>
+  </section>
+
+  <!-- Misión y visión -->
+  <section class="section surface-dark" aria-labelledby="identity-title">
+    <div class="container">
+      <h2 class="visually-hidden" id="identity-title">{ui.about.mission} · {ui.about.vision}</h2>
+      <div class="identity">
+        <div class="identity__item" data-reveal>
+          <p class="eyebrow eyebrow--line identity__label">{ui.about.mission}</p>
+          {about.mission ? <p class="identity__text">{about.mission}</p> : <PendingContent locale={locale} />}
+        </div>
+        <div class="identity__item" data-reveal style="--reveal-delay: 120ms">
+          <p class="eyebrow eyebrow--line identity__label">{ui.about.vision}</p>
+          {about.vision ? <p class="identity__text">{about.vision}</p> : <PendingContent locale={locale} />}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Valores -->
+  <section class="section" aria-labelledby="values-title">
+    <div class="container">
+      <div class="section-head" data-reveal>
+        <p class="eyebrow eyebrow--line">{ui.about.eyebrow}</p>
+        <h2 id="values-title">{ui.about.values}</h2>
+      </div>
+      {
+        about.values.length > 0 ? (
+          <ol class="values">
+            {about.values.map((v, i) => (
+              <li data-reveal style={`--reveal-delay: ${i * 80}ms`}>
+                <span class="values__num">{String(i + 1).padStart(2, '0')}</span>
+                <h3>{v.title}</h3>
+                {v.text && <p>{v.text}</p>}
+              </li>
+            ))}
+          </ol>
+        ) : (
+          <PendingContent locale={locale} />
+        )
+      }
+    </div>
+  </section>
+
+  <!-- Historia -->
+  <section class="section surface-sand" aria-labelledby="history-title">
+    <div class="container">
+      {
+        about.history.length > 0 || showPending ? (
+          <Timeline locale={locale} block={historyBlock} titleId="history-title" pendingText={ui.about.historyPending} />
+        ) : (
+          <h2 id="history-title" class="visually-hidden">
+            {ui.about.history}
+          </h2>
+        )
+      }
+    </div>
+  </section>
+
+  <!-- Equipo -->
+  <section class="section" aria-labelledby="team-title">
+    <div class="container">
+      <div class="section-head" data-reveal>
+        <p class="eyebrow eyebrow--line">{ui.about.team}</p>
+        <h2 id="team-title">{ui.about.teamTitle}</h2>
+        {about.teamIntro && <p class="lead team-intro">{about.teamIntro}</p>}
+      </div>
+      {
+        people.length > 0 ? (
+          <ul role="list" class="team">
+            {people.map((p, i) => (
+              <li data-reveal style={`--reveal-delay: ${(i % 4) * 80}ms`}>
+                <PersonCard locale={locale} person={p} />
+              </li>
+            ))}
+          </ul>
+        ) : (
+          showPending && (
+            <ul role="list" class="team">
+              {[1, 2, 3, 4].map(() => (
+                <li class="team__ghost" aria-hidden="true">
+                  <ImagePlaceholder />
+                </li>
+              ))}
+              <li class="team__pending">
+                <PendingContent locale={locale} />
+              </li>
+            </ul>
+          )
+        )
+      }
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .about-intro {
+    max-width: 60rem;
+    font-family: var(--font-display);
+    font-size: var(--text-statement);
+    line-height: 1.02;
+    text-transform: uppercase;
+  }
+
+  .identity {
+    display: grid;
+    gap: var(--space-8);
+  }
+
+  @media (min-width: 64rem) {
+    .identity {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  .identity__item {
+    display: grid;
+    gap: var(--space-5);
+    align-content: start;
+  }
+
+  .identity__label {
+    color: var(--color-river);
+  }
+
+  .identity__text {
+    font-size: var(--text-2xl);
+    line-height: 1.35;
+  }
+
+  .values {
+    display: grid;
+    gap: var(--space-6);
+    padding: 0;
+    list-style: none;
+  }
+
+  @media (min-width: 48rem) {
+    .values {
+      grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+    }
+  }
+
+  .values li {
+    display: grid;
+    gap: var(--space-3);
+    align-content: start;
+    padding-top: var(--space-5);
+    border-top: 2px solid var(--color-night);
+  }
+
+  .values__num {
+    color: var(--color-green);
+    font-size: var(--text-xs);
+    font-weight: 700;
+  }
+
+  .values p {
+    color: var(--color-text-muted);
+  }
+
+  .team-intro {
+    max-width: 40rem;
+    color: var(--color-text-muted);
+  }
+
+  .team {
+    display: grid;
+    gap: var(--space-7) var(--space-5);
+    grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+  }
+
+  .team__ghost {
+    aspect-ratio: 4 / 5;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    opacity: 0.6;
+  }
+
+  .team__pending {
+    grid-column: 1 / -1;
+  }
+</style>

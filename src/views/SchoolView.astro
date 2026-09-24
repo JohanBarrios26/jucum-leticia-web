@@ -4,14 +4,17 @@
  * ----------------------------------------------------------------------------
  * Una sola plantilla para todas las escuelas. URL: /escuelas/[slug]/
  *
- * Incluye la ficha (duración, fechas, lugar, requisitos, costo, inscripción)
- * y las PERSONAS ENCARGADAS de esa escuela (pedido del cliente), cada una con
- * sus propios datos de contacto.
+ * Incluye la ficha (duración, fechas, lugar, requisitos, costo, inscripción),
+ * los BLOQUES ESPECIALES de la escuela (etapas, qué llevar, video…) y las
+ * PERSONAS ENCARGADAS de esa escuela (pedido del cliente), cada una con sus
+ * propios datos de contacto.
  *
  * Para agregar un dato nuevo a la ficha: añádelo al tipo School (types.ts) y a
  * la lista `facts` de abajo.
  */
 import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHero from '@/components/PageHero.astro';
+import FeatureBlocks from '@/components/features/FeatureBlocks.astro';
 import ImagePlaceholder from '@/components/ui/ImagePlaceholder.astro';
 import SmartImage from '@/components/ui/SmartImage.astro';
 import PendingContent from '@/components/PendingContent.astro';
@@ -46,17 +49,13 @@ const facts = [
   description={school.description ?? school.fullName ?? undefined}
   headerOverlay
 >
-  <!-- Portada -->
-  <section class="cover on-photo">
-    <div class="cover__media">
-      {school.image ? <SmartImage image={school.image} priority sizes="100vw" /> : <ImagePlaceholder />}
-    </div>
-    <div class="container cover__content">
-      <a class="link-arrow cover__back" href={routes.schools[locale]}><span aria-hidden="true">←</span> {ui.nav.schools}</a>
-      <h1 class="cover__title">{school.name}</h1>
-      {school.fullName && <p class="lead cover__lead">{school.fullName}</p>}
-    </div>
-  </section>
+  <PageHero
+    title={school.name}
+    lead={school.fullName}
+    image={school.image}
+    motif={school.motif}
+    back={{ href: routes.schools[locale], label: ui.nav.schools }}
+  />
 
   <!-- Descripción + ficha -->
   <section class="section">
@@ -81,6 +80,9 @@ const facts = [
       </div>
     </div>
   </section>
+
+  <!-- Bloques especiales de esta escuela -->
+  <FeatureBlocks locale={locale} blocks={school.features} />
 
   <!-- Personas encargadas de la escuela -->
   <section class="section surface-sand">
@@ -121,56 +123,6 @@ const facts = [
 </BaseLayout>
 
 <style>
-  /* ---------- Portada (mismo patrón que MinistryView) ---------- */
-  .cover {
-    position: relative;
-    display: flex;
-    align-items: flex-end;
-    min-height: min(44rem, 85svh);
-    padding-top: calc(var(--header-height) + var(--space-8));
-    padding-bottom: var(--space-8);
-    color: var(--color-text-on-dark);
-    background: var(--color-night-deep);
-    overflow: hidden;
-    isolation: isolate;
-  }
-
-  .cover__media {
-    position: absolute;
-    inset: 0;
-    z-index: -1;
-  }
-
-  .cover__media :global(img),
-  .cover__media :global(picture) {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-
-  .cover__media::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(to top, rgb(10 29 29 / 0.92), rgb(10 29 29 / 0.25) 60%, rgb(10 29 29 / 0.55));
-  }
-
-  .cover__back {
-    color: var(--color-river);
-  }
-
-  .cover__title {
-    margin-top: var(--space-5);
-    font-size: var(--text-display);
-    line-height: 0.88;
-  }
-
-  .cover__lead {
-    max-width: 40rem;
-    margin-top: var(--space-5);
-    opacity: 0.9;
-  }
-
   /* ---------- Contenido ---------- */
   .detail-grid {
     display: grid;
@@ -184,6 +136,7 @@ const facts = [
   }
 
   .detail-label {
+    display: flex;
     margin-bottom: var(--space-5);
     color: var(--color-green);
     font-family: var(--font-body);
