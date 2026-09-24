@@ -22,7 +22,7 @@ const { locale, activities } = Astro.props;
 const ui = t(locale);
 ---
 
-<section class="activities surface-dark" aria-labelledby="activities-title">
+<section class="activities surface-dark" aria-labelledby="activities-title" data-live>
   <h2 class="visually-hidden" id="activities-title">{ui.home.whatWeDo}</h2>
   <div class="activities__track">
     {

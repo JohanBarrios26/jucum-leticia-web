@@ -24,7 +24,7 @@ const ui = t(locale).people;
 
 <a class="person-card" href={personAlternates(p.slug)[locale]} data-event="person_card_click">
   <div class="person-card__photo">
-    {p.photo ? <SmartImage image={p.photo} decorative sizes="(min-width: 64rem) 22rem, 90vw" widths={[480, 768]} /> : <ImagePlaceholder label={p.name.charAt(0)} />}
+    {p.photo ? <SmartImage image={p.photo} decorative sizes="(min-width: 64rem) 22rem, 90vw" widths={[480, 768]} ratio={1.25} /> : <ImagePlaceholder label={p.name.charAt(0)} />}
     {p.support.enabled && <span class="person-card__badge">{ui.supportBadge}</span>}
   </div>
   <h3 class="person-card__name">{p.name}</h3>

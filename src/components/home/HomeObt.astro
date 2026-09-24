@@ -35,7 +35,7 @@ const bars = [30, 55, 80, 45, 95, 60, 35, 70, 100, 50, 25, 65, 85, 40, 75, 55, 9
       {obt?.image ? <SmartImage image={obt.image} sizes="(min-width: 64rem) 45vw, 100vw" /> : <ImagePlaceholder label="OBT" />}
 
       <!-- Onda de audio decorativa -->
-      <div class="obt__wave" aria-hidden="true">
+      <div class="obt__wave" aria-hidden="true" data-live>
         {bars.map((h, i) => <span style={`--h: ${h}%; --i: ${i}`} />)}
       </div>
     </div>

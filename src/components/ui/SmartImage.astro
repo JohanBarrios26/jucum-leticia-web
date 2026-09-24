@@ -27,6 +27,12 @@ interface Props {
   class?: string;
   /** Texto alternativo vacío si la imagen es decorativa (ya la describe el texto cercano). */
   decorative?: boolean;
+  /**
+   * Proporción alto/ancho en que se MUESTRA la imagen (ej. 1.25 para 4:5).
+   * Con fotos del panel, el CDN entrega la foto ya recortada a esa forma
+   * (centrada en el punto de interés): menos peso para el celular.
+   */
+  ratio?: number;
 }
 
 const {
@@ -36,6 +42,7 @@ const {
   priority = false,
   class: className,
   decorative = false,
+  ratio,
 } = Astro.props;
 
 const alt = decorative ? '' : image.alt;
@@ -50,12 +57,17 @@ if (typeof image.src === 'string') {
   const max = image.width ?? Math.max(...widths);
   const usable = widths.filter((w) => w <= max);
   const list = usable.length > 0 ? usable : [max];
-  const url = (w: number) => `${base}?w=${w}&q=60&auto=format&fit=max`;
+  // Punto de interés ("50% 30%") → focal point del CDN (0.5, 0.3).
+  const [fx, fy] = (image.position ?? '50% 50%').split(' ').map((v) => Number.parseFloat(v) / 100);
+  const url = (w: number) =>
+    ratio
+      ? `${base}?w=${w}&h=${Math.round(w * ratio)}&fit=crop&crop=focalpoint&fp-x=${fx}&fp-y=${fy}&q=60&auto=format`
+      : `${base}?w=${w}&q=60&auto=format&fit=max`;
   remote = {
     src: url(list[Math.min(2, list.length - 1)]),
     srcset: list.map((w) => `${url(w)} ${w}w`).join(', '),
-    width: image.width,
-    height: image.height,
+    width: ratio ? list[list.length - 1] : image.width,
+    height: ratio ? Math.round(list[list.length - 1] * ratio) : image.height,
   };
 }
 ---

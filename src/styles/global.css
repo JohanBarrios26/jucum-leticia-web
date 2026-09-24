@@ -367,6 +367,16 @@ a {
   transform: none;
 }
 
+/*
+ * Animaciones "vivas" (infinitas: cinta de actividades, ondas, motivos…):
+ * con `data-live` en el contenedor, solo corren mientras están en pantalla.
+ * Ahorra batería y procesador en celulares. El script está en reveal.ts.
+ */
+.js [data-live]:not(.is-live),
+.js [data-live]:not(.is-live) * {
+  animation-play-state: paused !important;
+}
+
 /* ============================================================ 6. Accesibilidad */
 :focus-visible {
   outline: 3px solid var(--color-focus);

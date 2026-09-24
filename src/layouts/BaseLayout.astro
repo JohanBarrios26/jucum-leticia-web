@@ -21,6 +21,10 @@ import '@fontsource/bebas-neue';
 import '@fontsource-variable/inter';
 import '@/styles/global.css';
 
+// URLs de las tipografías principales (solo el subconjunto latino) para precargarlas.
+import bebasLatin from '@fontsource/bebas-neue/files/bebas-neue-latin-400-normal.woff2?url';
+import interLatin from '@fontsource-variable/inter/files/inter-latin-wght-normal.woff2?url';
+
 import Header from '@/components/Header.astro';
 import Footer from '@/components/Footer.astro';
 import { defaultLocale, locales, type Alternates, type Locale } from '@/i18n/routes';
@@ -124,6 +128,9 @@ if (breadcrumbs && breadcrumbs.length > 0) {
       ocultan contenido si esta clase existe (ver global.css, sección 5).
     -->
     <script is:inline>document.documentElement.classList.add('js');</script>
+    <!-- Precarga de tipografías: el título grande aparece sin saltos. -->
+    <link rel="preload" href={bebasLatin} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={interLatin} as="font" type="font/woff2" crossorigin />
     <title>{pageTitle}</title>
     <meta name="description" content={metaDescription} />
     <link rel="canonical" href={canonical} />

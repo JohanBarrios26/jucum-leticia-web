@@ -29,3 +29,21 @@ if (!('IntersectionObserver' in window)) {
 
   elements.forEach((el) => observer.observe(el));
 }
+
+/*
+ * ANIMACIONES VIVAS: los elementos con `data-live` reciben la clase `is-live`
+ * mientras están en pantalla (y la pierden al salir). En global.css, sin esa
+ * clase sus animaciones quedan en pausa.
+ */
+const liveElements = document.querySelectorAll<HTMLElement>('[data-live]');
+if (!('IntersectionObserver' in window)) {
+  liveElements.forEach((el) => el.classList.add('is-live'));
+} else {
+  const liveObserver = new IntersectionObserver(
+    (entries) => {
+      for (const entry of entries) entry.target.classList.toggle('is-live', entry.isIntersecting);
+    },
+    { rootMargin: '100px 0px' },
+  );
+  liveElements.forEach((el) => liveObserver.observe(el));
+}

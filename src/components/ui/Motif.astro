@@ -14,7 +14,7 @@
  *   pulse  → pulso (Brigadas médicas)
  *   path   → ruta (escuelas)
  *
- * Animación: las líneas se "dibujan" al cargar y luego tienen un movimiento
+ * Animación: las líneas se "dibujan" al aparecer en pantalla y luego tienen un movimiento
  * sutil propio (la onda vibra, el pulso late, el río fluye). Todo con CSS;
  * se desactiva con "reducir movimiento".
  *
@@ -36,6 +36,7 @@ const bars = [20, 42, 64, 36, 80, 54, 28, 70, 90, 46, 24, 60, 76, 38, 58, 30];
 ---
 
 <svg
+  data-live
   class:list={['motif', `motif--${motif}`, className]}
   viewBox="0 0 200 120"
   aria-hidden="true"

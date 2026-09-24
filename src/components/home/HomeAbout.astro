@@ -32,9 +32,13 @@ const words = about.statement.split(' ');
       </div>
 
       <div>
-        <!-- aria-label con la frase completa: los lectores de pantalla no leen palabra por palabra. -->
-        <p class="about__statement" aria-label={about.statement}>
-          {words.map((word) => <span class="about__word" aria-hidden="true">{word} </span>)}
+        <!--
+          La frase completa va oculta para lectores de pantalla (que así no leen
+          palabra por palabra); las palabras animadas se ocultan para ellos.
+        -->
+        <p class="about__statement">
+          <span class="visually-hidden">{about.statement}</span>
+          <span aria-hidden="true">{words.map((word) => <span class="about__word">{word} </span>)}</span>
         </p>
 
         <a class="btn btn--dark about__cta" href={routes.about[locale]} data-reveal style="--reveal-delay: 100ms">

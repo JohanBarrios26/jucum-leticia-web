@@ -28,7 +28,7 @@ const num = String(number).padStart(2, '0');
 
 <a class="m-card" href={ministryAlternates(m.slug)[locale]} data-event="ministry_card_click">
   <div class="m-card__media">
-    {m.image ? <SmartImage image={m.image} decorative sizes={sizes} widths={[480, 768, 1080]} /> : <ImagePlaceholder label={num} />}
+    {m.image ? <SmartImage image={m.image} decorative sizes={sizes} widths={[480, 768, 1080]} ratio={1.15} /> : <ImagePlaceholder label={num} />}
   </div>
   {
     m.motif && (
