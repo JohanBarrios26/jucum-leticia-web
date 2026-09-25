@@ -35,7 +35,7 @@
 - **Línea de río** en SVG que se dibuja con el scroll: el concepto del sitio es *"la misión que conecta mundos"*.
 - **Manifiesto** que se ilumina palabra por palabra al hacer scroll.
 - **Ministerios** en un recorrido horizontal anclado (escritorio) o deslizable con el dedo (móvil).
-- **Escuelas** como lista editorial, con una foto que sigue al cursor.
+- **Escuelas** como lista editorial, con una miniatura de cada escuela que crece al pasar el cursor.
 - **OBT** (traducción bíblica oral) con una onda de audio animada.
 - **Cuatro caminos para participar** en paneles que se expanden.
 - **Nuestras bases:** una página por base (la ciudad de Leticia y JUCUM El Puente, en medio de la selva) con fotos, videos y una ilustración de **"Cómo llegar"** (a pie por la selva o por el río).
