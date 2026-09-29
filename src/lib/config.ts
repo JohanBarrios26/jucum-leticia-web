@@ -15,11 +15,12 @@ export const showPending = import.meta.env.PUBLIC_SHOW_PENDING !== 'false';
 /**
  * Clave pública de Web3Forms (servicio que envía el formulario de contacto al
  * correo de JUCUM). Es pública por diseño: NO revela el correo de destino.
- * Formulario "Sitio web JUCUM Leticia" en web3forms.com (envía a ywamleticia).
+ * Formulario "JUCUM Leticia" en web3forms.com. El correo de destino se
+ * configura allí, no en el código.
  * Se puede cambiar con la variable de entorno PUBLIC_WEB3FORMS_KEY.
  * Sin clave, el formulario muestra un aviso y los canales directos.
  */
-export const web3formsKey = import.meta.env.PUBLIC_WEB3FORMS_KEY || '356dbef5-1478-49c2-87c5-b1175f7423be';
+export const web3formsKey = import.meta.env.PUBLIC_WEB3FORMS_KEY || '79d284b0-c8aa-4159-a947-cad9a1c40ad7';
 
 /**
  * ID del sitio en Umami (analítica sin cookies). Público por diseño.
