@@ -20,7 +20,7 @@ export const showPending = import.meta.env.PUBLIC_SHOW_PENDING !== 'false';
  * Se puede cambiar con la variable de entorno PUBLIC_WEB3FORMS_KEY.
  * Sin clave, el formulario muestra un aviso y los canales directos.
  */
-export const web3formsKey = import.meta.env.PUBLIC_WEB3FORMS_KEY || '79d284b0-c8aa-4159-a947-cad9a1c40ad7';
+export const web3formsKey = import.meta.env.PUBLIC_WEB3FORMS_KEY || '6bfc95d4-4391-49f4-b917-2c6fa4626b3b';
 
 /**
  * ID del sitio en Umami (analítica sin cookies). Público por diseño.
