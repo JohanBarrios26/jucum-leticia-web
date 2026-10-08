@@ -347,6 +347,20 @@ export async function getAbout(locale: Locale): Promise<About> {
       image: resolveImageMaybe(h.image, locale),
     })),
     teamIntro: localizeMaybe(a.teamIntro, locale),
+    founders:
+      a.founders.authorized && a.founders.members.length > 0
+        ? {
+            photo: resolveImageMaybe(a.founders.photo, locale),
+            story: localizeMaybe(a.founders.story, locale),
+            members: a.founders.members.map((m) => ({
+              name: m.name,
+              role: localizeMaybe(m.role, locale),
+              country: localizeMaybe(m.country, locale),
+              photo: resolveImageMaybe(m.photo, locale),
+              bio: localizeMaybe(m.bio, locale),
+            })),
+          }
+        : null,
   };
 }
 
@@ -379,6 +393,7 @@ function resolvePerson(p: PersonRaw, locale: Locale): Person {
       members: p.members,
       country: localizeMaybe(p.country, locale),
       support: { enabled: p.support.enabled, link: p.support.link, text: localizeMaybe(p.support.text, locale) },
+      whatsapp: p.whatsapp,
       photo: resolveImageMaybe(p.photo, locale),
       role: localizeMaybe(p.role, locale),
       ministrySlug: p.ministrySlug,
@@ -449,7 +464,7 @@ export async function getBase(slug: string, locale: Locale): Promise<Maybe<Base>
  * (en inglés con "and"). Se usa para los integrantes de una familia.
  */
 export function joinNames(names: string[], locale: Locale): string {
-  const and = locale === 'en' ? ' and ' : ' y ';
+  const and = { es: ' y ', en: ' and ', pt: ' e ' }[locale];
   if (names.length <= 1) return names[0] ?? '';
   return `${names.slice(0, -1).join(', ')}${and}${names[names.length - 1]}`;
 }

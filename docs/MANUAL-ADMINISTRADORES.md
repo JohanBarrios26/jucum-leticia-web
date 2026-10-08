@@ -37,11 +37,11 @@ Todo se hace desde el **panel de administración**, una página web con usuario 
 
 ---
 
-## 3. Textos en dos idiomas
+## 3. Textos en tres idiomas
 
-Cada texto tiene dos casillas: **Español** (obligatoria) e **English** (opcional).
-Si dejas el inglés vacío, la versión en inglés del sitio muestra el texto en español.
-Así nunca queda un espacio en blanco.
+Cada texto tiene tres casillas: **Español** (obligatoria), **English** y **Português** (opcionales).
+Si dejas el inglés o el portugués vacío, esa versión del sitio muestra el texto en español.
+Así nunca queda un espacio en blanco. Como la ciudad está en la triple frontera, conviene llenar también el portugués.
 
 ---
 
@@ -125,6 +125,15 @@ Abre la persona → pestaña **Apoyo**:
 3. Opcional: escribe **para qué es el apoyo** (ej. transporte por el río, materiales).
 4. **Publicar.**
 
+### WhatsApp personal de cada integrante
+Abre la persona → pestaña **Apoyo** → **WhatsApp personal** (solo con su autorización; número con código de país, sin espacios ni +, ej. `573001234567`).
+- Con número: los botones **Escribir a…**, **Orar por…** y **Apoyar…** le llegan directamente a esa persona.
+- Sin número: llegan al WhatsApp de JUCUM con el mensaje "Estoy preguntando por [nombre]".
+El enlace de **donación personal** (PayPal.me, etc.) va en el campo de enlace de la misma pestaña.
+
+### Directores fundadores (el matrimonio)
+Menú **Quiénes somos** → pestaña **Directores fundadores**: foto de los dos, su historia juntos y las dos personas (nombre, cargo, foto, historia). Marca **"Autorizaron publicar"** para que aparezca; se muestra arriba en "Nuestro equipo" y antes de la historia en "Quiénes somos".
+
 > ⚠️ Nunca escribas números de cuenta bancaria en el panel. El sitio solo enlaza a páginas de donación seguras o a una conversación por WhatsApp.
 
 ### Publicar una historia o foto de personas
@@ -161,3 +170,10 @@ Dentro, los datos vienen ordenados y en español: motivo, nombre, correo, teléf
 3. ¿Está activado **"Mostrar en el sitio"** o las **autorizaciones**?
 
 Si sigue sin verse, contacta a la persona que administra la parte técnica del sitio.
+
+
+---
+
+## 8. Páginas legales y datos personales
+
+El sitio incluye Política de privacidad, Términos y condiciones, Política de cookies y Donaciones y reembolsos (enlazadas en el pie de página, en español, inglés y portugués). Sus textos no se editan en el panel: están en el código (`src/i18n/legal.ts`). Son un borrador base: **un abogado en Colombia debe revisarlos** y hay que agregar la razón social y el NIT de la entidad antes de publicar con dominio propio. El sitio no usa cookies, por eso no muestra aviso de cookies. El formulario pide solo nombre, correo, mensaje (obligatorios) y teléfono y país (opcionales), con una casilla de autorización obligatoria.

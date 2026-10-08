@@ -93,6 +93,15 @@ export const person = defineType({
     defineField({name: 'bio', title: 'Su historia', type: 'localeText', group: 'story', description: 'Por qué llegó, por qué decidió servir, qué hace hoy.'}),
     defineField({name: 'prayerRequest', title: 'Petición de oración', type: 'localeText', group: 'story'}),
     defineField({
+      name: 'whatsapp',
+      title: 'WhatsApp personal (opcional)',
+      type: 'string',
+      group: 'support',
+      description:
+        'Solo con autorización de la persona. Número con código de país y sin espacios ni +. Ej: 573001234567. Los botones "Escribir a…", "Orar por…" y "Apoyar…" le llegan a ella. Si se deja vacío, llegan al WhatsApp de JUCUM con un mensaje que dice por quién se pregunta.',
+      validation: (rule) => rule.regex(/^\d{8,15}$/, {name: 'número'}).error('Solo números, con código de país (8 a 15 dígitos).'),
+    }),
+    defineField({
       name: 'support',
       title: 'Apoyo personal',
       type: 'object',
@@ -109,7 +118,7 @@ export const person = defineType({
           name: 'link',
           title: 'Enlace de donación personal',
           type: 'url',
-          description: 'Opcional. Página segura donde se puede donar a esta persona. Si se deja vacío, el botón abre WhatsApp de JUCUM.',
+          description: 'Opcional. Página segura donde se puede donar a esta persona (por ejemplo, su enlace de PayPal.me). Si se deja vacío, el botón abre WhatsApp de JUCUM.',
           validation: (rule) => rule.uri({scheme: ['https']}),
         }),
         defineField({

@@ -76,7 +76,10 @@ const query = `{
     ..., "slug": slug.current, image${photo}, gallery[]${photo},
     "programs": programs[]->{_type, "slug": slug.current, name, active}
   },
-  "about": *[_id == "about"][0]{..., image${photo}, history[]{..., image${photo}}},
+  "about": *[_id == "about"][0]{
+    ..., image${photo}, history[]{..., image${photo}},
+    founders{..., photo${photo}, members[]{..., photo${photo}}}
+  },
   "pageTexts": *[_id == "pageTexts"][0],
   "people": *[_type == "person"] | order(orderRank){
     ..., "slug": slug.current, photo${photo}, "ministrySlug": ministry->slug.current
@@ -224,6 +227,14 @@ function toAbout(d: Doc | null): AboutRaw {
       .filter((h: Doc) => h.year && h.title)
       .map((h: Doc) => ({ year: h.year, title: h.title, text: lx(h.text), image: toImage(h.image) })),
     teamIntro: lx(d.teamIntro),
+    founders: {
+      authorized: d.founders?.authorized === true,
+      photo: toImage(d.founders?.photo),
+      story: lx(d.founders?.story),
+      members: (d.founders?.members ?? [])
+        .filter((m: Doc) => m.name)
+        .map((m: Doc) => ({ name: m.name, role: lx(m.role), country: lx(m.country), photo: toImage(m.photo), bio: lx(m.bio) })),
+    },
   };
 }
 
@@ -240,6 +251,7 @@ function toPerson(d: Doc): PersonRaw {
       link: d.support?.link ?? null,
       text: lx(d.support?.text),
     },
+    whatsapp: typeof d.whatsapp === 'string' && /^\d{8,15}$/.test(d.whatsapp.trim()) ? d.whatsapp.trim() : null,
     photo: toImage(d.photo),
     role: lx(d.role),
     ministrySlug: d.ministrySlug ?? null,

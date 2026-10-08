@@ -7,6 +7,7 @@ import { t } from '@/i18n/ui';
 // todo el sitio, por eso muestra el mensaje en ambos idiomas.
 const es = t('es').notFound;
 const en = t('en').notFound;
+const pt = t('pt').notFound;
 ---
 
 <BaseLayout locale="es" alternates={routes.home} title={es.title} noindex>
@@ -16,9 +17,11 @@ const en = t('en').notFound;
       <h1>{es.title}</h1>
       <p>{es.text}</p>
       <p lang="en" class="not-found__en">{en.title}. {en.text}</p>
+      <p lang="pt" class="not-found__en">{pt.title}. {pt.text}</p>
       <div class="not-found__actions">
         <a class="btn btn--primary" href={routes.home.es}>{es.back}</a>
         <a class="btn btn--outline" href={routes.home.en} lang="en">{en.back}</a>
+        <a class="btn btn--outline" href={routes.home.pt} lang="pt">{pt.back}</a>
       </div>
     </div>
   </section>

@@ -332,6 +332,21 @@ export interface AboutRaw {
   values: { title: Localized; text: Maybe<Localized> }[];
   history: { year: string; title: Localized; text: Maybe<Localized>; image: Maybe<ImageRawRef> }[];
   teamIntro: Maybe<Localized>;
+  founders: FoundersRaw;
+}
+
+/** Los dos directores fundadores (esposos). Solo se publican si lo autorizaron. */
+export interface FoundersRaw {
+  authorized: boolean;
+  photo: Maybe<ImageRawRef>;
+  story: Maybe<Localized>;
+  members: { name: string; role: Maybe<Localized>; country: Maybe<Localized>; photo: Maybe<ImageRawRef>; bio: Maybe<Localized> }[];
+}
+
+export interface Founders {
+  photo: Maybe<ImageRef>;
+  story: Maybe<string>;
+  members: { name: string; role: Maybe<string>; country: Maybe<string>; photo: Maybe<ImageRef>; bio: Maybe<string> }[];
 }
 
 export interface About {
@@ -342,6 +357,8 @@ export interface About {
   values: { title: string; text: Maybe<string> }[];
   history: { year: string; title: string; text: Maybe<string>; image: Maybe<ImageRef> }[];
   teamIntro: Maybe<string>;
+  /** null = sin autorización o sin datos todavía. */
+  founders: Maybe<Founders>;
 }
 
 /* ----------------------------------------------------------------- Personas */
@@ -367,6 +384,8 @@ export interface PersonRaw {
   members: FamilyMember[];
   country: Maybe<Localized>;
   support: PersonSupportRaw;
+  /** WhatsApp personal (solo números, con país). Si falta, se usa el de JUCUM. */
+  whatsapp: Maybe<string>;
   photo: Maybe<ImageRawRef>;
   role: Maybe<Localized>;
   ministrySlug: Maybe<string>;
@@ -384,6 +403,7 @@ export interface Person {
   members: FamilyMember[];
   country: Maybe<string>;
   support: { enabled: boolean; link: Maybe<string>; text: Maybe<string> };
+  whatsapp: Maybe<string>;
   photo: Maybe<ImageRef>;
   role: Maybe<string>;
   ministrySlug: Maybe<string>;

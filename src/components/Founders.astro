@@ -1,0 +1,153 @@
+---
+/**
+ * DIRECTORES FUNDADORES (el matrimonio)
+ * ----------------------------------------------------------------------------
+ * Sección destacada con los dos directores fundadores, que son esposos. Se usa
+ * en "Quiénes somos" (antes de la historia) y en "Nuestro equipo" (arriba).
+ * El contenido se edita en el panel: Quiénes somos → pestaña "Directores
+ * fundadores". Solo aparece si ellos autorizaron publicarlo; mientras no haya
+ * datos muestra "Pendiente de contenido" (oculto con PUBLIC_SHOW_PENDING=false).
+ *
+ * `level` es el nivel del título (h2 por defecto) para no saltar niveles.
+ */
+import PendingContent from './PendingContent.astro';
+import ImagePlaceholder from './ui/ImagePlaceholder.astro';
+import SmartImage from './ui/SmartImage.astro';
+import type { Locale } from '@/i18n/routes';
+import { t } from '@/i18n/ui';
+import { showPending } from '@/lib/config';
+import { joinNames, type Founders, type Maybe } from '@/lib/content';
+
+interface Props {
+  locale: Locale;
+  founders: Maybe<Founders>;
+  id?: string;
+}
+
+const { locale, founders, id = 'founders-title' } = Astro.props;
+const ui = t(locale);
+const names = founders ? joinNames(founders.members.map((m) => m.name), locale) : '';
+---
+
+{
+  (founders || showPending) && (
+    <section class="founders surface-deep section" aria-labelledby={id}>
+      <div class="container">
+        <p class="eyebrow eyebrow--line">{ui.founders.eyebrow}</p>
+        <h2 id={id}>{founders ? names : ui.founders.title}</h2>
+
+        {
+          founders ? (
+            <>
+              <p class="founders__together">{ui.founders.together}</p>
+              <div class="founders__top">
+                {founders.photo && (
+                  <div class="founders__photo" data-reveal="scale">
+                    <SmartImage image={founders.photo} sizes="(min-width: 64rem) 45vw, 100vw" />
+                  </div>
+                )}
+                {founders.story && <p class="lead founders__story" data-reveal>{founders.story}</p>}
+              </div>
+              <ul role="list" class="founders__list">
+                {founders.members.map((m, i) => (
+                  <li class="founder" data-reveal style={`--reveal-delay: ${i * 100}ms`}>
+                    <div class="founder__photo">
+                      {m.photo ? <SmartImage image={m.photo} sizes="(min-width: 48rem) 20rem, 40vw" /> : <ImagePlaceholder label={m.name.charAt(0)} />}
+                    </div>
+                    <div class="founder__text">
+                      <h3>{m.name}</h3>
+                      <p class="founder__role">{m.role ?? ui.founders.role}{m.country && ` · ${m.country}`}</p>
+                      {m.bio && <p>{m.bio}</p>}
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </>
+          ) : (
+            <p class="founders__pending">
+              {ui.founders.pending} <PendingContent locale={locale} />
+            </p>
+          )
+        }
+      </div>
+    </section>
+  )
+}
+
+<style>
+  .founders h2 {
+    margin-top: var(--space-3);
+  }
+
+  .founders__together {
+    margin-top: var(--space-2);
+    color: var(--color-text-on-dark-muted);
+  }
+
+  .founders__top {
+    display: grid;
+    gap: var(--space-6);
+    align-items: center;
+    margin-top: var(--space-6);
+  }
+
+  .founders__photo {
+    overflow: hidden;
+    border-radius: var(--radius-lg);
+    aspect-ratio: 16 / 10;
+  }
+
+  .founders__story {
+    max-width: 40rem;
+  }
+
+  .founders__list {
+    display: grid;
+    gap: var(--space-6);
+    margin-top: var(--space-7);
+  }
+
+  .founder {
+    display: grid;
+    gap: var(--space-4);
+    align-content: start;
+  }
+
+  .founder__photo {
+    overflow: hidden;
+    width: min(100%, 16rem);
+    aspect-ratio: 4 / 5;
+    border-radius: var(--radius-md);
+  }
+
+  .founder h3 {
+    font-size: var(--text-h3);
+  }
+
+  .founder__role {
+    margin-bottom: var(--space-3);
+    color: var(--color-river);
+    font-weight: 600;
+  }
+
+  .founders__pending {
+    margin-top: var(--space-4);
+    max-width: 40rem;
+  }
+
+  @media (min-width: 48rem) {
+    .founders__list {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .founder {
+      grid-template-columns: 12rem 1fr;
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .founders__top {
+      grid-template-columns: 1.1fr 1fr;
+    }
+  }
+</style>

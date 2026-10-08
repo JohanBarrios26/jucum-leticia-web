@@ -17,6 +17,7 @@ export const about = defineType({
   groups: [
     {name: 'intro', title: 'Introducción', default: true},
     {name: 'identity', title: 'Misión, visión y valores'},
+    {name: 'founders', title: 'Directores fundadores'},
     {name: 'history', title: 'Historia'},
     {name: 'team', title: 'Equipo'},
   ],
@@ -68,6 +69,56 @@ export const about = defineType({
             defineField({name: 'image', title: 'Foto', type: 'photo'}),
           ],
           preview: {select: {title: 'title.es', subtitle: 'year', media: 'image'}},
+        }),
+      ],
+    }),
+    defineField({
+      name: 'founders',
+      title: 'Directores fundadores (el matrimonio)',
+      type: 'object',
+      group: 'founders',
+      description:
+        'Los dos directores fundadores (esposos). Aparecen de forma destacada en "Quiénes somos" y en "Nuestro equipo". Solo se publican si marcas la autorización.',
+      fields: [
+        defineField({
+          name: 'authorized',
+          title: 'Autorizaron publicar su nombre, foto e historia',
+          type: 'boolean',
+          initialValue: false,
+          description: 'Si no está marcado, esta sección NO aparece en el sitio.',
+        }),
+        defineField({name: 'photo', title: 'Foto de los dos juntos', type: 'photo'}),
+        defineField({
+          name: 'story',
+          title: 'Su historia juntos',
+          type: 'localeText',
+          description: 'Cómo comenzó la base y cuál es su llamado. Solo hechos reales confirmados por ellos.',
+        }),
+        defineField({
+          name: 'members',
+          title: 'Las dos personas',
+          type: 'array',
+          validation: (rule) => rule.max(2).error('Son dos directores fundadores.'),
+          of: [
+            defineArrayMember({
+              type: 'object',
+              name: 'founder',
+              title: 'Director/a fundador/a',
+              fields: [
+                defineField({name: 'name', title: 'Nombre', type: 'string', validation: (rule) => rule.required()}),
+                defineField({
+                  name: 'role',
+                  title: 'Cargo',
+                  type: 'localeString',
+                  description: 'Ej: "Director fundador" / "Directora fundadora".',
+                }),
+                defineField({name: 'country', title: 'País de origen', type: 'localeString'}),
+                defineField({name: 'photo', title: 'Foto individual', type: 'photo'}),
+                defineField({name: 'bio', title: 'Su historia', type: 'localeText'}),
+              ],
+              preview: {select: {title: 'name', subtitle: 'role.es', media: 'photo'}},
+            }),
+          ],
         }),
       ],
     }),

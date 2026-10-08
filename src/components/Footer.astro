@@ -10,7 +10,7 @@
  * (getSiteSettings): si JUCUM cambia un teléfono en el panel, cambia aquí solo.
  */
 import PendingContent from './PendingContent.astro';
-import { joinPathUrl, joinPaths, mainNav, routes, type Locale } from '@/i18n/routes';
+import { joinPathUrl, joinPaths, legalPages, legalRoutes, mainNav, routes, type Locale } from '@/i18n/routes';
 import { t } from '@/i18n/ui';
 import { whatsappUrl, type SiteSettings, type SocialLinks } from '@/lib/content';
 
@@ -122,7 +122,11 @@ const socials = (Object.keys(socialNames) as (keyof SocialLinks)[])
 
     <div class="footer-bottom">
       <p>© {year} {settings.organizationName}. {ui.footer.rights}</p>
-      <p>{settings.tagline}</p>
+      <nav aria-label={ui.legal.title}>
+        <ul role="list" class="footer-legal">
+          {legalPages.map((p) => <li><a href={legalRoutes[p][locale]}>{ui.legal[p]}</a></li>)}
+        </ul>
+      </nav>
     </div>
   </div>
 </footer>
@@ -235,6 +239,17 @@ const socials = (Object.keys(socialNames) as (keyof SocialLinks)[])
     color: transparent;
     -webkit-text-stroke: 1px rgb(255 255 255 / 0.18);
     user-select: none;
+  }
+
+  .footer-legal {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2) var(--space-5);
+  }
+
+  .footer-legal a {
+    color: var(--color-text-on-dark);
+    text-underline-offset: 0.2em;
   }
 
   .footer-bottom {

@@ -91,7 +91,7 @@ const siteHost = new URL(site).hostname;
 const analyticsEnabled = Boolean(umamiWebsiteId) && siteHost !== 'localhost';
 const canonical = new URL(alternates[locale], site).href;
 const ogImageFinal = ogImage ?? ogImageUrl(home.hero.image) ?? new URL('/brand/logo-original.png', site).href;
-const ogLocale = { es: 'es_CO', en: 'en_US' } satisfies Record<Locale, string>;
+const ogLocale = { es: 'es_CO', en: 'en_US', pt: 'pt_BR' } satisfies Record<Locale, string>;
 
 // ---- Datos estructurados (JSON-LD) para Google ----
 const jsonLd: object[] = [];
@@ -179,6 +179,7 @@ if (breadcrumbs && breadcrumbs.length > 0) {
           src="https://cloud.umami.is/script.js"
           data-website-id={umamiWebsiteId}
           data-domains={siteHost}
+          data-do-not-track="true"
         />
       )
     }

@@ -1,9 +1,9 @@
 /**
- * CAMPOS BILINGÜES (español / inglés)
+ * CAMPOS MULTILINGÜES (español / inglés / portugués)
  * ----------------------------------------------------------------------------
  * Cada texto del sitio se guarda en ambos idiomas dentro del mismo campo.
- * El español es obligatorio; el inglés es opcional: si se deja vacío, el sitio
- * en inglés muestra el texto en español (nunca queda un hueco).
+ * El español es obligatorio; el inglés y el portugués son opcionales: si se dejan
+ * vacíos, el sitio en ese idioma muestra el texto en español (nunca queda un hueco).
  *
  * Tipos:
  *   localeString      → texto corto (títulos, nombres, botones)
@@ -15,6 +15,7 @@ import {defineField, defineType} from 'sanity'
 const languages = [
   {id: 'es', title: 'Español', required: true},
   {id: 'en', title: 'English (opcional: si se deja vacío se usa el español)', required: false},
+  {id: 'pt', title: 'Português (opcional: si se deja vacío se usa el español)', required: false},
 ]
 
 export const localeString = defineType({

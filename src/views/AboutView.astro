@@ -7,6 +7,7 @@
  * Lo no confirmado por JUCUM se muestra como "Pendiente de contenido".
  */
 import BaseLayout from '@/layouts/BaseLayout.astro';
+import Founders from '@/components/Founders.astro';
 import PageHero from '@/components/PageHero.astro';
 import PendingContent from '@/components/PendingContent.astro';
 import PersonCard from '@/components/PersonCard.astro';
@@ -95,6 +96,9 @@ const historyBlock = {
   </section>
 
   <!-- Historia -->
+  <!-- Los dos directores fundadores (esposos), destacados antes de la historia. -->
+  <Founders locale={locale} founders={about.founders} />
+
   <section class="section surface-sand" aria-labelledby="history-title">
     <div class="container">
       {

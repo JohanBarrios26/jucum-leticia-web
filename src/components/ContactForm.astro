@@ -31,7 +31,7 @@
  *   Responder el correo le escribe directamente a la persona.
  * Para cambiar etiquetas u orden: función `buildEmail` en el script de abajo.
  */
-import { contactThanks, type Locale } from '@/i18n/routes';
+import { contactThanks, legalRoutes, type Locale } from '@/i18n/routes';
 import { t } from '@/i18n/ui';
 import { web3formsKey } from '@/lib/config';
 import { getSiteSettings } from '@/lib/content';
@@ -68,6 +68,7 @@ const orgNameEs = (await getSiteSettings('es')).organizationName;
       data-msg-success={ui.success}
       data-msg-error={ui.error}
       data-msg-invalid={ui.invalid}
+      data-msg-consent={ui.consentError}
       data-submit-label={ui.submit}
       data-interests-es={interestsEs}
       data-org={orgNameEs}
@@ -121,20 +122,23 @@ const orgNameEs = (await getSiteSettings('es')).organizationName;
           <input id="cf-country" name="country" type="text" autocomplete="country-name" maxlength="80" />
         </div>
 
-        <div class="field">
-          <label for="cf-city">
-            {ui.city} <span class="field__optional">({ui.optional})</span>
-          </label>
-          <input id="cf-city" name="city" type="text" autocomplete="address-level2" maxlength="80" />
-        </div>
-
         <div class="field field--full">
           <label for="cf-message">{ui.message} <span aria-hidden="true">*</span></label>
           <textarea id="cf-message" name="message" rows="6" required maxlength="4000"></textarea>
         </div>
       </div>
 
-      <p class="contact-form__privacy">{ui.privacy}</p>
+      <p class="contact-form__privacy" id="cf-notice">{ui.dataNotice} * = {ui.required}.</p>
+
+      <!-- Consentimiento expreso (Ley 1581 de 2012, Colombia; LGPD, Brasil; RGPD): sin marcarlo no se envía. -->
+      <div class="field field--consent">
+        <input id="cf-consent" name="consent" type="checkbox" value="yes" required />
+        <label for="cf-consent">
+          {ui.consent}
+          <a href={legalRoutes.privacy[locale]} target="_blank" rel="noopener">{ui.consentLink} <span class="visually-hidden">{t(locale).newTab}</span></a>.
+          <span aria-hidden="true">*</span>
+        </label>
+      </div>
 
       <button type="submit" class="btn btn--primary contact-form__submit">
         <span data-submit-text>{ui.submit}</span> <span class="btn__arrow" aria-hidden="true">→</span>
@@ -196,9 +200,9 @@ const orgNameEs = (await getSiteSettings('es')).organizationName;
         // Enlace directo para escribirle por WhatsApp (solo si dejó un número).
         ['💬 Escribirle por WhatsApp', phoneDigits.length >= 8 ? `https://wa.me/${phoneDigits}` : ''],
         ['🌎 País', text('country')],
-        ['🏙️ Ciudad', text('city')],
         ['📝 Mensaje', text('message')],
-        ['🌐 Idioma del sitio', form.dataset.locale === 'en' ? 'Inglés' : 'Español'],
+        ['🌐 Idioma del sitio', ({ en: 'Inglés', pt: 'Portugués' } as Record<string, string>)[form.dataset.locale ?? ''] ?? 'Español'],
+        ['✅ Consentimiento de datos', 'Aceptó la política de privacidad'],
         ['📄 Enviado desde', location.href.split('?')[0]],
         ['🕒 Fecha (hora de Colombia)', sentAt],
       ];
@@ -221,9 +225,16 @@ const orgNameEs = (await getSiteSettings('es')).organizationName;
 
     // Marca/desmarca campos inválidos al salir de ellos.
     form.querySelectorAll<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>('input, textarea, select').forEach((field) => {
-      field.addEventListener('blur', () => field.toggleAttribute('data-invalid', !field.checkValidity()));
+      const mark = (invalid: boolean) => {
+        field.toggleAttribute('data-invalid', invalid);
+        field.setAttribute('aria-invalid', String(invalid));
+      };
+      field.addEventListener('blur', () => mark(!field.checkValidity()));
       field.addEventListener('input', () => {
-        if (field.hasAttribute('data-invalid') && field.checkValidity()) field.removeAttribute('data-invalid');
+        if (field.hasAttribute('data-invalid') && field.checkValidity()) mark(false);
+      });
+      field.addEventListener('change', () => {
+        if (field.hasAttribute('data-invalid') && field.checkValidity()) mark(false);
       });
     });
 
@@ -231,9 +242,13 @@ const orgNameEs = (await getSiteSettings('es')).organizationName;
       event.preventDefault();
 
       if (!form.checkValidity()) {
-        form.querySelectorAll<HTMLInputElement>(':invalid').forEach((f) => f.setAttribute('data-invalid', ''));
+        form.querySelectorAll<HTMLInputElement>(':invalid').forEach((f) => {
+          f.setAttribute('data-invalid', '');
+          f.setAttribute('aria-invalid', 'true');
+        });
+        const consent = form.querySelector<HTMLInputElement>('input[name="consent"]')!;
         form.querySelector<HTMLElement>(':invalid')?.focus();
-        setStatus(form.dataset.msgInvalid ?? '', 'error');
+        setStatus(consent.checkValidity() ? (form.dataset.msgInvalid ?? '') : (form.dataset.msgConsent ?? ''), 'error');
         return;
       }
 
@@ -306,6 +321,24 @@ const orgNameEs = (await getSiteSettings('es')).organizationName;
   .field {
     display: grid;
     gap: var(--space-2);
+  }
+
+  .field--consent {
+    grid-template-columns: auto 1fr;
+    align-items: start;
+    gap: var(--space-3);
+  }
+
+  .field--consent input {
+    width: 1.35rem;
+    min-height: 1.35rem;
+    margin-top: 0.15rem;
+    accent-color: var(--color-night);
+  }
+
+  .field--consent label {
+    font-weight: 400;
+    line-height: 1.5;
   }
 
   .field label {

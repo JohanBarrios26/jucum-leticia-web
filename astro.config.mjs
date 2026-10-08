@@ -9,7 +9,7 @@
  * - `output: 'static'`: se generan archivos HTML puros. Es lo más rápido para
  *   conexiones lentas (Amazonas) y lo más duradero: se puede alojar en cualquier
  *   servicio sin servidor ni base de datos.
- * - `i18n`: español por defecto (sin prefijo) e inglés bajo /en/.
+ * - `i18n`: español por defecto (sin prefijo), inglés bajo /en/ y portugués bajo /pt/.
  */
 import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
@@ -26,12 +26,12 @@ export default defineConfig({
   site,
   output: 'static',
   i18n: {
-    locales: ['es', 'en'],
+    locales: ['es', 'en', 'pt'],
     defaultLocale: 'es',
     routing: {
       prefixDefaultLocale: false,
     },
   },
   // El sitemap excluye las páginas de agradecimiento del formulario.
-  integrations: [sitemap({ filter: (page) => !/\/(gracias|thanks)\/$/.test(page) })],
+  integrations: [sitemap({ filter: (page) => !/\/(gracias|thanks|obrigado)\/$/.test(page) })],
 });

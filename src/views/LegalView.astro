@@ -1,0 +1,133 @@
+---
+/**
+ * VISTA: PÁGINAS LEGALES (privacidad, términos, cookies, donaciones y reembolsos)
+ * ----------------------------------------------------------------------------
+ * Una sola vista para las 4 páginas. El texto sale de src/i18n/legal.ts y las
+ * direcciones de legalRoutes (src/i18n/routes.ts). Muestra un índice con
+ * enlaces a cada apartado y la fecha de la última actualización.
+ */
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHero from '@/components/PageHero.astro';
+import { legalPages, legalRoutes, routes, type LegalPage, type Locale } from '@/i18n/routes';
+import { getLegal, legalUpdated } from '@/i18n/legal';
+import { t } from '@/i18n/ui';
+import { getSiteSettings } from '@/lib/content';
+
+interface Props {
+  locale: Locale;
+  page: LegalPage;
+}
+
+const { locale, page } = Astro.props;
+const ui = t(locale);
+const settings = await getSiteSettings(locale);
+const doc = getLegal(locale, page);
+
+// Reemplaza {org} y {email} por los datos reales del panel.
+const fill = (text: string) => text.replaceAll('{org}', settings.organizationName).replaceAll('{email}', settings.email);
+const updated = new Intl.DateTimeFormat(locale, { dateStyle: 'long', timeZone: 'UTC' }).format(new Date(legalUpdated));
+const slugOf = (i: number) => `seccion-${i + 1}`;
+---
+
+<BaseLayout
+  locale={locale}
+  alternates={legalRoutes[page]}
+  title={doc.title}
+  description={doc.description}
+  headerOverlay
+  breadcrumbs={[
+    { name: ui.nav.home, url: routes.home[locale] },
+    { name: doc.title, url: legalRoutes[page][locale] },
+  ]}
+>
+  <PageHero title={doc.title} eyebrow={ui.legal.title} lead={`${ui.legal.updated}: ${updated}`} compact />
+
+  <section class="section">
+    <div class="container container--narrow legal">
+      <nav class="legal__toc" aria-label={ui.legal.contents}>
+        <h2 class="legal__toc-title">{ui.legal.contents}</h2>
+        <ol role="list">
+          {doc.sections.map((s, i) => <li><a href={`#${slugOf(i)}`}>{s.heading.replace(/^\d+\.\s*/, '')}</a></li>)}
+        </ol>
+      </nav>
+
+      {
+        doc.sections.map((s, i) => (
+          <section class="legal__section" aria-labelledby={slugOf(i)}>
+            <h2 id={slugOf(i)}>{s.heading}</h2>
+            {s.paragraphs?.map((p) => <p>{fill(p)}</p>)}
+            {s.items && <ul>{s.items.map((item) => <li>{fill(item)}</li>)}</ul>}
+          </section>
+        ))
+      }
+
+      <nav class="legal__others" aria-label={ui.legal.title}>
+        <ul role="list">
+          {
+            legalPages
+              .filter((p) => p !== page)
+              .map((p) => <li><a href={legalRoutes[p][locale]}>{ui.legal[p]}</a></li>)
+          }
+        </ul>
+      </nav>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .legal {
+    display: grid;
+    gap: var(--space-6);
+  }
+
+  .legal__toc {
+    padding: var(--space-5);
+    border-radius: var(--radius-md);
+    background: var(--color-sand, #f4efe6);
+  }
+
+  .legal__toc-title {
+    margin-bottom: var(--space-3);
+    font-family: var(--font-body);
+    font-size: var(--text-sm);
+    font-weight: 700;
+  }
+
+  .legal__toc ol {
+    display: grid;
+    gap: var(--space-2);
+    padding-left: 1.25rem;
+    list-style: decimal;
+  }
+
+  .legal__section h2 {
+    margin-bottom: var(--space-3);
+    font-size: var(--text-h3);
+    scroll-margin-top: 6rem;
+  }
+
+  .legal__section p + p,
+  .legal__section p + ul {
+    margin-top: var(--space-3);
+  }
+
+  .legal__section ul {
+    display: grid;
+    gap: var(--space-2);
+    padding-left: 1.25rem;
+    list-style: disc;
+  }
+
+  .legal a {
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+
+  .legal__others ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3) var(--space-6);
+    padding-top: var(--space-5);
+    border-top: 1px solid var(--color-border);
+  }
+</style>
