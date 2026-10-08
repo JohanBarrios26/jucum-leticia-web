@@ -134,7 +134,7 @@ const orgNameEs = (await getSiteSettings('es')).organizationName;
       <div class="field field--consent">
         <input id="cf-consent" name="consent" type="checkbox" value="yes" required />
         <label for="cf-consent">
-          {ui.consent}
+          {ui.consent}{' '}
           <a href={legalRoutes.privacy[locale]} target="_blank" rel="noopener">{ui.consentLink} <span class="visually-hidden">{t(locale).newTab}</span></a>.
           <span aria-hidden="true">*</span>
         </label>
