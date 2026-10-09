@@ -240,7 +240,31 @@ export async function getMinistry(slug: string, locale: Locale): Promise<Maybe<M
 
 /* ------------------------------------------------------------------ Escuelas */
 
-function resolveSchool(s: SchoolRaw, locale: Locale): School {
+function resolveSchool(s: SchoolRaw, locale: Locale, people: PersonRaw[]): School {
+  // Encargados del equipo (se asignan desde el perfil de la persona) + los escritos a mano.
+  const fromTeam = people
+    .filter((p) => p.authorized && p.schoolSlugs.includes(s.slug))
+    .map((p) => ({
+      slug: p.slug,
+      name: p.name,
+      role: localizeMaybe(p.role, locale),
+      email: p.email,
+      phone: p.phone,
+      whatsapp: p.whatsapp,
+      photo: resolveImageMaybe(p.photo, locale),
+    }));
+  const norm = (n: string) => n.trim().toLowerCase();
+  const manual = s.contacts
+    .filter((c) => c.authorized && !fromTeam.some((t) => norm(t.name) === norm(c.name)))
+    .map((c) => ({
+      slug: null,
+      name: c.name,
+      role: localizeMaybe(c.role, locale),
+      email: c.email,
+      phone: c.phone,
+      whatsapp: c.whatsapp,
+      photo: resolveImageMaybe(c.photo, locale),
+    }));
   return {
     slug: s.slug,
     name: localize(s.name, locale),
@@ -255,14 +279,7 @@ function resolveSchool(s: SchoolRaw, locale: Locale): School {
     enrollment: localizeMaybe(s.enrollment, locale),
     activities: localize(s.activities, locale),
     // Solo encargados que autorizaron publicar sus datos.
-    contacts: s.contacts.filter((c) => c.authorized).map((c) => ({
-      name: c.name,
-      role: localizeMaybe(c.role, locale),
-      email: c.email,
-      phone: c.phone,
-      whatsapp: c.whatsapp,
-      photo: resolveImageMaybe(c.photo, locale),
-    })),
+    contacts: [...fromTeam, ...manual],
     image: resolveImageMaybe(s.image, locale),
     order: s.order,
     motif: s.motif,
@@ -272,10 +289,11 @@ function resolveSchool(s: SchoolRaw, locale: Locale): School {
 }
 
 export async function getSchools(locale: Locale): Promise<School[]> {
-  return (await source()).schools
+  const { schools, people } = await source();
+  return schools
     .filter((s) => s.active)
     .sort(byOrder)
-    .map((s) => resolveSchool(s, locale));
+    .map((s) => resolveSchool(s, locale, people));
 }
 
 export async function getSchoolSlugs(): Promise<string[]> {
@@ -283,8 +301,9 @@ export async function getSchoolSlugs(): Promise<string[]> {
 }
 
 export async function getSchool(slug: string, locale: Locale): Promise<Maybe<School>> {
-  const s = (await source()).schools.find((x) => x.slug === slug && x.active);
-  return s ? resolveSchool(s, locale) : null;
+  const { schools, people } = await source();
+  const s = schools.find((x) => x.slug === slug && x.active);
+  return s ? resolveSchool(s, locale, people) : null;
 }
 
 /* ------------------------------------------------------ Caminos para participar */

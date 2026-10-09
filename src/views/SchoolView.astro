@@ -18,7 +18,7 @@ import FeatureBlocks from '@/components/features/FeatureBlocks.astro';
 import ImagePlaceholder from '@/components/ui/ImagePlaceholder.astro';
 import SmartImage from '@/components/ui/SmartImage.astro';
 import PendingContent from '@/components/PendingContent.astro';
-import { baseAlternates, routes, schoolAlternates, type Locale } from '@/i18n/routes';
+import { baseAlternates, personAlternates, routes, schoolAlternates, type Locale } from '@/i18n/routes';
 import { t } from '@/i18n/ui';
 import { ogImageUrl, whatsappUrl, type School } from '@/lib/content';
 
@@ -116,7 +116,9 @@ const facts = [
                   {c.photo ? <SmartImage image={c.photo} sizes="6rem" widths={[240]} /> : <ImagePlaceholder label={c.name.charAt(0)} />}
                 </div>
                 <div class="person__info">
-                  <p class="person__name">{c.name}</p>
+                  <p class="person__name">
+                    {c.slug ? <a href={personAlternates(c.slug)[locale]}>{c.name}</a> : c.name}
+                  </p>
                   {c.role && <p class="person__role">{c.role}</p>}
                   <ul role="list" class="person__links">
                     {c.whatsapp && (

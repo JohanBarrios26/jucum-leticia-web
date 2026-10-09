@@ -188,6 +188,8 @@ export interface SchoolContactRaw {
 }
 
 export interface SchoolContact {
+  /** Identificador del perfil si es parte del equipo (enlaza a su página). */
+  slug: Maybe<string>;
   name: string;
   role: Maybe<string>;
   email: Maybe<string>;
@@ -386,6 +388,11 @@ export interface PersonRaw {
   support: PersonSupportRaw;
   /** WhatsApp personal (solo números, con país). Si falta, se usa el de JUCUM. */
   whatsapp: Maybe<string>;
+  /** Correo y teléfono personales: solo se muestran como encargado de escuela. */
+  email: Maybe<string>;
+  phone: Maybe<string>;
+  /** Escuelas de las que esta persona es encargada. */
+  schoolSlugs: string[];
   photo: Maybe<ImageRawRef>;
   role: Maybe<Localized>;
   ministrySlug: Maybe<string>;

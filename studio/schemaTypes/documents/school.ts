@@ -83,7 +83,8 @@ export const school = defineType({
       title: 'Personas encargadas',
       type: 'array',
       group: 'contacts',
-      description: 'Quienes responden por esta escuela. Publica sus datos solo con su autorización.',
+      description:
+        'Solo para encargados que NO son parte del equipo. Los miembros del equipo se asignan desde su propio perfil (Personas → "Encargado/a de la(s) escuela(s)") y aparecen aquí solos. Publica datos solo con autorización.',
       of: [
         defineArrayMember({
           type: 'object',

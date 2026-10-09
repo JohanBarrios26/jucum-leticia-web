@@ -93,6 +93,30 @@ export const person = defineType({
     defineField({name: 'bio', title: 'Su historia', type: 'localeText', group: 'story', description: 'Por qué llegó, por qué decidió servir, qué hace hoy.'}),
     defineField({name: 'prayerRequest', title: 'Petición de oración', type: 'localeText', group: 'story'}),
     defineField({
+      name: 'schools',
+      title: 'Encargado/a de la(s) escuela(s)',
+      type: 'array',
+      group: 'main',
+      description:
+        'Si esta persona es responsable de una o más escuelas, elígelas aquí. Aparecerá automáticamente en "Encargados de la escuela" de cada una, sin cargarla otra vez. Requiere que esté autorizada.',
+      of: [defineArrayMember({type: 'reference', to: [{type: 'school'}]})],
+    }),
+    defineField({
+      name: 'email',
+      title: 'Correo personal (opcional)',
+      type: 'string',
+      group: 'support',
+      description: 'Solo con autorización. Se muestra únicamente en la página de la escuela que encabeza.',
+      validation: (rule) => rule.email(),
+    }),
+    defineField({
+      name: 'phone',
+      title: 'Teléfono personal (opcional)',
+      type: 'string',
+      group: 'support',
+      description: 'Solo con autorización. Con código de país. Ej: +57 300 123 4567. Se muestra únicamente en la página de la escuela que encabeza.',
+    }),
+    defineField({
       name: 'whatsapp',
       title: 'WhatsApp personal (opcional)',
       type: 'string',

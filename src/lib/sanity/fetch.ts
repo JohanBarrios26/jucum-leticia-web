@@ -82,7 +82,8 @@ const query = `{
   },
   "pageTexts": *[_id == "pageTexts"][0],
   "people": *[_type == "person"] | order(orderRank){
-    ..., "slug": slug.current, photo${photo}, "ministrySlug": ministry->slug.current
+    ..., "slug": slug.current, photo${photo}, "ministrySlug": ministry->slug.current,
+    "schoolSlugs": schools[]->slug.current
   },
   "joinPaths": *[_type == "joinPath"],
   "gallery": *[_type == "galleryItem"] | order(orderRank){..., image${photo}},
@@ -251,6 +252,9 @@ function toPerson(d: Doc): PersonRaw {
       link: d.support?.link ?? null,
       text: lx(d.support?.text),
     },
+    email: d.email?.trim() || null,
+    phone: d.phone?.trim() || null,
+    schoolSlugs: (d.schoolSlugs ?? []).filter(Boolean),
     whatsapp: typeof d.whatsapp === 'string' && /^\d{8,15}$/.test(d.whatsapp.trim()) ? d.whatsapp.trim() : null,
     photo: toImage(d.photo),
     role: lx(d.role),
