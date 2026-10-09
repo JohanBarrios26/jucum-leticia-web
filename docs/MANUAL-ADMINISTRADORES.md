@@ -136,6 +136,9 @@ Menú **Quiénes somos** → pestaña **Directores fundadores**: foto de los dos
 
 > ⚠️ Nunca escribas números de cuenta bancaria en el panel. El sitio solo enlaza a páginas de donación seguras o a una conversación por WhatsApp.
 
+### Historias del inicio (con video y rotación)
+En **Historias** crea una por persona. Si es del equipo, elígela en **Persona del equipo**: el nombre, la foto y el rol se toman de su perfil (debe estar autorizada). Opcional: pega el enlace de YouTube en **Video**. En el inicio se ven 3 historias al azar y el botón **Ver otras historias** muestra otras 3 (hasta 12 historias entran en la rotación). Solo se publican las que tienen las tres autorizaciones y **Publicar** marcado.
+
 ### Publicar una historia o foto de personas
 Por respeto y por ley, **solo publica con autorización**:
 - **Historias:** deben estar marcadas las tres autorizaciones (nombre, foto e historia) **y** "Publicar en el sitio".

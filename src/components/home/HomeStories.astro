@@ -5,6 +5,12 @@
  * Muestra historias SOLO si tienen todas las autorizaciones (nombre, foto e
  * historia). getStories() ya hace ese filtro.
  *
+ * ROTACIÓN: la página lleva hasta 12 historias, pero se ven 3. Al cargar, un
+ * script elige 3 al azar y el botón "Ver otras historias" muestra otras 3.
+ * Sin JavaScript se ven las 3 primeras. Si la historia tiene video, la tarjeta
+ * muestra un botón de reproducir (el reproductor de YouTube se carga solo al
+ * pulsarlo, con el dominio sin cookies de seguimiento).
+ *
  * Si todavía no hay historias:
  *   - Mientras el cliente revisa (showPending): se muestran 3 tarjetas vacías
  *     marcadas como pendientes, para que se entienda dónde irán.
@@ -13,7 +19,7 @@
 import ImagePlaceholder from '@/components/ui/ImagePlaceholder.astro';
 import SmartImage from '@/components/ui/SmartImage.astro';
 import PendingContent from '@/components/PendingContent.astro';
-import type { Locale } from '@/i18n/routes';
+import { personAlternates, type Locale } from '@/i18n/routes';
 import { t } from '@/i18n/ui';
 import { showPending } from '@/lib/config';
 import type { Story } from '@/lib/content';
@@ -26,6 +32,8 @@ interface Props {
 const { locale, stories } = Astro.props;
 const ui = t(locale);
 const visible = stories.length > 0 || showPending;
+// Hasta 12 historias viajan en la página; se muestran 3 a la vez.
+const pool = stories.slice(0, 12);
 ---
 
 {
@@ -38,20 +46,44 @@ const visible = stories.length > 0 || showPending;
           <p class="lead stories__subtitle">{ui.home.storiesSubtitle}</p>
         </div>
 
-        <ul role="list" class="stories__grid">
+        <ul role="list" class="stories__grid" data-stories>
           {stories.length > 0
-            ? stories.slice(0, 3).map((s, i) => (
-                <li class="story" data-reveal style={`--reveal-delay: ${i * 100}ms`}>
+            ? pool.map((s, i) => (
+                <li class:list={['story', { 'story--video': s.youtubeId }]} data-story data-shown={i < 3 ? i + 1 : undefined}>
                   <div class="story__photo">
-                    {s.photo ? <SmartImage image={s.photo} sizes="(min-width: 64rem) 30vw, 90vw" /> : <ImagePlaceholder />}
+                    {s.youtubeId ? (
+                      <button
+                        type="button"
+                        class="story__play"
+                        data-youtube-id={s.youtubeId}
+                        data-title={s.name}
+                        data-event="video_play"
+                      >
+                        {s.photo ? (
+                          <SmartImage image={s.photo} decorative sizes="(min-width: 64rem) 30vw, 90vw" />
+                        ) : (
+                          <img src={`https://i.ytimg.com/vi/${s.youtubeId}/hqdefault.jpg`} alt="" loading="lazy" decoding="async" width="480" height="360" />
+                        )}
+                        <span class="story__play-icon" aria-hidden="true">
+                          <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>
+                        </span>
+                        <span class="visually-hidden">{ui.home.storiesPlay} {s.name}</span>
+                      </button>
+                    ) : s.photo ? (
+                      <SmartImage image={s.photo} sizes="(min-width: 64rem) 30vw, 90vw" />
+                    ) : (
+                      <ImagePlaceholder />
+                    )}
                   </div>
                   <blockquote class="story__quote">“{s.quote}”</blockquote>
-                  <p class="story__name">{s.name}</p>
+                  <p class="story__name">
+                    {s.personSlug ? <a href={personAlternates(s.personSlug)[locale]}>{s.name}</a> : s.name}
+                  </p>
                   <p class="story__title">{s.title}</p>
                 </li>
               ))
             : [1, 2, 3].map((n, i) => (
-                <li class="story story--pending" data-reveal style={`--reveal-delay: ${i * 100}ms`}>
+                <li class="story story--pending" data-shown={i + 1}>
                   <div class="story__photo">
                     <ImagePlaceholder label={String(n).padStart(2, '0')} />
                   </div>
@@ -59,10 +91,73 @@ const visible = stories.length > 0 || showPending;
                 </li>
               ))}
         </ul>
+
+        {
+          pool.length > 3 && (
+            <div class="stories__more">
+              <button type="button" class="btn btn--outline" data-stories-more data-status={ui.home.storiesShown}>
+                {ui.home.storiesMore} <span class="btn__arrow" aria-hidden="true">↻</span>
+              </button>
+              <p class="visually-hidden" role="status" data-stories-status></p>
+            </div>
+          )
+        }
       </div>
     </section>
   )
 }
+
+<script>
+  /*
+   * Rotación de historias: elige 3 al azar al cargar y otras 3 con el botón.
+   * Al ocultar una tarjeta se restaura su botón de video (para que un video en
+   * reproducción no siga sonando escondido).
+   */
+  const grid = document.querySelector<HTMLElement>('[data-stories]');
+  if (grid) {
+    const cards = [...grid.querySelectorAll<HTMLElement>('[data-story]')];
+    const buttons = new WeakMap<Element, Element>();
+    let current: HTMLElement[] = cards.slice(0, 3);
+    const shuffle = <T,>(list: T[]) => [...list].sort(() => Math.random() - 0.5);
+
+    // Video: al pulsar, la miniatura se reemplaza por el reproductor de YouTube.
+    grid.addEventListener('click', (e) => {
+      const button = (e.target as HTMLElement).closest<HTMLButtonElement>('button[data-youtube-id]');
+      if (!button) return;
+      const iframe = document.createElement('iframe');
+      iframe.src = `https://www.youtube-nocookie.com/embed/${button.dataset.youtubeId}?autoplay=1&rel=0`;
+      iframe.title = button.dataset.title ?? 'Video';
+      iframe.allow = 'accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture; fullscreen';
+      iframe.allowFullscreen = true;
+      buttons.set(iframe, button);
+      button.replaceWith(iframe);
+    });
+
+    const show = (chosen: HTMLElement[]) => {
+      cards.forEach((card) => {
+        card.removeAttribute('data-shown');
+        card.querySelectorAll('iframe').forEach((f) => {
+          const original = buttons.get(f);
+          if (original) f.replaceWith(original);
+        });
+      });
+      chosen.forEach((card, i) => card.setAttribute('data-shown', String(i + 1)));
+      current = chosen;
+    };
+
+    if (cards.length > 3) {
+      show(shuffle(cards).slice(0, 3));
+      const more = document.querySelector<HTMLButtonElement>('[data-stories-more]');
+      const status = document.querySelector<HTMLElement>('[data-stories-status]');
+      more?.addEventListener('click', () => {
+        // Prioriza las que no se estaban viendo; si faltan, completa con las demás.
+        const next = [...shuffle(cards.filter((c) => !current.includes(c))), ...shuffle(current)].slice(0, 3);
+        show(next);
+        if (status) status.textContent = more?.dataset.status ?? '';
+      });
+    }
+  }
+</script>
 
 <style>
   .stories__subtitle {
@@ -80,8 +175,30 @@ const visible = stories.length > 0 || showPending;
     }
 
     /* La tarjeta del centro baja un poco: ritmo editorial. */
-    .story:nth-child(2) {
+    .story[data-shown='2'] {
       margin-top: var(--space-8);
+    }
+  }
+
+  /* Solo se ven las tarjetas marcadas (data-shown); el resto espera su turno. */
+  .story[data-story]:not([data-shown]) {
+    display: none;
+  }
+
+  .story[data-shown] {
+    animation: story-in 500ms var(--ease) both;
+  }
+
+  @keyframes story-in {
+    from {
+      opacity: 0;
+      transform: translateY(0.75rem);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .story[data-shown] {
+      animation: none;
     }
   }
 
@@ -118,6 +235,64 @@ const visible = stories.length > 0 || showPending;
   .story__title {
     color: var(--color-text-muted);
     font-size: var(--text-sm);
+  }
+
+  .stories__more {
+    display: flex;
+    justify-content: center;
+    margin-top: var(--space-7);
+  }
+
+  .story__name a {
+    text-underline-offset: 0.2em;
+  }
+
+  /* Tarjeta con video: foto horizontal y botón de reproducir encima. */
+  .story--video .story__photo {
+    position: relative;
+    aspect-ratio: 4 / 3;
+  }
+
+  .story__play {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    border: 0;
+    background: none;
+    cursor: pointer;
+  }
+
+  .story__photo :global(iframe) {
+    width: 100%;
+    height: 100%;
+    border: 0;
+  }
+
+  .story__play-icon {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    display: grid;
+    place-items: center;
+    width: 4rem;
+    height: 4rem;
+    border-radius: 50%;
+    background: var(--color-river);
+    color: var(--color-night);
+    transform: translate(-50%, -50%);
+    transition: transform 400ms var(--ease);
+  }
+
+  .story__play:hover .story__play-icon {
+    transform: translate(-50%, -50%) scale(1.08);
+  }
+
+  .story__play-icon svg {
+    width: 1.75rem;
+    height: 1.75rem;
+    fill: currentColor;
   }
 
   .story--pending {

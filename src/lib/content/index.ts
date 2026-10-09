@@ -338,13 +338,17 @@ export async function getGallery(locale: Locale): Promise<GalleryItem[]> {
 export async function getStories(locale: Locale): Promise<Story[]> {
   return (await source()).stories
     .filter((s) => s.publishable && s.authorization.name && s.authorization.photo && s.authorization.story)
+    // Si está ligada a una persona del equipo, esa persona debe estar autorizada.
+    .filter((s) => (s.person ? s.person.authorized : Boolean(s.name)))
     .map((s) => ({
       slug: s.slug,
-      name: s.name,
-      title: localize(s.title, locale),
+      name: s.name || s.person?.name || '',
+      personSlug: s.person?.slug ?? null,
+      youtubeId: s.videoUrl ? youtubeId(s.videoUrl) : null,
+      title: isEmpty(s.title.es) && s.person?.role ? localize(s.person.role, locale) : localize(s.title, locale),
       quote: localize(s.quote, locale),
       story: localize(s.story, locale),
-      photo: resolveImageMaybe(s.photo, locale),
+      photo: resolveImageMaybe(s.photo ?? s.person?.photo ?? null, locale),
       ministrySlug: s.ministrySlug,
     }));
 }

@@ -88,7 +88,8 @@ const query = `{
   "joinPaths": *[_type == "joinPath"],
   "gallery": *[_type == "galleryItem"] | order(orderRank){..., image${photo}},
   "stories": *[_type == "story"] | order(orderRank){
-    ..., "slug": slug.current, photo${photo}, "ministrySlug": ministry->slug.current
+    ..., "slug": slug.current, photo${photo}, "ministrySlug": ministry->slug.current,
+    "person": person->{"slug": slug.current, name, role, authorized, photo${photo}}
   }
 }`;
 
@@ -388,7 +389,17 @@ function toBase(d: Doc, i: number): BaseRaw {
 function toStory(d: Doc): StoryRaw {
   return {
     slug: d.slug,
-    name: d.name,
+    name: d.name ?? '',
+    person: d.person?.slug
+      ? {
+          slug: d.person.slug,
+          name: d.person.name,
+          role: d.person.role ?? null,
+          photo: toImage(d.person.photo),
+          authorized: d.person.authorized === true,
+        }
+      : null,
+    videoUrl: d.videoUrl ?? null,
     title: orEmpty(d.title, ''),
     quote: d.quote,
     story: orEmpty(d.story, ''),

@@ -303,7 +303,12 @@ export interface GalleryItem {
 
 export interface StoryRaw {
   slug: string;
+  /** Puede venir vacío si la historia está ligada a una persona del equipo. */
   name: string;
+  /** Persona del equipo ligada (aporta nombre, foto y rol si faltan). */
+  person: Maybe<{ slug: string; name: string; role: Maybe<Localized>; photo: Maybe<ImageRawRef>; authorized: boolean }>;
+  /** Enlace de YouTube opcional. */
+  videoUrl: Maybe<string>;
   title: Localized;
   quote: Localized;
   story: Localized;
@@ -317,6 +322,9 @@ export interface StoryRaw {
 export interface Story {
   slug: string;
   name: string;
+  /** Perfil del equipo al que enlaza el nombre (si la historia es de alguien del equipo). */
+  personSlug: Maybe<string>;
+  youtubeId: Maybe<string>;
   title: string;
   quote: string;
   story: string;

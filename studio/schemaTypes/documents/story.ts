@@ -4,6 +4,11 @@
  * Una historia SOLO se publica si están marcadas las tres autorizaciones
  * (nombre, foto e historia) y además "Publicar". Así nunca sale al aire el
  * testimonio de alguien sin su permiso.
+ *
+ * Si la historia es de alguien del equipo, elígelo en "Persona del equipo": el
+ * nombre, la foto y el rol se toman de su perfil (sin cargarlos otra vez). Con
+ * "Video" la tarjeta muestra un botón para verlo (se carga solo al pulsar).
+ * En el inicio se muestran 3 historias al azar y un botón para ver otras 3.
  */
 import {CommentIcon} from '@sanity/icons/Comment'
 import {orderRankField, orderRankOrdering} from '../../lib/orderRank'
@@ -21,7 +26,24 @@ export const story = defineType({
   ],
   fields: [
     orderRankField({type: 'story'}),
-    defineField({name: 'name', title: 'Nombre de la persona', type: 'string', group: 'content', validation: (rule) => rule.required()}),
+    defineField({
+      name: 'person',
+      title: 'Persona del equipo (opcional)',
+      type: 'reference',
+      to: [{type: 'person'}],
+      group: 'content',
+      description:
+        'Si la historia es de alguien del equipo, elígelo aquí y no tendrás que escribir su nombre, foto ni rol. Esa persona debe estar autorizada en "Personas".',
+    }),
+    defineField({
+      name: 'name',
+      title: 'Nombre de la persona',
+      type: 'string',
+      group: 'content',
+      description: 'Solo si no elegiste una persona del equipo.',
+      validation: (rule) =>
+        rule.custom((value, context) => (value || (context.document as {person?: unknown})?.person ? true : 'Escribe el nombre o elige una persona del equipo.')),
+    }),
     defineField({
       name: 'slug',
       title: 'Identificador',
@@ -41,6 +63,14 @@ export const story = defineType({
       validation: (rule) => rule.required(),
     }),
     defineField({name: 'story', title: 'Historia completa', type: 'localeText', group: 'content'}),
+    defineField({
+      name: 'videoUrl',
+      title: 'Video (opcional)',
+      type: 'url',
+      group: 'content',
+      description: 'Enlace de YouTube (youtu.be/… o youtube.com/watch?v=…). Solo se carga cuando alguien pulsa reproducir.',
+      validation: (rule) => rule.uri({scheme: ['https']}),
+    }),
     defineField({
       name: 'ministry',
       title: 'Ministerio relacionado',
@@ -69,9 +99,9 @@ export const story = defineType({
     }),
   ],
   preview: {
-    select: {title: 'name', subtitle: 'title.es', media: 'photo', publishable: 'publishable'},
-    prepare: ({title, subtitle, media, publishable}) => ({
-      title: publishable ? title : `${title} (no publicada)`,
+    select: {name: 'name', person: 'person.name', subtitle: 'title.es', media: 'photo', publishable: 'publishable'},
+    prepare: ({name, person, subtitle, media, publishable}) => ({
+      title: publishable ? name || person : `${name || person} (no publicada)`,
       subtitle,
       media,
     }),
