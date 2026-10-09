@@ -69,7 +69,7 @@ const query = `{
   },
   "schools": *[_type == "school"] | order(orderRank){
     ..., "slug": slug.current, image${photo},
-    contacts[]{..., photo${photo}}, ${features},
+    contacts[]{..., photo${photo}}, gallery[]${photo}, ${features},
     "baseRef": base->{"slug": slug.current, name, active}
   },
   "bases": *[_type == "base"] | order(orderRank){
@@ -352,6 +352,8 @@ function toSchool(d: Doc, i: number): SchoolRaw {
       photo: toImage(c.photo),
       authorized: c.authorized === true,
     })),
+    gallery: (d.gallery ?? []).map(toImage).filter(Boolean) as ImageRawRef[],
+    videos: (d.videos ?? []).filter((v: Doc) => v.url).map((v: Doc) => ({ title: lx(v.title), url: v.url })),
     image: toImage(d.image),
     active: d.active !== false,
     order: i,

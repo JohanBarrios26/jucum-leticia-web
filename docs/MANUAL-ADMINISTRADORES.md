@@ -87,6 +87,9 @@ Para volver a mostrarlo, actívalo de nuevo.
 
 Para indicar en una escuela dónde se realiza: abre la escuela → pestaña **Ficha** → **Base donde se realiza**.
 
+### Agregar fotos o videos a una escuela
+Abre la escuela → pestaña **Fotos y videos**: sube fotos (con su descripción) y pega enlaces de YouTube. La sección aparece sola en la página de la escuela, con visor ampliado; si no hay nada, no se muestra.
+
 ### Bloques especiales (lo que hace única a cada página)
 En un ministerio o escuela, pestaña **Bloques especiales**:
 - **Motivo visual:** elige el dibujo animado que lo identifica (río, puente, onda de audio…).

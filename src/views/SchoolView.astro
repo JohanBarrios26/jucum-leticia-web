@@ -15,6 +15,8 @@
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import PageHero from '@/components/PageHero.astro';
 import FeatureBlocks from '@/components/features/FeatureBlocks.astro';
+import LiteVideo from '@/components/features/LiteVideo.astro';
+import PhotoGallery from '@/components/ui/PhotoGallery.astro';
 import ImagePlaceholder from '@/components/ui/ImagePlaceholder.astro';
 import SmartImage from '@/components/ui/SmartImage.astro';
 import PendingContent from '@/components/PendingContent.astro';
@@ -29,6 +31,13 @@ interface Props {
 
 const { locale, school } = Astro.props;
 const ui = t(locale);
+
+// Fotos y videos: la sección solo aparece si hay alguno. El título dice lo que hay.
+const hasPhotos = school.gallery.length > 0;
+const hasVideos = school.videos.length > 0;
+const hasMedia = hasPhotos || hasVideos;
+const mediaTitle =
+  hasPhotos && !hasVideos ? ui.bases.photos : hasVideos && !hasPhotos ? ui.bases.videos : `${ui.bases.photos} · ${ui.bases.videos}`;
 
 // Ficha técnica: etiqueta + valor (null = pendiente).
 const facts = [
@@ -103,6 +112,33 @@ const facts = [
   <!-- Bloques especiales de esta escuela -->
   <FeatureBlocks locale={locale} blocks={school.features} />
 
+  <!-- Fotos y videos de la escuela (solo si hay) -->
+  {
+    hasMedia && (
+      <section class="section surface-dark" aria-labelledby="media-title">
+        <div class="container">
+          <h2 id="media-title" class="media-title" data-reveal>
+            {mediaTitle}
+          </h2>
+
+          {hasPhotos && <PhotoGallery locale={locale} images={school.gallery} />}
+
+          {hasVideos && (
+            <div class="videos">
+              {school.videos.map((v, i) => (
+                <LiteVideo
+                  locale={locale}
+                  block={{ type: 'video', title: v.title, url: v.url, youtubeId: v.youtubeId }}
+                  titleId={`school-video-${i}`}
+                />
+              ))}
+            </div>
+          )}
+        </div>
+      </section>
+    )
+  }
+
   <!-- Personas encargadas de la escuela -->
   <section class="section surface-sand">
     <div class="container">
@@ -144,6 +180,27 @@ const facts = [
 </BaseLayout>
 
 <style>
+  /* Fotos y videos */
+  .media-title {
+    margin-bottom: var(--space-6);
+  }
+
+  .videos {
+    display: grid;
+    gap: var(--space-7);
+    margin-top: var(--space-7);
+  }
+
+  @media (min-width: 64rem) {
+    .videos {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  .videos :global(.video__title) {
+    font-size: var(--text-h3);
+  }
+
   /* ---------- Contenido ---------- */
   .detail-grid {
     display: grid;

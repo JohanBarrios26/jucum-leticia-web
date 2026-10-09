@@ -280,6 +280,8 @@ function resolveSchool(s: SchoolRaw, locale: Locale, people: PersonRaw[]): Schoo
     activities: localize(s.activities, locale),
     // Solo encargados que autorizaron publicar sus datos.
     contacts: [...fromTeam, ...manual],
+    gallery: s.gallery.map((g) => resolveImage(g, locale)),
+    videos: s.videos.map((v) => ({ title: localizeMaybe(v.title, locale), url: v.url, youtubeId: youtubeId(v.url) })),
     image: resolveImageMaybe(s.image, locale),
     order: s.order,
     motif: s.motif,

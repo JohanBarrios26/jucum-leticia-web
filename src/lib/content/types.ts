@@ -215,6 +215,9 @@ export interface SchoolRaw {
   enrollment: Maybe<Localized>;
   activities: Localized<string[]>;
   contacts: SchoolContactRaw[];
+  /** Fotos y videos de YouTube de la escuela. */
+  gallery: ImageRawRef[];
+  videos: { title: Maybe<Localized>; url: string }[];
   image: Maybe<ImageRawRef>;
   active: boolean;
   order: number;
@@ -238,6 +241,8 @@ export interface School {
   enrollment: Maybe<string>;
   activities: string[];
   contacts: SchoolContact[];
+  gallery: ImageRef[];
+  videos: { title: Maybe<string>; url: string; youtubeId: Maybe<string> }[];
   image: Maybe<ImageRef>;
   order: number;
   motif: Maybe<MotifName>;

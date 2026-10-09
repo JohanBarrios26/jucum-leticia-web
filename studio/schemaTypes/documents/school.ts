@@ -21,6 +21,7 @@ export const school = defineType({
     {name: 'main', title: 'General', default: true},
     {name: 'details', title: 'Ficha'},
     {name: 'contacts', title: 'Encargados'},
+    {name: 'media', title: 'Fotos y videos'},
     {name: 'features', title: 'Bloques especiales'},
   ],
   fields: [
@@ -129,6 +130,42 @@ export const school = defineType({
     }),
     motifField('features'),
     featuresField('features'),
+    // Fotos y videos
+    defineField({
+      name: 'gallery',
+      title: 'Fotos',
+      type: 'array',
+      group: 'media',
+      description: 'Solo fotos con autorización de las personas que aparecen.',
+      of: [defineArrayMember({type: 'photo'})],
+      options: {layout: 'grid'},
+    }),
+    defineField({
+      name: 'videos',
+      title: 'Videos (YouTube)',
+      type: 'array',
+      group: 'media',
+      of: [
+        defineArrayMember({
+          type: 'object',
+          name: 'schoolVideo',
+          title: 'Video',
+          fields: [
+            defineField({name: 'title', title: 'Título', type: 'localeString'}),
+            defineField({
+              name: 'url',
+              title: 'Enlace de YouTube',
+              type: 'url',
+              validation: (rule) =>
+                rule.required().custom((url) =>
+                  !url || /youtu\.?be/.test(String(url)) ? true : 'Por ahora solo se admiten videos de YouTube.',
+                ),
+            }),
+          ],
+          preview: {select: {title: 'title.es', subtitle: 'url'}},
+        }),
+      ],
+    }),
   ],
   preview: {
     select: {title: 'name.es', subtitle: 'fullName.es', media: 'image', active: 'active'},
