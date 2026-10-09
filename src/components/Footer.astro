@@ -12,7 +12,7 @@
 import PendingContent from './PendingContent.astro';
 import { joinPathUrl, joinPaths, legalPages, legalRoutes, mainNav, routes, type Locale } from '@/i18n/routes';
 import { t } from '@/i18n/ui';
-import { whatsappUrl, type SiteSettings, type SocialLinks } from '@/lib/content';
+import { getAbout, whatsappUrl, type SiteSettings, type SocialLinks } from '@/lib/content';
 
 interface Props {
   locale: Locale;
@@ -22,6 +22,8 @@ interface Props {
 const { locale, settings } = Astro.props;
 const ui = t(locale);
 const year = new Date().getFullYear();
+// Lema de la organización (se edita en el panel: Quiénes somos → Lema).
+const { motto } = await getAbout(locale);
 
 // Nombre visible de cada red. Solo se muestran las que tienen URL cargada.
 const socialNames: Record<keyof SocialLinks, string> = {
@@ -44,6 +46,7 @@ const socials = (Object.keys(socialNames) as (keyof SocialLinks)[])
           <span class="display">{settings.organizationName}</span>
         </a>
         <p>{settings.tagline}</p>
+        {motto && <p class="footer-motto">{motto}</p>}
       </div>
 
       <nav class="footer-col" aria-labelledby="footer-nav-title">
@@ -190,6 +193,16 @@ const socials = (Object.keys(socialNames) as (keyof SocialLinks)[])
     margin-top: var(--space-4);
     color: var(--color-text-on-dark-muted);
     font-size: var(--text-base);
+  }
+
+  .footer-brand .footer-motto {
+    margin-top: var(--space-3);
+    color: var(--color-river);
+    font-family: var(--font-display);
+    font-size: var(--text-xl, 1.5rem);
+    letter-spacing: 0.02em;
+    line-height: 1.1;
+    text-transform: uppercase;
   }
 
   .footer-col__title {
