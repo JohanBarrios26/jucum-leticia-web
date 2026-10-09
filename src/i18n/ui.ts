@@ -643,7 +643,7 @@ const pt: UIStrings = {
   reach: {
     eyebrow: 'Alcance',
     title: 'Igrejas na tríplice fronteira',
-    intro: 'Comunidades às margens do rio Amazonas, na Colômbia, no Peru e no Brasil, onde a JOCUM Letícia plantou igrejas. Toque em um ponto para conhecer.',
+    intro: 'Comunidades às margens do rio Amazonas, na Colômbia, no Peru e no Brasil, onde a JOCUM Letícia plantou igrejas. Toque em um ponto para saber mais.',
     count: 'comunidades no mapa',
     filterLabel: 'Filtrar por país',
     all: 'Todos',
