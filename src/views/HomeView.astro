@@ -19,7 +19,7 @@ import HomeBases from '@/components/home/HomeBases.astro';
 import HomeActivities from '@/components/home/HomeActivities.astro';
 import HomeMinistries from '@/components/home/HomeMinistries.astro';
 import HomeSchools from '@/components/home/HomeSchools.astro';
-import HomeObt from '@/components/home/HomeObt.astro';
+import HomeEde from '@/components/home/HomeEde.astro';
 import HomeReach from '@/components/home/HomeReach.astro';
 import HomeStories from '@/components/home/HomeStories.astro';
 import HomeGallery from '@/components/home/HomeGallery.astro';
@@ -58,8 +58,8 @@ const [home, settings, ministries, schools, stories, gallery, joinPaths, bases, 
   getCommunities(),
 ]);
 
-// OBT tiene su propia sección destacada (además de su tarjeta en Ministerios).
-const obt = ministries.find((m) => m.slug === 'obt');
+// La EDE tiene su propia sección destacada (además de su tarjeta en Escuelas).
+const ede = schools.find((s) => s.slug === 'ede');
 ---
 
 <BaseLayout
@@ -78,7 +78,7 @@ const obt = ministries.find((m) => m.slug === 'obt');
   <HomeMinistries locale={locale} ministries={ministries} />
   <HomeReach locale={locale} communities={communities} ministry={ministries.find((m) => m.showMap)} />
   <HomeSchools locale={locale} schools={schools} />
-  <HomeObt locale={locale} obt={obt} />
+  <HomeEde locale={locale} ede={ede} />
   <HomeStories locale={locale} stories={stories} />
   <HomeGallery locale={locale} items={gallery} />
   <HomeJoin locale={locale} paths={joinPaths} />
