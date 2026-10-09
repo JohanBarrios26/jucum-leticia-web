@@ -20,6 +20,7 @@ import type {
   HomeRaw,
   ImageRawRef,
   JoinPathRaw,
+  Community,
   Localized,
   MinistryRaw,
   MotifName,
@@ -29,6 +30,7 @@ import type {
   SiteSettingsRaw,
   StoryRaw,
 } from '@/lib/content/types';
+import { communityCountries, communityPhases } from '@/lib/content/types';
 import { sanityConfig } from './config';
 
 const client = createClient({
@@ -85,6 +87,7 @@ const query = `{
     ..., "slug": slug.current, photo${photo}, "ministrySlug": ministry->slug.current,
     "schoolSlugs": schools[]->slug.current
   },
+  "communities": *[_type == "community"] | order(name),
   "joinPaths": *[_type == "joinPath"],
   "gallery": *[_type == "galleryItem"] | order(orderRank){..., image${photo}},
   "stories": *[_type == "story"] | order(orderRank){
@@ -121,6 +124,7 @@ export interface CmsContent {
   ministries: MinistryRaw[];
   schools: SchoolRaw[];
   joinPaths: JoinPathRaw[];
+  communities: Community[];
   gallery: GalleryItemRaw[];
   stories: StoryRaw[];
 }
@@ -224,6 +228,8 @@ function toAbout(d: Doc | null): AboutRaw {
     intro: d.intro,
     mission: lx(d.mission),
     vision: lx(d.vision),
+    motto: lx(d.motto),
+    verse: d.verse?.text?.es ? { text: d.verse.text, reference: d.verse.reference ?? '' } : null,
     values: (d.values ?? []).filter((v: Doc) => v.title).map((v: Doc) => ({ title: v.title, text: lx(v.text) })),
     history: (d.history ?? [])
       .filter((h: Doc) => h.year && h.title)
@@ -326,6 +332,7 @@ function toMinistry(d: Doc, i: number): MinistryRaw {
     order: i,
     motif: toMotif(d.motif),
     features: toFeatures(d.features),
+    showMap: d.showMap === true,
   };
 }
 
@@ -388,6 +395,21 @@ function toBase(d: Doc, i: number): BaseRaw {
   };
 }
 
+const communityCountryList: readonly string[] = communityCountries;
+const communityPhaseList: readonly string[] = communityPhases;
+
+function toCommunity(d: Doc): Community {
+  return {
+    id: d._id,
+    name: d.name,
+    kind: d.kind === 'base' ? 'base' : 'church',
+    country: communityCountryList.includes(d.country) ? d.country : null,
+    phase: communityPhaseList.includes(d.phase) ? d.phase : null,
+    x: Math.min(100, Math.max(0, Number(d.x))),
+    y: Math.min(100, Math.max(0, Number(d.y))),
+  };
+}
+
 function toStory(d: Doc): StoryRaw {
   return {
     slug: d.slug,
@@ -438,6 +460,9 @@ export function fetchCmsContent(): Promise<CmsContent> {
     home: toHome(r.home),
     ministries: (r.ministries ?? []).map(toMinistry),
     schools: (r.schools ?? []).map(toSchool),
+    communities: (r.communities ?? [])
+      .filter((c: Doc) => c.name && c.active !== false && Number.isFinite(Number(c.x)) && Number.isFinite(Number(c.y)))
+      .map(toCommunity),
     joinPaths: (r.joinPaths ?? [])
       .filter((p: Doc) => p.key)
       .map((p: Doc) => ({

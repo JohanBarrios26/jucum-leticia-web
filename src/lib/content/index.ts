@@ -14,6 +14,7 @@ import { joinPathUrl, joinPaths as joinPathOrder, type Locale } from '@/i18n/rou
 import { fetchCmsContent, type CmsContent } from '@/lib/sanity/fetch';
 import type {
   About,
+  Community,
   Base,
   BaseRaw,
   FeatureBlock,
@@ -217,6 +218,7 @@ function resolveMinistry(m: MinistryRaw, locale: Locale): Ministry {
     order: m.order,
     motif: m.motif,
     features: resolveFeatures(m.features, locale),
+    showMap: m.showMap,
   };
 }
 
@@ -308,6 +310,13 @@ export async function getSchool(slug: string, locale: Locale): Promise<Maybe<Sch
   return s ? resolveSchool(s, locale, people) : null;
 }
 
+/* ------------------------------------------------------ Mapa de comunidades */
+
+/** Comunidades del mapa ilustrado (las desactivadas ya vienen filtradas). */
+export async function getCommunities(): Promise<Community[]> {
+  return (await source()).communities;
+}
+
 /* ------------------------------------------------------ Caminos para participar */
 
 export async function getJoinPaths(locale: Locale): Promise<JoinPathItem[]> {
@@ -364,6 +373,8 @@ export async function getAbout(locale: Locale): Promise<About> {
     intro: localize(a.intro, locale),
     mission: localizeMaybe(a.mission, locale),
     vision: localizeMaybe(a.vision, locale),
+    motto: localizeMaybe(a.motto, locale),
+    verse: a.verse ? { text: localize(a.verse.text, locale), reference: a.verse.reference } : null,
     values: a.values.map((v) => ({ title: localize(v.title, locale), text: localizeMaybe(v.text, locale) })),
     history: a.history.map((h) => ({
       year: h.year,

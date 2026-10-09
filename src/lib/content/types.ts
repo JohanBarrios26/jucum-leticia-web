@@ -158,6 +158,26 @@ export interface MinistryRaw {
   motif: Maybe<MotifName>;
   /** Bloques especiales: audios, ruta, etapas… */
   features: FeatureBlockRaw[];
+  /** Muestra el mapa interactivo de comunidades en su página. */
+  showMap: boolean;
+}
+
+/* ------------------------------------------------------ Mapa de comunidades */
+
+export const communityCountries = ['co', 'pe', 'br'] as const;
+export type CommunityCountry = (typeof communityCountries)[number];
+export const communityPhases = ['jerusalem', 'judea', 'samaria', 'frontier'] as const;
+export type CommunityPhase = (typeof communityPhases)[number];
+
+/** Un punto del mapa ilustrado (x, y en porcentaje: 0 = izquierda/arriba). */
+export interface Community {
+  id: string;
+  name: string;
+  kind: 'church' | 'base';
+  country: Maybe<CommunityCountry>;
+  phase: Maybe<CommunityPhase>;
+  x: number;
+  y: number;
 }
 
 export interface Ministry {
@@ -170,6 +190,7 @@ export interface Ministry {
   order: number;
   motif: Maybe<MotifName>;
   features: FeatureBlock[];
+  showMap: boolean;
 }
 
 /* ------------------------------------------------------------------ Escuelas */
@@ -344,6 +365,8 @@ export interface AboutRaw {
   intro: Localized;
   mission: Maybe<Localized>;
   vision: Maybe<Localized>;
+  motto: Maybe<Localized>;
+  verse: Maybe<{ text: Localized; reference: string }>;
   values: { title: Localized; text: Maybe<Localized> }[];
   history: { year: string; title: Localized; text: Maybe<Localized>; image: Maybe<ImageRawRef> }[];
   teamIntro: Maybe<Localized>;
@@ -369,6 +392,8 @@ export interface About {
   intro: string;
   mission: Maybe<string>;
   vision: Maybe<string>;
+  motto: Maybe<string>;
+  verse: Maybe<{ text: string; reference: string }>;
   values: { title: string; text: Maybe<string> }[];
   history: { year: string; title: string; text: Maybe<string>; image: Maybe<ImageRef> }[];
   teamIntro: Maybe<string>;

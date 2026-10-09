@@ -20,6 +20,7 @@ import HomeActivities from '@/components/home/HomeActivities.astro';
 import HomeMinistries from '@/components/home/HomeMinistries.astro';
 import HomeSchools from '@/components/home/HomeSchools.astro';
 import HomeObt from '@/components/home/HomeObt.astro';
+import HomeReach from '@/components/home/HomeReach.astro';
 import HomeStories from '@/components/home/HomeStories.astro';
 import HomeGallery from '@/components/home/HomeGallery.astro';
 import HomeJoin from '@/components/home/HomeJoin.astro';
@@ -34,6 +35,7 @@ import {
   getMinistries,
   getSchools,
   getSiteSettings,
+  getCommunities,
   getStories,
 } from '@/lib/content';
 
@@ -44,7 +46,7 @@ interface Props {
 const { locale } = Astro.props;
 
 // Todo el contenido se pide en paralelo (importa cuando venga del CMS).
-const [home, settings, ministries, schools, stories, gallery, joinPaths, bases] = await Promise.all([
+const [home, settings, ministries, schools, stories, gallery, joinPaths, bases, communities] = await Promise.all([
   getHome(locale),
   getSiteSettings(locale),
   getMinistries(locale),
@@ -53,6 +55,7 @@ const [home, settings, ministries, schools, stories, gallery, joinPaths, bases] 
   getGallery(locale),
   getJoinPaths(locale),
   getBases(locale),
+  getCommunities(),
 ]);
 
 // OBT tiene su propia sección destacada (además de su tarjeta en Ministerios).
@@ -73,6 +76,7 @@ const obt = ministries.find((m) => m.slug === 'obt');
   <HomeBases locale={locale} bases={bases} />
   <HomeActivities locale={locale} activities={home.activities} />
   <HomeMinistries locale={locale} ministries={ministries} />
+  <HomeReach locale={locale} communities={communities} ministry={ministries.find((m) => m.showMap)} />
   <HomeSchools locale={locale} schools={schools} />
   <HomeObt locale={locale} obt={obt} />
   <HomeStories locale={locale} stories={stories} />

@@ -31,3 +31,6 @@ studio/backups/
 .DS_Store
 Thumbs.db
 .idea/
+
+# Material informativo del cliente (no se publica)
+Documentos Informacion/

@@ -1,0 +1,61 @@
+---
+/**
+ * INICIO · ALCANCE (mapa de iglesias en la triple frontera)
+ * ----------------------------------------------------------------------------
+ * Muestra el mapa ilustrado de las comunidades donde JUCUM Leticia ha plantado
+ * iglesias (src/components/AmazonMap.astro). Los puntos se editan en el panel:
+ * "Mapa: comunidades". Si no hay ninguna comunidad cargada, la sección no se
+ * muestra. El enlace lleva al ministerio de plantación de iglesias.
+ */
+import AmazonMap from '@/components/AmazonMap.astro';
+import { ministryAlternates, type Locale } from '@/i18n/routes';
+import { t } from '@/i18n/ui';
+import type { Community, Ministry } from '@/lib/content';
+
+interface Props {
+  locale: Locale;
+  communities: Community[];
+  /** Ministerio que muestra el mapa (para el enlace "Conocer este ministerio"). */
+  ministry?: Ministry;
+}
+
+const { locale, communities, ministry } = Astro.props;
+const ui = t(locale).reach;
+---
+
+{
+  communities.length > 0 && (
+    <section class="reach section surface-deep" aria-labelledby="reach-title">
+      <div class="container">
+        <div class="section-head" data-reveal>
+          <p class="eyebrow eyebrow--line">{ui.eyebrow}</p>
+          <h2 id="reach-title">{ui.title}</h2>
+          <p class="lead reach__intro">{ui.intro}</p>
+        </div>
+        <AmazonMap locale={locale} communities={communities} titleId="reach-title" />
+        {
+          ministry && (
+            <a class="link-arrow reach__link" href={ministryAlternates(ministry.slug)[locale]}>
+              {ui.cta} <span aria-hidden="true">→</span>
+            </a>
+          )
+        }
+      </div>
+    </section>
+  )
+}
+
+<style>
+  .reach__intro {
+    max-width: 40rem;
+    color: var(--color-text-on-dark-muted);
+  }
+
+  .reach :global(.amap) {
+    margin-top: var(--space-6);
+  }
+
+  .reach__link {
+    margin-top: var(--space-5);
+  }
+</style>

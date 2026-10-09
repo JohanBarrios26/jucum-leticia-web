@@ -73,6 +73,24 @@ const es = {
 
 
   /* Página "Quiénes somos" */
+  reach: {
+    eyebrow: 'Alcance',
+    title: 'Iglesias en la triple frontera',
+    intro: 'Comunidades a orillas del río Amazonas, en Colombia, Perú y Brasil, donde JUCUM Leticia ha plantado iglesias. Toca un punto para conocerla.',
+    count: 'comunidades en el mapa',
+    filterLabel: 'Filtrar por país',
+    all: 'Todos',
+    church: 'Iglesia plantada',
+    base: 'Base de JUCUM',
+    select: 'Toca una comunidad del mapa para ver sus datos.',
+    listSummary: 'Ver la lista de comunidades',
+    mapLabel: 'Mapa ilustrado de las comunidades donde JUCUM Leticia ha plantado iglesias',
+    river: 'Río Amazonas',
+    note: 'Mapa ilustrativo: las posiciones son aproximadas.',
+    cta: 'Conocer este ministerio',
+    countries: { co: 'Colombia', pe: 'Perú', br: 'Brasil' },
+    phases: { jerusalem: 'Jerusalén (Leticia)', judea: 'Judea (comunidades por carretera)', samaria: 'Samaria (comunidades ribereñas)', frontier: 'Lo último de la tierra (fronteras)' },
+  },
   about: {
     eyebrow: 'Quiénes somos',
     mission: 'Misión',
@@ -84,6 +102,9 @@ const es = {
     teamTitle: 'Personas que sirven',
     since: 'Sirviendo desde',
     prayFor: 'Petición de oración',
+
+    motto: 'Lema',
+    verse: 'Nuestra palabra',
   },
 
   /* Listados de ministerios y escuelas */
@@ -340,6 +361,24 @@ const en: UIStrings = {
     contactTitle: 'Start a conversation',
     contactText: 'Want to learn more, study, serve, come or support? Write to us through the channel you prefer.',
   },
+  reach: {
+    eyebrow: 'Reach',
+    title: 'Churches across the tri-border region',
+    intro: 'Communities along the Amazon River in Colombia, Peru and Brazil where YWAM Leticia has planted churches. Tap a dot to learn more.',
+    count: 'communities on the map',
+    filterLabel: 'Filter by country',
+    all: 'All',
+    church: 'Church planted',
+    base: 'YWAM base',
+    select: 'Tap a community on the map to see its details.',
+    listSummary: 'See the list of communities',
+    mapLabel: 'Illustrated map of the communities where YWAM Leticia has planted churches',
+    river: 'Amazon River',
+    note: 'Illustrative map: positions are approximate.',
+    cta: 'Learn about this ministry',
+    countries: { co: 'Colombia', pe: 'Peru', br: 'Brazil' },
+    phases: { jerusalem: 'Jerusalem (Leticia)', judea: 'Judea (communities by road)', samaria: 'Samaria (riverside communities)', frontier: 'The ends of the earth (border areas)' },
+  },
   about: {
     eyebrow: 'About us',
     mission: 'Mission',
@@ -351,6 +390,9 @@ const en: UIStrings = {
     teamTitle: 'People who serve',
     since: 'Serving since',
     prayFor: 'Prayer request',
+
+    motto: 'Motto',
+    verse: 'Our verse',
   },
   lists: {
     viewMinistry: 'View ministry',
@@ -586,6 +628,24 @@ const pt: UIStrings = {
     contactTitle: 'Comece uma conversa',
     contactText: 'Quer saber mais, estudar, servir, vir ou apoiar? Escreva para nós pelo canal que preferir.',
   },
+  reach: {
+    eyebrow: 'Alcance',
+    title: 'Igrejas na tríplice fronteira',
+    intro: 'Comunidades às margens do rio Amazonas, na Colômbia, no Peru e no Brasil, onde a JOCUM Letícia plantou igrejas. Toque em um ponto para conhecer.',
+    count: 'comunidades no mapa',
+    filterLabel: 'Filtrar por país',
+    all: 'Todos',
+    church: 'Igreja plantada',
+    base: 'Base da JOCUM',
+    select: 'Toque em uma comunidade do mapa para ver os detalhes.',
+    listSummary: 'Ver a lista de comunidades',
+    mapLabel: 'Mapa ilustrado das comunidades onde a JOCUM Letícia plantou igrejas',
+    river: 'Rio Amazonas',
+    note: 'Mapa ilustrativo: as posições são aproximadas.',
+    cta: 'Conhecer este ministério',
+    countries: { co: 'Colômbia', pe: 'Peru', br: 'Brasil' },
+    phases: { jerusalem: 'Jerusalém (Letícia)', judea: 'Judeia (comunidades por estrada)', samaria: 'Samaria (comunidades ribeirinhas)', frontier: 'Os confins da terra (fronteiras)' },
+  },
   about: {
     eyebrow: 'Quem somos',
     mission: 'Missão',
@@ -597,6 +657,9 @@ const pt: UIStrings = {
     teamTitle: 'Pessoas que servem',
     since: 'Servindo desde',
     prayFor: 'Pedido de oração',
+
+    motto: 'Lema',
+    verse: 'Nossa palavra',
   },
   lists: {
     viewMinistry: 'Ver ministério',

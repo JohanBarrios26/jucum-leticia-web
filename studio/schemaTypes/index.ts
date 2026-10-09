@@ -4,6 +4,7 @@
  */
 import {about} from './documents/about'
 import {base} from './documents/base'
+import {community} from './documents/community'
 import {galleryItem} from './documents/galleryItem'
 import {home} from './documents/home'
 import {joinPath} from './documents/joinPath'
@@ -29,6 +30,7 @@ export const schemaTypes = [
   home,
   about,
   base,
+  community,
   pageTexts,
   person,
   ministry,

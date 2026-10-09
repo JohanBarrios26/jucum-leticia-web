@@ -1,0 +1,456 @@
+---
+/**
+ * MAPA ILUSTRADO DE LAS COMUNIDADES (iglesias plantadas)
+ * ----------------------------------------------------------------------------
+ * Dibujo propio de la triple frontera (Perú, Colombia y Brasil) con el río
+ * Amazonas y un punto por cada comunidad donde JUCUM Leticia ha plantado una
+ * iglesia. Se inspira en el mural pintado de la base. NO es un mapa geográfico
+ * exacto: las posiciones son aproximadas.
+ *
+ * Los puntos salen del panel (Mapa: comunidades). Para agregar, mover u ocultar
+ * una comunidad se edita allí; este archivo no cambia. Cada punto tiene
+ * posición x/y en % (0 = izquierda/arriba), país y fase opcionales.
+ *
+ * Accesibilidad: cada punto es un botón (se maneja con teclado y pantalla
+ * táctil), hay un panel que anuncia la comunidad elegida y una lista completa
+ * en texto debajo del mapa. Los filtros por país solo aparecen si hay datos.
+ * Sin JavaScript el mapa se ve igual (sin filtros ni selección).
+ *
+ * Animación: el río "fluye" dentro de [data-live] (se pausa fuera de pantalla)
+ * y se apaga con prefers-reduced-motion.
+ */
+import type { Locale } from '@/i18n/routes';
+import { t } from '@/i18n/ui';
+import type { Community } from '@/lib/content';
+import { communityCountries } from '@/lib/content/types';
+
+interface Props {
+  locale: Locale;
+  communities: Community[];
+  /** Id del título que describe la sección (aria-labelledby del contenedor). */
+  titleId?: string;
+}
+
+const { locale, communities, titleId } = Astro.props;
+const ui = t(locale).reach;
+
+// Solo se ofrecen filtros de los países que tienen al menos una comunidad.
+const countries = communityCountries.filter((c) => communities.some((x) => x.country === c));
+const sorted = [...communities].sort((a, b) => a.name.localeCompare(b.name, locale));
+const edge = (x: number) => (x < 14 ? 'left' : x > 86 ? 'right' : undefined);
+const detail = (c: Community) =>
+  [c.kind === 'base' ? ui.base : ui.church, c.country ? ui.countries[c.country] : null, c.phase ? ui.phases[c.phase] : null]
+    .filter(Boolean)
+    .join(' · ');
+---
+
+<div class="amap" data-amap aria-labelledby={titleId}>
+  <div class="amap__bar">
+    <p class="amap__count"><strong data-amap-count>{communities.length}</strong> {ui.count}</p>
+    {
+      countries.length > 1 && (
+        <div class="amap__filters" role="group" aria-label={ui.filterLabel}>
+          <button type="button" class="amap__filter" data-country="all" aria-pressed="true">{ui.all}</button>
+          {countries.map((c) => (
+            <button type="button" class="amap__filter" data-country={c} aria-pressed="false">{ui.countries[c]}</button>
+          ))}
+        </div>
+      )
+    }
+  </div>
+
+  <div class="amap__scroll">
+    <div class="amap__stage" data-live role="group" aria-label={ui.mapLabel}>
+      <svg class="amap__svg" viewBox="0 0 1600 1200" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+        <defs>
+          <linearGradient id="amap-river" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0" stop-color="#00adef" stop-opacity="0.55"></stop>
+            <stop offset="1" stop-color="#33bef2" stop-opacity="0.95"></stop>
+          </linearGradient>
+        </defs>
+        <rect width="1600" height="1200" class="amap__land amap__land--pe"></rect>
+        <!-- Colombia: al norte del río -->
+        <polygon class="amap__land amap__land--co" points="350,545 660,0 1240,0 1065,965 1000,900 900,790 800,640 700,570"></polygon>
+        <!-- Brasil: al este -->
+        <polygon class="amap__land amap__land--br" points="1240,0 1600,0 1600,1200 1050,1200 1065,965"></polygon>
+        <!-- Fronteras -->
+        <path class="amap__border" d="M350,545 L660,0 M1240,0 L1065,965 M350,545 C500,560 620,555 700,570 C800,640 900,790 1000,900 L1065,965"></path>
+        <!-- Río Amazonas y afluente -->
+        <path class="amap__river-bed" d="M0,745 C150,725 300,660 415,620 C520,585 600,545 700,545 C800,555 850,620 870,690 C895,760 960,840 1010,900 C1040,935 1060,955 1062,962 C1110,1005 1200,1060 1300,1062 C1440,1062 1520,960 1570,850"></path>
+        <path class="amap__river" d="M0,745 C150,725 300,660 415,620 C520,585 600,545 700,545 C800,555 850,620 870,690 C895,760 960,840 1010,900 C1040,935 1060,955 1062,962 C1110,1005 1200,1060 1300,1062 C1440,1062 1520,960 1570,850"></path>
+        <path class="amap__river-bed amap__river-bed--thin" d="M1062,962 C1000,1050 1010,1100 1040,1200"></path>
+        <text class="amap__label amap__label--pe" x="170" y="880" transform="rotate(-18 170 880)">{ui.countries.pe}</text>
+        <text class="amap__label amap__label--co" x="760" y="300">{ui.countries.co}</text>
+        <text class="amap__label amap__label--br" x="1250" y="620" transform="rotate(90 1250 620)">{ui.countries.br}</text>
+        <text class="amap__label amap__label--river" x="30" y="700">{ui.river}</text>
+      </svg>
+
+      {
+        communities.map((c) => (
+          <button
+            type="button"
+            class:list={['amap__dot', { 'amap__dot--base': c.kind === 'base' }]}
+            style={`left:${c.x}%;top:${c.y}%`}
+            data-id={c.id}
+            data-name={c.name}
+            data-detail={detail(c)}
+            data-country={c.country ?? 'none'}
+            data-edge={edge(c.x)}
+            aria-pressed="false"
+          >
+            <span class="visually-hidden">{c.name}</span>
+          </button>
+        ))
+      }
+    </div>
+  </div>
+
+  <p class="amap__panel" role="status" aria-live="polite" data-amap-panel data-default={ui.select}>{ui.select}</p>
+  <p class="amap__note">{ui.note}</p>
+
+  <details class="amap__list">
+    <summary>{ui.listSummary}</summary>
+    <ul role="list">
+      {sorted.map((c) => <li><strong>{c.name}</strong> <span>{detail(c)}</span></li>)}
+    </ul>
+  </details>
+</div>
+
+<script>
+  /* Filtro por país y selección de comunidad (panel + punto resaltado). */
+  document.querySelectorAll<HTMLElement>('[data-amap]').forEach((map) => {
+    const dots = [...map.querySelectorAll<HTMLButtonElement>('.amap__dot')];
+    const filters = [...map.querySelectorAll<HTMLButtonElement>('.amap__filter')];
+    const panel = map.querySelector<HTMLElement>('[data-amap-panel]')!;
+    const count = map.querySelector<HTMLElement>('[data-amap-count]');
+    let selected: HTMLButtonElement | null = null;
+
+    const clear = () => {
+      selected?.setAttribute('aria-pressed', 'false');
+      selected = null;
+      panel.textContent = panel.dataset.default ?? '';
+    };
+
+    dots.forEach((dot) =>
+      dot.addEventListener('click', () => {
+        if (selected === dot) return clear();
+        selected?.setAttribute('aria-pressed', 'false');
+        selected = dot;
+        dot.setAttribute('aria-pressed', 'true');
+        panel.textContent = `${dot.dataset.name} — ${dot.dataset.detail}`;
+      }),
+    );
+
+    filters.forEach((btn) =>
+      btn.addEventListener('click', () => {
+        const country = btn.dataset.country;
+        filters.forEach((b) => b.setAttribute('aria-pressed', String(b === btn)));
+        let shown = 0;
+        dots.forEach((dot) => {
+          const match = country === 'all' || dot.dataset.country === country;
+          dot.toggleAttribute('data-dim', !match);
+          dot.tabIndex = match ? 0 : -1;
+          if (match) shown++;
+        });
+        if (count) count.textContent = String(shown);
+        if (selected?.hasAttribute('data-dim')) clear();
+      }),
+    );
+
+    map.addEventListener('keydown', (e) => {
+      if ((e as KeyboardEvent).key === 'Escape') clear();
+    });
+  });
+</script>
+
+<style>
+  .amap {
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  .amap__bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3) var(--space-5);
+  }
+
+  .amap__count {
+    color: var(--color-text-on-dark-muted);
+  }
+
+  .amap__count strong {
+    color: var(--color-text-on-dark);
+    font-family: var(--font-display);
+    font-size: var(--text-2xl);
+    font-weight: 400;
+  }
+
+  .amap__filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+
+  .amap__filter {
+    min-height: 2.75rem;
+    padding: 0 var(--space-4);
+    border: 1.5px solid var(--color-border-on-dark);
+    border-radius: 999px;
+    background: transparent;
+    color: var(--color-text-on-dark);
+    font-size: var(--text-sm);
+    font-weight: 600;
+    cursor: pointer;
+    transition:
+      background var(--duration) var(--ease),
+      color var(--duration) var(--ease);
+  }
+
+  .amap__filter:hover {
+    border-color: var(--color-river);
+  }
+
+  .amap__filter[aria-pressed='true'] {
+    border-color: var(--color-river);
+    background: var(--color-river);
+    color: var(--color-night);
+  }
+
+  /* En pantallas angostas el mapa se desliza horizontalmente en vez de apretarse. */
+  .amap__scroll {
+    overflow-x: auto;
+    border-radius: var(--radius-lg);
+  }
+
+  .amap__stage {
+    position: relative;
+    min-width: 40rem;
+    aspect-ratio: 4 / 3;
+    /* Nunca más alto que el 70 % de la pantalla, conservando la proporción 4:3. */
+    width: min(100%, calc(70svh * 4 / 3));
+    margin-inline: auto;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    background: var(--color-night-deep);
+  }
+
+  @media (min-width: 40rem) {
+    .amap__stage {
+      min-width: 0;
+    }
+  }
+
+  .amap__svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .amap__land--pe {
+    fill: #23663f;
+  }
+
+  .amap__land--co {
+    fill: #1f5f61;
+  }
+
+  .amap__land--br {
+    fill: #17484f;
+  }
+
+  .amap__border {
+    fill: none;
+    stroke: rgb(255 255 255 / 0.35);
+    stroke-width: 3;
+    stroke-dasharray: 14 12;
+  }
+
+  .amap__river-bed {
+    fill: none;
+    stroke: var(--color-night-deep);
+    stroke-width: 34;
+    stroke-linecap: round;
+    opacity: 0.55;
+  }
+
+  .amap__river-bed--thin {
+    stroke-width: 16;
+  }
+
+  .amap__river {
+    fill: none;
+    stroke: url(#amap-river);
+    stroke-width: 18;
+    stroke-linecap: round;
+    stroke-dasharray: 60 36;
+    animation: amap-flow 6s linear infinite;
+  }
+
+  @keyframes amap-flow {
+    to {
+      stroke-dashoffset: -96;
+    }
+  }
+
+  .amap__label {
+    fill: rgb(255 255 255 / 0.2);
+    font-family: var(--font-display);
+    font-size: 150px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .amap__label--river {
+    fill: var(--color-river);
+    font-family: var(--font-body);
+    font-size: 36px;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    opacity: 0.9;
+  }
+
+  /* Cada punto es un botón de 44px (área táctil cómoda) con un círculo visible. */
+  .amap__dot {
+    position: absolute;
+    width: 2.75rem;
+    height: 2.75rem;
+    padding: 0;
+    border: 0;
+    background: none;
+    transform: translate(-50%, -50%);
+    cursor: pointer;
+  }
+
+  .amap__dot::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0.8rem;
+    height: 0.8rem;
+    border: 2px solid var(--color-night-deep);
+    border-radius: 50%;
+    background: var(--color-sand);
+    transform: translate(-50%, -50%);
+    transition:
+      transform var(--duration) var(--ease),
+      background var(--duration) var(--ease);
+  }
+
+  .amap__dot--base::before {
+    width: 1.35rem;
+    height: 1.35rem;
+    background: var(--color-river);
+    box-shadow: 0 0 0 4px rgb(0 173 239 / 0.35);
+  }
+
+  .amap__dot:hover::before,
+  .amap__dot:focus-visible::before,
+  .amap__dot[aria-pressed='true']::before {
+    background: var(--color-white);
+    transform: translate(-50%, -50%) scale(1.5);
+  }
+
+  .amap__dot:focus-visible {
+    outline: 3px solid var(--color-focus);
+    outline-offset: -4px;
+    border-radius: 50%;
+  }
+
+  .amap__dot[data-dim] {
+    opacity: 0.18;
+  }
+
+  /* Nombre sobre el punto al pasar el cursor, enfocar o seleccionar. */
+  .amap__dot::after {
+    content: attr(data-name);
+    position: absolute;
+    bottom: calc(50% + 0.9rem);
+    left: 50%;
+    padding: 0.25rem 0.6rem;
+    border-radius: var(--radius-sm);
+    background: var(--color-night-deep);
+    color: var(--color-text-on-dark);
+    font-size: var(--text-xs);
+    font-weight: 600;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateX(-50%);
+    transition: opacity var(--duration) var(--ease);
+  }
+
+  .amap__dot[data-edge='left']::after {
+    left: 0;
+    transform: none;
+  }
+
+  .amap__dot[data-edge='right']::after {
+    right: 0;
+    left: auto;
+    transform: none;
+  }
+
+  .amap__dot:hover,
+  .amap__dot:focus-visible,
+  .amap__dot[aria-pressed='true'] {
+    z-index: 2;
+  }
+
+  .amap__dot:hover::after,
+  .amap__dot:focus-visible::after,
+  .amap__dot[aria-pressed='true']::after {
+    opacity: 1;
+  }
+
+  .amap__panel {
+    min-height: 3rem;
+    padding: var(--space-3) var(--space-4);
+    border-left: 4px solid var(--color-river);
+    border-radius: var(--radius-sm);
+    background: rgb(255 255 255 / 0.06);
+    color: var(--color-text-on-dark);
+  }
+
+  .amap__note {
+    color: var(--color-text-on-dark-muted);
+    font-size: var(--text-xs);
+  }
+
+  .amap__list summary {
+    cursor: pointer;
+    font-weight: 600;
+    color: var(--color-text-on-dark);
+  }
+
+  .amap__list ul {
+    display: grid;
+    gap: var(--space-2) var(--space-5);
+    grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
+    margin-top: var(--space-4);
+    color: var(--color-text-on-dark);
+    font-size: var(--text-sm);
+  }
+
+  .amap__list li span {
+    display: block;
+    color: var(--color-text-on-dark-muted);
+    font-size: var(--text-xs);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .amap__river {
+      animation: none;
+    }
+
+    .amap__dot::before,
+    .amap__dot::after,
+    .amap__filter {
+      transition: none;
+    }
+  }
+</style>

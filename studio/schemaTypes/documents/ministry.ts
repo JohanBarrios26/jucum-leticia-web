@@ -32,6 +32,14 @@ export const ministry = defineType({
       initialValue: true,
       description: 'Desactívalo para ocultar este ministerio sin borrarlo.',
     }),
+    defineField({
+      name: 'showMap',
+      group: 'main',
+      title: 'Mostrar el mapa de comunidades',
+      type: 'boolean',
+      initialValue: false,
+      description: 'Actívalo en el ministerio de plantación de iglesias para que su página muestre el mapa interactivo de comunidades.',
+    }),
     defineField({name: 'name', title: 'Nombre', type: 'localeString', group: 'main', validation: (rule) => rule.required()}),
     defineField({
       name: 'slug',

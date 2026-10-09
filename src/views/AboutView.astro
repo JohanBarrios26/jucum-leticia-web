@@ -67,6 +67,26 @@ const historyBlock = {
           {about.vision ? <p class="identity__text">{about.vision}</p> : <PendingContent locale={locale} />}
         </div>
       </div>
+
+      {
+        (about.motto || about.verse) && (
+          <div class="identity__extra">
+            {about.motto && (
+              <div data-reveal>
+                <p class="eyebrow eyebrow--line identity__label">{ui.about.motto}</p>
+                <p class="identity__motto">{about.motto}</p>
+              </div>
+            )}
+            {about.verse && (
+              <figure data-reveal style="--reveal-delay: 120ms">
+                <p class="eyebrow eyebrow--line identity__label">{ui.about.verse}</p>
+                <blockquote class="identity__verse">“{about.verse.text}”</blockquote>
+                <figcaption class="identity__ref">{about.verse.reference}</figcaption>
+              </figure>
+            )}
+          </div>
+        )
+      }
     </div>
   </section>
 
@@ -151,6 +171,39 @@ const historyBlock = {
 </BaseLayout>
 
 <style>
+  .identity__extra {
+    display: grid;
+    gap: var(--space-7);
+    margin-top: var(--space-8);
+    padding-top: var(--space-7);
+    border-top: 1px solid var(--color-border-on-dark);
+  }
+
+  @media (min-width: 64rem) {
+    .identity__extra {
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-8);
+    }
+  }
+
+  .identity__motto {
+    font-family: var(--font-display);
+    font-size: var(--text-h3);
+    line-height: 1.05;
+    text-transform: uppercase;
+  }
+
+  .identity__verse {
+    font-size: var(--text-lg, 1.25rem);
+    line-height: 1.5;
+  }
+
+  .identity__ref {
+    margin-top: var(--space-3);
+    color: var(--color-river);
+    font-weight: 700;
+  }
+
   .about-intro {
     max-width: 60rem;
     font-family: var(--font-display);

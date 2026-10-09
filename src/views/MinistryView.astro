@@ -16,10 +16,11 @@ import MinistryCard from '@/components/MinistryCard.astro';
 import PageHero from '@/components/PageHero.astro';
 import PendingContent from '@/components/PendingContent.astro';
 import PersonCard from '@/components/PersonCard.astro';
+import AmazonMap from '@/components/AmazonMap.astro';
 import FeatureBlocks from '@/components/features/FeatureBlocks.astro';
 import { ministryAlternates, routes, type Locale } from '@/i18n/routes';
 import { t } from '@/i18n/ui';
-import { getMinistries, getPeople, getSiteSettings, ogImageUrl, whatsappUrl, type Ministry } from '@/lib/content';
+import { getCommunities, getMinistries, getPeople, getSiteSettings, ogImageUrl, whatsappUrl, type Ministry } from '@/lib/content';
 
 interface Props {
   locale: Locale;
@@ -28,10 +29,11 @@ interface Props {
 
 const { locale, ministry } = Astro.props;
 const ui = t(locale);
-const [settings, all, people] = await Promise.all([
+const [settings, all, people, communities] = await Promise.all([
   getSiteSettings(locale),
   getMinistries(locale),
   getPeople(locale, ministry.slug),
+  getCommunities(),
 ]);
 const others = all.filter((m) => m.slug !== ministry.slug).slice(0, 3);
 const contactHref = settings.whatsapp
@@ -93,6 +95,18 @@ const contactHref = settings.whatsapp
 
   <!-- Bloques especiales de este ministerio -->
   <FeatureBlocks locale={locale} blocks={ministry.features} />
+
+  <!-- Mapa interactivo de comunidades (solo en el ministerio que lo tiene activado) -->
+  {
+    ministry.showMap && communities.length > 0 && (
+      <section class="section surface-deep" aria-labelledby="reach-title">
+        <div class="container">
+          <h2 id="reach-title" class="eyebrow eyebrow--line">{ui.reach.title}</h2>
+          <AmazonMap locale={locale} communities={communities} titleId="reach-title" />
+        </div>
+      </section>
+    )
+  }
 
   <!-- Quiénes sirven aquí -->
   {

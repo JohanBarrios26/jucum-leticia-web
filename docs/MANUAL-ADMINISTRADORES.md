@@ -90,6 +90,9 @@ Para indicar en una escuela dónde se realiza: abre la escuela → pestaña **Fi
 ### Agregar fotos o videos a una escuela
 Abre la escuela → pestaña **Fotos y videos**: sube fotos (con su descripción) y pega enlaces de YouTube. La sección aparece sola en la página de la escuela, con visor ampliado; si no hay nada, no se muestra.
 
+### Mapa de comunidades (iglesias plantadas)
+Menú **Mapa: comunidades**. Cada comunidad es un punto del mapa interactivo (inicio y página de "Comunidades ribereñas"). Para agregar una: nombre, tipo (iglesia o base), país y fase (opcionales; si faltan, el punto igual aparece) y su **posición** en el mapa (horizontal y vertical, de 0 a 100; 0,0 es arriba a la izquierda). El mapa es una ilustración: las posiciones son aproximadas. Para ocultar una sin borrarla, desactiva **Mostrar en el mapa**. Los filtros por país solo aparecen si hay comunidades con país asignado. Hoy la mayoría no tiene país ni fase: conviene completarlos.
+
 ### Bloques especiales (lo que hace única a cada página)
 En un ministerio o escuela, pestaña **Bloques especiales**:
 - **Motivo visual:** elige el dibujo animado que lo identifica (río, puente, onda de audio…).

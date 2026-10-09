@@ -33,6 +33,17 @@ export const about = defineType({
     }),
     defineField({name: 'mission', title: 'Misión', type: 'localeText', group: 'identity', description: 'Formulación oficial confirmada por JUCUM.'}),
     defineField({name: 'vision', title: 'Visión', type: 'localeText', group: 'identity'}),
+    defineField({name: 'motto', title: 'Lema', type: 'localeString', group: 'identity', description: 'Ej: "Trayendo el Reino de Dios, uniendo el Cuerpo de Cristo para discipular las naciones".'}),
+    defineField({
+      name: 'verse',
+      title: 'Versículo base',
+      type: 'object',
+      group: 'identity',
+      fields: [
+        defineField({name: 'text', title: 'Texto del versículo', type: 'localeText'}),
+        defineField({name: 'reference', title: 'Cita', type: 'string', description: 'Ej: "Salmos 2:8".'}),
+      ],
+    }),
     defineField({
       name: 'values',
       title: 'Valores',
