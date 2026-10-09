@@ -145,7 +145,7 @@ function resolveFeatures(list: FeatureBlockRaw[], locale: Locale): FeatureBlock[
           })),
         };
       case 'verse':
-        return { type: b.type, text: localize(b.text, locale), reference: b.reference };
+        return { type: b.type, text: localize(b.text, locale), reference: localize(b.reference, locale) };
       case 'video':
         return { type: b.type, title: localizeMaybe(b.title, locale), url: b.url, youtubeId: youtubeId(b.url) };
       case 'checklist':
@@ -375,10 +375,10 @@ export async function getAbout(locale: Locale): Promise<About> {
     vision: localizeMaybe(a.vision, locale),
     motto: localizeMaybe(a.motto, locale),
     global: localizeMaybe(a.global, locale),
-    verse: a.verse ? { text: localize(a.verse.text, locale), reference: a.verse.reference } : null,
+    verse: a.verse ? { text: localize(a.verse.text, locale), reference: localize(a.verse.reference, locale) } : null,
     values: a.values.map((v) => ({ title: localize(v.title, locale), text: localizeMaybe(v.text, locale) })),
     history: a.history.map((h) => ({
-      year: h.year,
+      year: localize(h.year, locale),
       title: localize(h.title, locale),
       text: localizeMaybe(h.text, locale),
       image: resolveImageMaybe(h.image, locale),

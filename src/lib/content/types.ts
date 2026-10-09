@@ -367,9 +367,9 @@ export interface AboutRaw {
   vision: Maybe<Localized>;
   motto: Maybe<Localized>;
   global: Maybe<Localized>;
-  verse: Maybe<{ text: Localized; reference: string }>;
+  verse: Maybe<{ text: Localized; reference: Localized }>;
   values: { title: Localized; text: Maybe<Localized> }[];
-  history: { year: string; title: Localized; text: Maybe<Localized>; image: Maybe<ImageRawRef> }[];
+  history: { year: Localized; title: Localized; text: Maybe<Localized>; image: Maybe<ImageRawRef> }[];
   teamIntro: Maybe<Localized>;
   founders: FoundersRaw;
 }
@@ -541,7 +541,7 @@ export type FeatureBlockRaw =
       intro: Maybe<Localized>;
       steps: { label: Maybe<Localized>; title: Localized; text: Maybe<Localized> }[];
     }
-  | { type: 'verse'; text: Localized; reference: string }
+  | { type: 'verse'; text: Localized; reference: Localized }
   | { type: 'video'; title: Maybe<Localized>; url: string }
   | { type: 'checklist'; title: Maybe<Localized>; items: Localized<string[]> }
   | { type: 'stats'; title: Maybe<Localized>; items: { value: string; label: Localized }[] };

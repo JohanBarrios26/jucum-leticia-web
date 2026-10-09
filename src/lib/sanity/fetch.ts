@@ -133,6 +133,9 @@ export interface CmsContent {
 
 const orEmpty = <T,>(value: L<T>, empty: T): Localized<T> => value ?? { es: empty };
 
+/** Acepta un texto simple (datos antiguos) o un campo traducible y siempre devuelve uno traducible. */
+const lz = (value: unknown): Localized => (typeof value === 'string' ? { es: value } : (value as Localized));
+
 function toImage(p: SanityPhoto | null | undefined): ImageRawRef | null {
   if (!p?.url) return null;
   return {
@@ -201,7 +204,7 @@ function toFeatures(list: Doc[] | null | undefined): FeatureBlockRaw[] {
         });
         break;
       case 'verse':
-        if (b.text && b.reference) out.push({ type: 'verse', text: b.text, reference: b.reference });
+        if (b.text && b.reference) out.push({ type: 'verse', text: b.text, reference: lz(b.reference) });
         break;
       case 'video':
         if (b.url) out.push({ type: 'video', title: lx(b.title), url: b.url });
@@ -230,11 +233,11 @@ function toAbout(d: Doc | null): AboutRaw {
     vision: lx(d.vision),
     motto: lx(d.motto),
     global: lx(d.global),
-    verse: d.verse?.text?.es ? { text: d.verse.text, reference: d.verse.reference ?? '' } : null,
+    verse: d.verse?.text?.es ? { text: d.verse.text, reference: lz(d.verse.reference ?? '') } : null,
     values: (d.values ?? []).filter((v: Doc) => v.title).map((v: Doc) => ({ title: v.title, text: lx(v.text) })),
     history: (d.history ?? [])
       .filter((h: Doc) => h.year && h.title)
-      .map((h: Doc) => ({ year: h.year, title: h.title, text: lx(h.text), image: toImage(h.image) })),
+      .map((h: Doc) => ({ year: lz(h.year), title: h.title, text: lx(h.text), image: toImage(h.image) })),
     teamIntro: lx(d.teamIntro),
     founders: {
       authorized: d.founders?.authorized === true,

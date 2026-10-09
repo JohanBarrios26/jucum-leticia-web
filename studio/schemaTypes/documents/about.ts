@@ -48,7 +48,7 @@ export const about = defineType({
       group: 'identity',
       fields: [
         defineField({name: 'text', title: 'Texto del versículo', type: 'localeText'}),
-        defineField({name: 'reference', title: 'Cita', type: 'string', description: 'Ej: "Salmos 2:8".'}),
+        defineField({name: 'reference', title: 'Cita', type: 'localeString', description: 'Ej: "Salmos 2:8" (en inglés "Psalm 2:8").'}),
       ],
     }),
     defineField({
@@ -81,12 +81,12 @@ export const about = defineType({
           name: 'milestone',
           title: 'Momento',
           fields: [
-            defineField({name: 'year', title: 'Año o fecha', type: 'string', validation: (rule) => rule.required()}),
+            defineField({name: 'year', title: 'Año o fecha', type: 'localeString', validation: (rule) => rule.required()}),
             defineField({name: 'title', title: 'Qué pasó', type: 'localeString', validation: (rule) => rule.required()}),
             defineField({name: 'text', title: 'Detalle', type: 'localeText'}),
             defineField({name: 'image', title: 'Foto', type: 'photo'}),
           ],
-          preview: {select: {title: 'title.es', subtitle: 'year', media: 'image'}},
+          preview: {select: {title: 'title.es', subtitle: 'year.es', media: 'image'}},
         }),
       ],
     }),

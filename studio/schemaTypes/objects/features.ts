@@ -161,9 +161,9 @@ export const verse = defineType({
   type: 'object',
   fields: [
     defineField({name: 'text', title: 'Texto', type: 'localeText', validation: (rule) => rule.required()}),
-    defineField({name: 'reference', title: 'Cita', type: 'string', description: 'Ej: "Mateo 28:19".', validation: (rule) => rule.required()}),
+    defineField({name: 'reference', title: 'Cita', type: 'localeString', description: 'Ej: "Mateo 28:19" (en inglés "Matthew 28:19").', validation: (rule) => rule.required()}),
   ],
-  preview: {select: {title: 'reference', subtitle: 'text.es'}},
+  preview: {select: {title: 'reference.es', subtitle: 'text.es'}},
 })
 
 export const video = defineType({
