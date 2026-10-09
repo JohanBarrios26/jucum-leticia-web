@@ -229,6 +229,7 @@ function toAbout(d: Doc | null): AboutRaw {
     mission: lx(d.mission),
     vision: lx(d.vision),
     motto: lx(d.motto),
+    global: lx(d.global),
     verse: d.verse?.text?.es ? { text: d.verse.text, reference: d.verse.reference ?? '' } : null,
     values: (d.values ?? []).filter((v: Doc) => v.title).map((v: Doc) => ({ title: v.title, text: lx(v.text) })),
     history: (d.history ?? [])

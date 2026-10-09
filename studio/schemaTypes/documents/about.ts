@@ -33,6 +33,13 @@ export const about = defineType({
     }),
     defineField({name: 'mission', title: 'Misión', type: 'localeText', group: 'identity', description: 'Formulación oficial confirmada por JUCUM.'}),
     defineField({name: 'vision', title: 'Visión', type: 'localeText', group: 'identity'}),
+    defineField({
+      name: 'global',
+      title: 'Parte del movimiento global JUCUM',
+      type: 'localeText',
+      group: 'identity',
+      description: 'Explica que JUCUM Leticia pertenece a JUCUM internacional, su respaldo y lo propio de esta base.',
+    }),
     defineField({name: 'motto', title: 'Lema', type: 'localeString', group: 'identity', description: 'Ej: "Trayendo el Reino de Dios, uniendo el Cuerpo de Cristo para discipular las naciones".'}),
     defineField({
       name: 'verse',

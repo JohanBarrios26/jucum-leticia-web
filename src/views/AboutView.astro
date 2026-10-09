@@ -53,6 +53,19 @@ const historyBlock = {
     </div>
   </section>
 
+  <!-- Parte del movimiento global JUCUM -->
+  {
+    about.global && (
+      <section class="section surface-sand" aria-labelledby="global-title">
+        <div class="container container--narrow">
+          <p class="eyebrow eyebrow--line" data-reveal>{ui.about.globalEyebrow}</p>
+          <h2 id="global-title" class="visually-hidden">{ui.about.globalEyebrow}</h2>
+          <p class="lead" data-reveal>{about.global}</p>
+        </div>
+      </section>
+    )
+  }
+
   <!-- Misión y visión -->
   <section class="section surface-dark" aria-labelledby="identity-title">
     <div class="container">

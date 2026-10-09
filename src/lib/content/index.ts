@@ -374,6 +374,7 @@ export async function getAbout(locale: Locale): Promise<About> {
     mission: localizeMaybe(a.mission, locale),
     vision: localizeMaybe(a.vision, locale),
     motto: localizeMaybe(a.motto, locale),
+    global: localizeMaybe(a.global, locale),
     verse: a.verse ? { text: localize(a.verse.text, locale), reference: a.verse.reference } : null,
     values: a.values.map((v) => ({ title: localize(v.title, locale), text: localizeMaybe(v.text, locale) })),
     history: a.history.map((h) => ({

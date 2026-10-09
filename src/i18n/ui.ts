@@ -88,6 +88,8 @@ const es = {
     listSummary: 'Ver la lista de comunidades',
     mapLabel: 'Mapa ilustrado de las comunidades donde JUCUM Leticia ha plantado iglesias',
     river: 'Río Amazonas',
+    zoomIn: 'Ampliar mapa',
+    zoomOut: 'Reducir mapa',
     note: 'Mapa ilustrativo: las posiciones son aproximadas.',
     cta: 'Conocer este ministerio',
     countries: { co: 'Colombia', pe: 'Perú', br: 'Brasil' },
@@ -106,6 +108,7 @@ const es = {
     prayFor: 'Petición de oración',
 
     motto: 'Lema',
+    globalEyebrow: 'Parte de un movimiento global',
     verse: 'Nuestra palabra',
   },
 
@@ -378,6 +381,8 @@ const en: UIStrings = {
     listSummary: 'See the list of communities',
     mapLabel: 'Illustrated map of the communities where YWAM Leticia has planted churches',
     river: 'Amazon River',
+    zoomIn: 'Zoom in',
+    zoomOut: 'Zoom out',
     note: 'Illustrative map: positions are approximate.',
     cta: 'Learn about this ministry',
     countries: { co: 'Colombia', pe: 'Peru', br: 'Brazil' },
@@ -396,6 +401,7 @@ const en: UIStrings = {
     prayFor: 'Prayer request',
 
     motto: 'Motto',
+    globalEyebrow: 'Part of a global movement',
     verse: 'Our verse',
   },
   lists: {
@@ -647,6 +653,8 @@ const pt: UIStrings = {
     listSummary: 'Ver a lista de comunidades',
     mapLabel: 'Mapa ilustrado das comunidades onde a JOCUM Letícia plantou igrejas',
     river: 'Rio Amazonas',
+    zoomIn: 'Ampliar mapa',
+    zoomOut: 'Reduzir mapa',
     note: 'Mapa ilustrativo: as posições são aproximadas.',
     cta: 'Conhecer este ministério',
     countries: { co: 'Colômbia', pe: 'Peru', br: 'Brasil' },
@@ -665,6 +673,7 @@ const pt: UIStrings = {
     prayFor: 'Pedido de oração',
 
     motto: 'Lema',
+    globalEyebrow: 'Parte de um movimento global',
     verse: 'Nossa palavra',
   },
   lists: {

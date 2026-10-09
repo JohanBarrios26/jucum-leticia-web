@@ -37,7 +37,27 @@ const ui = t(locale).reach;
 // Solo se ofrecen filtros de los países que tienen al menos una comunidad.
 const countries = communityCountries.filter((c) => communities.some((x) => x.country === c));
 const sorted = [...communities].sort((a, b) => a.name.localeCompare(b.name, locale));
-const edge = (x: number) => (x < 14 ? 'left' : x > 86 ? 'right' : undefined);
+// Encuadre: el dibujo mide 1600 x 1200; se recorta a la zona donde están las
+// comunidades (más un margen) para que llene la pantalla, sobre todo en celular.
+// Los porcentajes del panel (x, y) se miden sobre el dibujo completo.
+const px = communities.map((c) => (c.x / 100) * 1600);
+const py = communities.map((c) => (c.y / 100) * 1200);
+const x0 = Math.max(0, Math.floor(Math.min(...px, 1600) - 100));
+const x1 = Math.ceil(Math.max(...px, 0) + 100);
+const y0 = Math.max(0, Math.floor(Math.min(...py, 1200) - 120));
+const y1 = Math.ceil(Math.max(...py, 0) + 70);
+// Siempre cabe el nombre de los países (rótulos del dibujo).
+const cropX = Math.min(x0, 125);
+const cropY = Math.min(y0, 415);
+const cropW = Math.min(1600, Math.max(x1, 1240)) - cropX;
+const cropH = Math.min(1200, Math.max(y1, 1180)) - cropY;
+const ratio = (cropW / cropH).toFixed(3);
+// Posición de cada punto dentro del encuadre, en %.
+const place = (c: Community) => ({
+  left: (((c.x / 100) * 1600 - cropX) / cropW) * 100,
+  top: (((c.y / 100) * 1200 - cropY) / cropH) * 100,
+});
+const edge = (left: number) => (left < 14 ? 'left' : left > 86 ? 'right' : undefined);
 const detail = (c: Community) =>
   [c.kind === 'base' ? ui.base : ui.church, c.country ? ui.countries[c.country] : null, c.phase ? ui.phases[c.phase] : null]
     .filter(Boolean)
@@ -47,6 +67,9 @@ const detail = (c: Community) =>
 <div class="amap" data-amap aria-labelledby={titleId}>
   <div class="amap__bar">
     <p class="amap__count"><strong data-amap-count>{communities.length}</strong> {ui.count}</p>
+    <button type="button" class="amap__zoom" data-amap-zoom aria-pressed="false" data-label-on={ui.zoomOut} data-label-off={ui.zoomIn}>
+      <span data-amap-zoom-label>{ui.zoomIn}</span>
+    </button>
     {
       countries.length > 1 && (
         <div class="amap__filters" role="group" aria-label={ui.filterLabel}>
@@ -60,8 +83,8 @@ const detail = (c: Community) =>
   </div>
 
   <div class="amap__scroll">
-    <div class="amap__stage" data-live role="group" aria-label={ui.mapLabel}>
-      <svg class="amap__svg" viewBox="0 0 1600 1200" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+    <div class="amap__stage" data-live role="group" aria-label={ui.mapLabel} style={`--ratio: ${ratio}`}>
+      <svg class="amap__svg" viewBox={`${cropX} ${cropY} ${cropW} ${cropH}`} aria-hidden="true" focusable="false">
         <defs>
           <linearGradient id="amap-river" x1="0" y1="0" x2="1" y2="0">
             <stop offset="0" stop-color="#00adef" stop-opacity="0.55"></stop>
@@ -79,10 +102,10 @@ const detail = (c: Community) =>
         <path class="amap__river-bed" d="M0,745 C150,725 300,660 415,620 C520,585 600,545 700,545 C800,555 850,620 870,690 C895,760 960,840 1010,900 C1040,935 1060,955 1062,962 C1110,1005 1200,1060 1300,1062 C1440,1062 1520,960 1570,850"></path>
         <path class="amap__river" d="M0,745 C150,725 300,660 415,620 C520,585 600,545 700,545 C800,555 850,620 870,690 C895,760 960,840 1010,900 C1040,935 1060,955 1062,962 C1110,1005 1200,1060 1300,1062 C1440,1062 1520,960 1570,850"></path>
         <path class="amap__river-bed amap__river-bed--thin" d="M1062,962 C1000,1050 1010,1100 1040,1200"></path>
-        <text class="amap__label amap__label--pe" x="170" y="880" transform="rotate(-18 170 880)">{ui.countries.pe}</text>
-        <text class="amap__label amap__label--co" x="760" y="300">{ui.countries.co}</text>
-        <text class="amap__label amap__label--br" x="1250" y="620" transform="rotate(90 1250 620)">{ui.countries.br}</text>
-        <text class="amap__label amap__label--river" x="30" y="700">{ui.river}</text>
+        <text class="amap__label amap__label--pe" x="200" y="810" transform="rotate(-18 200 810)">{ui.countries.pe}</text>
+        <text class="amap__label amap__label--co" x="790" y="500">{ui.countries.co}</text>
+        <text class="amap__label amap__label--br" x="1165" y="560" transform="rotate(90 1165 560)">{ui.countries.br}</text>
+        <text class="amap__label amap__label--river" x="140" y="690">{ui.river}</text>
       </svg>
 
       {
@@ -90,12 +113,12 @@ const detail = (c: Community) =>
           <button
             type="button"
             class:list={['amap__dot', { 'amap__dot--base': c.kind === 'base' }]}
-            style={`left:${c.x}%;top:${c.y}%`}
+            style={`left:${place(c).left}%;top:${place(c).top}%`}
             data-id={c.id}
             data-name={c.name}
             data-detail={detail(c)}
             data-country={c.country ?? 'none'}
-            data-edge={edge(c.x)}
+            data-edge={edge(place(c).left)}
             aria-pressed="false"
           >
             <span class="visually-hidden">{c.name}</span>
@@ -125,6 +148,15 @@ const detail = (c: Community) =>
     const count = map.querySelector<HTMLElement>('[data-amap-count]');
     let selected: HTMLButtonElement | null = null;
 
+    // Ampliar: el mapa se hace más ancho y se desliza con el dedo.
+    const zoom = map.querySelector<HTMLButtonElement>('[data-amap-zoom]');
+    zoom?.addEventListener('click', () => {
+      const on = map.classList.toggle('amap--zoom');
+      zoom.setAttribute('aria-pressed', String(on));
+      const label = zoom.querySelector('[data-amap-zoom-label]');
+      if (label) label.textContent = (on ? zoom.dataset.labelOn : zoom.dataset.labelOff) ?? '';
+    });
+
     const clear = () => {
       selected?.setAttribute('aria-pressed', 'false');
       selected = null;
@@ -138,6 +170,8 @@ const detail = (c: Community) =>
         selected = dot;
         dot.setAttribute('aria-pressed', 'true');
         panel.textContent = `${dot.dataset.name} — ${dot.dataset.detail}`;
+        // Con el mapa ampliado, centra el punto elegido en la pantalla.
+        if (map.classList.contains('amap--zoom')) dot.scrollIntoView({ block: 'nearest', inline: 'center', behavior: 'smooth' });
       }),
     );
 
@@ -227,20 +261,36 @@ const detail = (c: Community) =>
 
   .amap__stage {
     position: relative;
-    min-width: 40rem;
-    aspect-ratio: 4 / 3;
-    /* Nunca más alto que el 70 % de la pantalla, conservando la proporción 4:3. */
-    width: min(100%, calc(70svh * 4 / 3));
+    aspect-ratio: var(--ratio, 1.4);
+    /* Nunca más alto que el 70 % de la pantalla, conservando la proporción. */
+    width: min(100%, calc(70svh * var(--ratio, 1.4)));
     margin-inline: auto;
     border-radius: var(--radius-lg);
     overflow: hidden;
     background: var(--color-night-deep);
   }
 
-  @media (min-width: 40rem) {
-    .amap__stage {
-      min-width: 0;
-    }
+  /* Ampliado: más ancho que la pantalla; se desliza horizontalmente. */
+  .amap--zoom .amap__stage {
+    width: 56rem;
+    max-width: none;
+  }
+
+  .amap__zoom {
+    min-height: 2.75rem;
+    padding: 0 var(--space-4);
+    border: 1.5px solid var(--color-border-on-dark);
+    border-radius: 999px;
+    background: transparent;
+    color: var(--color-text-on-dark);
+    font-size: var(--text-sm);
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .amap__zoom:hover,
+  .amap__zoom[aria-pressed='true'] {
+    border-color: var(--color-river);
   }
 
   .amap__svg {
@@ -299,7 +349,7 @@ const detail = (c: Community) =>
   .amap__label {
     fill: rgb(255 255 255 / 0.2);
     font-family: var(--font-display);
-    font-size: 150px;
+    font-size: 100px;
     letter-spacing: 0.08em;
     text-transform: uppercase;
   }
@@ -307,7 +357,7 @@ const detail = (c: Community) =>
   .amap__label--river {
     fill: var(--color-river);
     font-family: var(--font-body);
-    font-size: 36px;
+    font-size: 30px;
     font-weight: 700;
     letter-spacing: 0.2em;
     opacity: 0.9;

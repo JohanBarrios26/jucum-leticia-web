@@ -366,6 +366,7 @@ export interface AboutRaw {
   mission: Maybe<Localized>;
   vision: Maybe<Localized>;
   motto: Maybe<Localized>;
+  global: Maybe<Localized>;
   verse: Maybe<{ text: Localized; reference: string }>;
   values: { title: Localized; text: Maybe<Localized> }[];
   history: { year: string; title: Localized; text: Maybe<Localized>; image: Maybe<ImageRawRef> }[];
@@ -393,6 +394,7 @@ export interface About {
   mission: Maybe<string>;
   vision: Maybe<string>;
   motto: Maybe<string>;
+  global: Maybe<string>;
   verse: Maybe<{ text: string; reference: string }>;
   values: { title: string; text: Maybe<string> }[];
   history: { year: string; title: string; text: Maybe<string>; image: Maybe<ImageRef> }[];
