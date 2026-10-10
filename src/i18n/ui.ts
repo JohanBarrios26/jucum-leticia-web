@@ -15,6 +15,7 @@ import type { JoinPath, Locale, RouteKey } from './routes';
 const es = {
   languageName: 'Español',
   skipToContent: 'Saltar al contenido',
+  backToTop: 'Volver arriba',
   homeLinkLabel: 'ir al inicio',
   mainNavLabel: 'Navegación principal',
   openMenu: 'Abrir menú',
@@ -318,6 +319,7 @@ export type UIStrings = typeof es;
 const en: UIStrings = {
   languageName: 'English',
   skipToContent: 'Skip to content',
+  backToTop: 'Back to top',
   homeLinkLabel: 'go to home page',
   mainNavLabel: 'Main navigation',
   openMenu: 'Open menu',
@@ -594,6 +596,7 @@ const en: UIStrings = {
 const pt: UIStrings = {
   languageName: 'Português',
   skipToContent: 'Ir para o conteúdo',
+  backToTop: 'Voltar ao topo',
   homeLinkLabel: 'ir para a página inicial',
   mainNavLabel: 'Navegação principal',
   openMenu: 'Abrir menu',

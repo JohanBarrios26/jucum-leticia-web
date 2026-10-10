@@ -1,0 +1,150 @@
+---
+/**
+ * BOTONES FLOTANTES (esquina inferior derecha)
+ * ----------------------------------------------------------------------------
+ *   1. WhatsApp: siempre visible; abre la conversación con JUCUM con un
+ *      mensaje listo. Es el canal de contacto más usado en la región.
+ *   2. Volver arriba: aparece después de bajar un buen trecho (la página es
+ *      larga) y sube suavemente.
+ * Los números y textos salen de la configuración del sitio (panel) y de ui.ts.
+ * Si no hay WhatsApp configurado, solo se ofrece "Volver arriba".
+ */
+import type { Locale } from '@/i18n/routes';
+import { t } from '@/i18n/ui';
+import { whatsappUrl, type SiteSettings } from '@/lib/content';
+
+interface Props {
+  locale: Locale;
+  settings: SiteSettings;
+}
+
+const { locale, settings } = Astro.props;
+const ui = t(locale);
+---
+
+<div class="fab">
+  <button type="button" class="fab__btn fab__btn--top" data-back-to-top hidden aria-label={ui.backToTop} title={ui.backToTop}>
+    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 19V6m0 0-6 6m6-6 6 6" /></svg>
+  </button>
+
+  {
+    settings.whatsapp && (
+      <a
+        class="fab__btn fab__btn--chat"
+        href={whatsappUrl(settings.whatsapp, ui.contact.whatsappMessage)}
+        target="_blank"
+        rel="noopener"
+        data-event="whatsapp_click"
+        title={ui.contact.writeWhatsapp}
+      >
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <path d="M12 3C7 3 3 6.6 3 11c0 2 .9 3.8 2.3 5.2L4 21l4.9-1.5c1 .3 2 .5 3.1.5 5 0 9-3.6 9-8s-4-8-9-8z" />
+        </svg>
+        <span class="visually-hidden">{ui.contact.writeWhatsapp} {ui.newTab}</span>
+      </a>
+    )
+  }
+</div>
+
+<script>
+  /* "Volver arriba": se muestra al bajar más de un par de pantallas. */
+  const button = document.querySelector<HTMLButtonElement>('[data-back-to-top]');
+  if (button) {
+    const update = () => {
+      button.hidden = window.scrollY < window.innerHeight * 1.5;
+    };
+    update();
+    window.addEventListener('scroll', update, { passive: true });
+    button.addEventListener('click', () => window.scrollTo({ top: 0 }));
+  }
+</script>
+
+<style>
+  .fab {
+    position: fixed;
+    right: max(1rem, env(safe-area-inset-right));
+    bottom: max(1rem, env(safe-area-inset-bottom));
+    z-index: 40; /* por debajo del encabezado y del menú móvil (50) */
+    display: grid;
+    justify-items: center;
+    gap: 0.75rem;
+  }
+
+  .fab__btn {
+    display: grid;
+    place-items: center;
+    width: 3.5rem;
+    height: 3.5rem;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 0.5rem 1.25rem rgb(0 0 0 / 0.35);
+    transition:
+      transform var(--duration) var(--ease),
+      background var(--duration) var(--ease);
+  }
+
+  .fab__btn[hidden] {
+    display: none;
+  }
+
+  .fab__btn:hover {
+    transform: translateY(-3px) scale(1.05);
+  }
+
+  .fab__btn svg {
+    width: 1.6rem;
+    height: 1.6rem;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  /* WhatsApp: azul del río con ícono oscuro (contraste correcto). */
+  .fab__btn--chat {
+    background: var(--color-river);
+    color: var(--color-night);
+  }
+
+  .fab__btn--chat:hover {
+    background: var(--color-river-hover);
+  }
+
+  .fab__btn--chat svg {
+    fill: currentColor;
+    stroke: none;
+  }
+
+  /* Volver arriba: más discreto. */
+  .fab__btn--top {
+    width: 2.75rem;
+    height: 2.75rem;
+    background: var(--color-night-soft);
+    color: var(--color-text-on-dark);
+    border: 1.5px solid rgb(255 255 255 / 0.25);
+  }
+
+  .fab__btn--top svg {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .fab__btn {
+      transition: none;
+    }
+
+    .fab__btn:hover {
+      transform: none;
+    }
+  }
+
+  @media print {
+    .fab {
+      display: none;
+    }
+  }
+</style>

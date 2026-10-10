@@ -27,6 +27,7 @@ import interLatin from '@fontsource-variable/inter/files/inter-latin-wght-normal
 
 import Header from '@/components/Header.astro';
 import Footer from '@/components/Footer.astro';
+import FloatingActions from '@/components/FloatingActions.astro';
 import { defaultLocale, locales, type Alternates, type Locale } from '@/i18n/routes';
 import { t } from '@/i18n/ui';
 import { umamiWebsiteId } from '@/lib/config';
@@ -192,11 +193,14 @@ if (breadcrumbs && breadcrumbs.length > 0) {
   </head>
   <body data-page-event={pageEvent} data-page-item={pageItem}>
     <a class="skip-link" href="#main">{ui.skipToContent}</a>
+    <!-- Barra de progreso de lectura (solo CSS; se oculta si el navegador no la soporta) -->
+    <div class="scroll-progress" aria-hidden="true"></div>
     <Header locale={locale} alternates={alternates} settings={settings} overlay={headerOverlay} />
     <main id="main" tabindex="-1">
       <slot />
     </main>
     <Footer locale={locale} settings={settings} />
+    <FloatingActions locale={locale} settings={settings} />
 
     <!-- Animaciones de aparición (data-reveal) y registro de eventos de analítica. -->
     <script>

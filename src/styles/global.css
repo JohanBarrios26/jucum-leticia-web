@@ -491,3 +491,51 @@ main > .section:not(:first-child):not(.no-wave),
 main > :not(.section):not(.no-wave):has(+ .section:not(.no-wave)) {
   border-bottom: var(--wave-h) solid transparent;
 }
+
+/* ---------------------------------------------------------------------------
+ * DETALLES DE PULIDO
+ * ---------------------------------------------------------------------------
+ */
+
+/* Controles de formulario y selección de texto con los colores de la marca. */
+:root {
+  accent-color: var(--color-river);
+}
+
+::selection {
+  background: var(--color-river);
+  color: var(--color-night);
+}
+
+/* Barra de progreso de lectura: una línea azul (el río) que avanza al bajar. */
+.scroll-progress {
+  display: none;
+}
+
+@supports (animation-timeline: scroll()) {
+  .scroll-progress {
+    display: block;
+    position: fixed;
+    inset: 0 0 auto 0;
+    z-index: 60;
+    height: 3px;
+    background: linear-gradient(90deg, var(--color-river), #ffffff);
+    transform: scaleX(0);
+    transform-origin: 0 50%;
+    animation: scroll-progress linear both;
+    animation-timeline: scroll(root block);
+    pointer-events: none;
+  }
+
+  @keyframes scroll-progress {
+    to {
+      transform: scaleX(1);
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scroll-progress {
+    display: none;
+  }
+}
