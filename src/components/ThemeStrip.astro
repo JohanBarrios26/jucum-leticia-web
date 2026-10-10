@@ -1,0 +1,67 @@
+---
+/**
+ * FRANJA TEMÁTICA (adorno de cada ministerio, escuela o base)
+ * ----------------------------------------------------------------------------
+ * Una franja decorativa que repite el símbolo del "motivo visual" de la página:
+ *   river/wave → ondas de río · burst → estallidos · book → libros abiertos
+ *   crown → coronas · pulse → latido · bridge → arcos de puente · path → ruta
+ * Se usa debajo de la portada y antes de "Cómo puedes participar". Es solo
+ * decoración (aria-hidden). El motivo viene del panel (campo "Motivo visual").
+ * ¿Un motivo nuevo? Agrega su dibujo en `tiles` (cuadro de 120 × 40).
+ */
+import type { MotifName } from '@/lib/content';
+
+interface Props {
+  motif: MotifName | null | undefined;
+}
+
+const { motif } = Astro.props;
+
+// Cada dibujo es una línea (el color lo pone el CSS). Cuadro de 120 × 40.
+const tiles: Record<MotifName, string> = {
+  river: 'M0 14C15 4 30 4 45 14S75 24 90 14 105 4 120 14M0 28C15 18 30 18 45 28S75 38 90 28 105 18 120 28',
+  wave: 'M10 14v12M22 8v24M34 3v34M46 11v18M58 2v36M70 9v22M82 15v10M94 6v28M106 12v16',
+  burst: 'M60 20m-3 0a3 3 0 1 0 6 0 3 3 0 1 0-6 0M60 6v8M60 26v8M46 20h8M66 20h8M50 10l5 5M70 25l5 5M70 15l5-5M50 30l5-5',
+  book: 'M18 32C34 24 50 24 60 30 70 24 86 24 102 32V12C86 4 70 4 60 10 50 4 34 4 18 12zM60 10v20',
+  crown: 'M30 30 36 12 48 22 60 8 72 22 84 12 90 30zM30 35h60',
+  pulse: 'M0 20h34l7-14 9 28 8-20 6 6h56',
+  bridge: 'M0 30Q30 4 60 30 90 4 120 30M0 35h120',
+  path: 'M4 32c14-22 28-10 40-14s20 8 34 0 24-12 38-8',
+};
+const d = motif ? tiles[motif] : null;
+const svg = d
+  ? `url("data:image/svg+xml,${encodeURIComponent(
+      `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 40'><path d='${d}' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'${motif === 'path' ? " stroke-dasharray='2 7'" : ''}/></svg>`,
+    )}")`
+  : null;
+---
+
+{svg && <div class="tstrip" aria-hidden="true" data-live style={`--tile: ${svg}`}></div>}
+
+<style>
+  .tstrip {
+    height: 3.25rem;
+    background: var(--color-river);
+    opacity: 0.75;
+    -webkit-mask-image: var(--tile);
+    mask-image: var(--tile);
+    -webkit-mask-repeat: repeat-x;
+    mask-repeat: repeat-x;
+    -webkit-mask-size: 7.5rem 100%;
+    mask-size: 7.5rem 100%;
+    animation: tstrip-flow 26s linear infinite;
+  }
+
+  @keyframes tstrip-flow {
+    to {
+      -webkit-mask-position: -15rem 0;
+      mask-position: -15rem 0;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .tstrip {
+      animation: none;
+    }
+  }
+</style>

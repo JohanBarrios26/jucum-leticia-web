@@ -16,6 +16,7 @@
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import SmartImage from '@/components/ui/SmartImage.astro';
 import PhotoGallery from '@/components/ui/PhotoGallery.astro';
+import TriBorderMap from '@/components/TriBorderMap.astro';
 import { amazonRoute, joinPathUrl, routes, type Locale } from '@/i18n/routes';
 import { t } from '@/i18n/ui';
 import { getAmazonPage, getGallery, getMinistries, getSchools, ogImageUrl } from '@/lib/content';
@@ -125,6 +126,7 @@ const icons = {
       <section class="section surface-deep" aria-labelledby="ways-title">
         <div class="container">
           <h2 id="ways-title" class="av-title" data-reveal>{ui.amazon.waysTitle}</h2>
+          <div class="av-map" data-reveal><TriBorderMap locale={locale} /></div>
           <ul role="list" class="av-ways">
             {page.ways.map((w, i) => (
               <li data-reveal style={`--reveal-delay: ${i * 100}ms`}>
@@ -345,6 +347,10 @@ const icons = {
 
   .av-reasons p {
     color: var(--color-text-muted);
+  }
+
+  .av-map {
+    margin-bottom: var(--space-6);
   }
 
   .av-ways {

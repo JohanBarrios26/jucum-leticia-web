@@ -10,6 +10,7 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
 import BaseAccess from '@/components/BaseAccess.astro';
 import PageHero from '@/components/PageHero.astro';
 import PendingContent from '@/components/PendingContent.astro';
+import ThemeStrip from '@/components/ThemeStrip.astro';
 import LiteVideo from '@/components/features/LiteVideo.astro';
 import PhotoGallery from '@/components/ui/PhotoGallery.astro';
 import { baseAlternates, ministryAlternates, routes, schoolAlternates, type Locale } from '@/i18n/routes';
@@ -65,6 +66,8 @@ const mediaTitle =
     bigName
     back={{ href: routes.bases[locale], label: ui.nav.bases }}
   />
+
+  <ThemeStrip motif={base.motif} />
 
   <!-- Descripción + qué se realiza aquí -->
   <section class="section">

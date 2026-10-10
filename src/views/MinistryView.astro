@@ -18,6 +18,7 @@ import PendingContent from '@/components/PendingContent.astro';
 import PersonCard from '@/components/PersonCard.astro';
 import AmazonMap from '@/components/AmazonMap.astro';
 import Participate from '@/components/Participate.astro';
+import ThemeStrip from '@/components/ThemeStrip.astro';
 import FeatureBlocks from '@/components/features/FeatureBlocks.astro';
 import { ministryAlternates, routes, type Locale } from '@/i18n/routes';
 import { t } from '@/i18n/ui';
@@ -66,6 +67,8 @@ const contactHref = settings.whatsapp
     bigName
     back={{ href: routes.ministries[locale], label: ui.nav.ministries }}
   />
+
+  <ThemeStrip motif={ministry.motif} />
 
   <!-- Descripción + actividades -->
   <section class="section">
@@ -131,7 +134,8 @@ const contactHref = settings.whatsapp
   }
 
   <!-- Cómo participar (interactivo en el ministerio destacado con mapa; simple en los demás) -->
-  <Participate locale={locale} name={ministry.name} whatsapp={settings.whatsapp} variant={ministry.showMap ? 'interactive' : 'simple'} />
+  <ThemeStrip motif={ministry.motif} />
+  <Participate locale={locale} name={ministry.name} whatsapp={settings.whatsapp} variant={ministry.showMap ? 'interactive' : 'simple'} motif={ministry.motif} />
 
   <!-- Otros ministerios -->
   {

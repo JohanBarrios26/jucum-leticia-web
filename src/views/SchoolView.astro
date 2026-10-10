@@ -20,6 +20,7 @@ import PhotoGallery from '@/components/ui/PhotoGallery.astro';
 import ImagePlaceholder from '@/components/ui/ImagePlaceholder.astro';
 import SmartImage from '@/components/ui/SmartImage.astro';
 import PendingContent from '@/components/PendingContent.astro';
+import ThemeStrip from '@/components/ThemeStrip.astro';
 import { baseAlternates, personAlternates, routes, schoolAlternates, type Locale } from '@/i18n/routes';
 import { t } from '@/i18n/ui';
 import { ogImageUrl, whatsappUrl, type School } from '@/lib/content';
@@ -75,6 +76,8 @@ const facts = [
     bigName
     back={{ href: routes.schools[locale], label: ui.nav.schools }}
   />
+
+  <ThemeStrip motif={school.motif} />
 
   <!-- Descripción + ficha -->
   <section class="section">

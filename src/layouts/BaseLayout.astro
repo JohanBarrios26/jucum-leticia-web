@@ -185,6 +185,39 @@ if (breadcrumbs && breadcrumbs.length > 0) {
       )
     }
 
+    <style is:inline>
+          /* Cargador amazónico: solo se muestra si la página tarda en cargar (ver script). */
+          .page-loader{position:fixed;inset:0;z-index:100;display:grid;place-content:center;justify-items:center;gap:1rem;background:#0a1d1d;color:#f7f7f2;transition:opacity .45s ease}
+          .page-loader[hidden]{display:none}
+          .page-loader.is-done{opacity:0;pointer-events:none}
+          .page-loader svg{width:min(18rem,70vw);height:auto;overflow:visible}
+          .page-loader .pl-wave{fill:none;stroke:#00adef;stroke-width:3;stroke-linecap:round;stroke-dasharray:14 10;animation:pl-flow 1.4s linear infinite}
+          .page-loader .pl-wave2{stroke:#33bef2;opacity:.6;animation-duration:2.1s;animation-direction:reverse}
+          .page-loader .pl-canoe{animation:pl-bob 1.8s ease-in-out infinite alternate;transform-origin:80px 56px}
+          .page-loader .pl-sun{fill:#00adef;opacity:.9;animation:pl-pulse 2.4s ease-in-out infinite alternate}
+          .page-loader p{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;letter-spacing:.14em;text-transform:uppercase;margin:0}
+          .page-loader small{font-size:.8rem;letter-spacing:.2em;text-transform:uppercase;opacity:.7}
+          @keyframes pl-flow{to{stroke-dashoffset:-48}}
+          @keyframes pl-bob{from{transform:translateY(-2px) rotate(-3deg)}to{transform:translateY(3px) rotate(3deg)}}
+          @keyframes pl-pulse{from{transform:scale(.92)}to{transform:scale(1.08)}}
+          @media (prefers-reduced-motion:reduce){.page-loader *{animation:none!important}}
+        </style>
+        <script is:inline>
+          /* Muestra el cargador solo si la página aún no terminó de cargar a los 0,5 s; lo quita al terminar. */
+          (function () {
+            var timer = setTimeout(function () {
+              var l = document.getElementById('page-loader');
+              if (l && document.readyState !== 'complete') l.hidden = false;
+            }, 500);
+            window.addEventListener('load', function () {
+              clearTimeout(timer);
+              var l = document.getElementById('page-loader');
+              if (!l) return;
+              l.classList.add('is-done');
+              setTimeout(function () { l.remove(); }, 600);
+            });
+          })();
+        </script>
     <meta name="theme-color" content="#102a2a" />
     <link rel="icon" type="image/png" href="/brand/logo-dark.png" />
     <link rel="apple-touch-icon" href="/brand/logo-original.png" />
@@ -192,6 +225,21 @@ if (breadcrumbs && breadcrumbs.length > 0) {
     <meta name="generator" content={Astro.generator} />
   </head>
   <body data-page-event={pageEvent} data-page-item={pageItem}>
+    <!-- Cargador amazónico (oculto salvo que la página tarde en cargar) -->
+    <div id="page-loader" class="page-loader" role="status" aria-live="polite" hidden>
+      <svg viewBox="0 0 160 90" aria-hidden="true" focusable="false">
+        <circle class="pl-sun" cx="118" cy="22" r="11" />
+        <g class="pl-canoe">
+          <path d="M34 54 Q80 76 126 54 L116 46 H44 Z" fill="#e8dcc5" />
+          <circle cx="86" cy="32" r="5" fill="#e8dcc5" />
+          <path d="M86 37 V46 M86 40 L104 54" stroke="#e8dcc5" stroke-width="3" stroke-linecap="round" fill="none" />
+        </g>
+        <path class="pl-wave" d="M0 66 q10 -8 20 0 t20 0 t20 0 t20 0 t20 0 t20 0 t20 0 t20 0" />
+        <path class="pl-wave pl-wave2" d="M0 78 q10 -8 20 0 t20 0 t20 0 t20 0 t20 0 t20 0 t20 0 t20 0" />
+      </svg>
+      <p>JUCUM Leticia</p>
+      <small>{ui.loading}</small>
+    </div>
     <a class="skip-link" href="#main">{ui.skipToContent}</a>
     <!-- Barra de progreso de lectura (solo CSS; se oculta si el navegador no la soporta) -->
     <div class="scroll-progress" aria-hidden="true"></div>

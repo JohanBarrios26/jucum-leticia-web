@@ -161,6 +161,32 @@ const { title, eyebrow, lead, image, motif, back, compact = false, bigName = fal
     min-height: min(38rem, 80svh);
   }
 
+  /* El dibujo del motivo (río, libro, estallido…) se ve grande detrás del nombre. */
+  .page-hero--name .page-hero__motif {
+    position: absolute;
+    right: -2rem;
+    bottom: 3.5rem;
+    z-index: 0;
+    width: min(46rem, 75vw);
+    max-width: none;
+    opacity: 0.42;
+    pointer-events: none;
+  }
+
+  .page-hero--name .page-hero__text {
+    position: relative;
+    z-index: 1;
+  }
+
+  @media (max-width: 47.99rem) {
+    .page-hero--name .page-hero__motif {
+      right: -35vw;
+      bottom: 5rem;
+      width: 140vw;
+      opacity: 0.22;
+    }
+  }
+
   .page-hero--name .page-hero__title {
     font-size: clamp(3.4rem, 10.5vw, 9.5rem);
     text-transform: uppercase;
