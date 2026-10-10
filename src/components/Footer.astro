@@ -256,6 +256,20 @@ const socials = (Object.keys(socialNames) as (keyof SocialLinks)[])
     user-select: none;
   }
 
+  /* Celular y tabletas: enlaces del pie con área táctil cómoda (40 px). */
+  @media (max-width: 63.99rem) {
+    .footer-col ul {
+      gap: 0;
+    }
+
+    .footer-col a,
+    .footer-legal a {
+      display: inline-flex;
+      align-items: center;
+      min-height: 2.5rem;
+    }
+  }
+
   .footer-legal {
     display: flex;
     flex-wrap: wrap;

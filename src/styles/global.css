@@ -318,6 +318,13 @@ a {
   text-decoration: none;
 }
 
+/* En celular y tabletas, el área táctil de los enlaces con flecha mide al menos 44 px. */
+@media (max-width: 63.99rem) {
+  .link-arrow {
+    min-height: 2.75rem;
+  }
+}
+
 .link-arrow span {
   transition: transform var(--duration) var(--ease);
 }
