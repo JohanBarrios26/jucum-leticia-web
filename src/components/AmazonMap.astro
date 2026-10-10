@@ -86,6 +86,13 @@ const detail = (c: Community) =>
     <div class="amap__stage" data-live role="group" aria-label={ui.mapLabel} style={`--ratio: ${ratio}`}>
       <svg class="amap__svg" viewBox={`${cropX} ${cropY} ${cropW} ${cropH}`} aria-hidden="true" focusable="false">
         <defs>
+          <!-- Maloca: casa comunal de los pueblos amazónicos (techo de palma y puerta). -->
+          <symbol id="amap-maloca" viewBox="0 0 24 24">
+            <path style="fill: var(--maloca-wall, #b99f6e); stroke: var(--color-night-deep); stroke-width: 1" d="M4 15h16v6.5H4z"></path>
+            <path style="fill: var(--maloca-roof, #e8dcc5); stroke: var(--color-night-deep); stroke-width: 1" d="M12 2.5C15 6.5 20.5 11 23 15H1C3.5 11 9 6.5 12 2.5z"></path>
+            <path style="fill: none; stroke: var(--color-night-deep); stroke-width: 0.8; opacity: 0.4" d="M12 3.5V15M7.5 9.5 5.8 15M16.5 9.5 18.2 15"></path>
+            <path style="fill: var(--color-night-deep)" d="M10 17.5h4v4h-4z"></path>
+          </symbol>
           <linearGradient id="amap-river" x1="0" y1="0" x2="1" y2="0">
             <stop offset="0" stop-color="#00adef" stop-opacity="0.55"></stop>
             <stop offset="1" stop-color="#33bef2" stop-opacity="0.95"></stop>
@@ -121,6 +128,7 @@ const detail = (c: Community) =>
             data-edge={edge(place(c).left)}
             aria-pressed="false"
           >
+            <svg class="amap__icon" aria-hidden="true" focusable="false"><use href="#amap-maloca"></use></svg>
             <span class="visually-hidden">{c.name}</span>
           </button>
         ))
@@ -129,7 +137,7 @@ const detail = (c: Community) =>
   </div>
 
   <p class="amap__panel" role="status" aria-live="polite" data-amap-panel data-default={ui.select}>{ui.select}</p>
-  <p class="amap__note">{ui.note}</p>
+  <p class="amap__note">{ui.legend} {ui.note}</p>
 
   <details class="amap__list">
     <summary>{ui.listSummary}</summary>
@@ -262,6 +270,7 @@ const detail = (c: Community) =>
   .amap__stage {
     position: relative;
     aspect-ratio: var(--ratio, 1.4);
+    container-type: inline-size;
     /* Nunca más alto que el 70 % de la pantalla, conservando la proporción. */
     width: min(100%, calc(70svh * var(--ratio, 1.4)));
     margin-inline: auto;
@@ -375,34 +384,34 @@ const detail = (c: Community) =>
     cursor: pointer;
   }
 
-  .amap__dot::before {
-    content: '';
+  /* La maloca crece con el ancho del mapa (más pequeña en celular, más grande al ampliar). */
+  .amap__icon {
     position: absolute;
     top: 50%;
     left: 50%;
-    width: 0.8rem;
-    height: 0.8rem;
-    border: 2px solid var(--color-night-deep);
-    border-radius: 50%;
-    background: var(--color-sand);
-    transform: translate(-50%, -50%);
+    width: clamp(1rem, 3.4cqi, 1.9rem);
+    height: clamp(1rem, 3.4cqi, 1.9rem);
+    overflow: visible;
+    transform: translate(-50%, -55%);
+    filter: drop-shadow(0 1px 2px rgb(0 0 0 / 0.55));
     transition:
       transform var(--duration) var(--ease),
-      background var(--duration) var(--ease);
+      --maloca-roof var(--duration) var(--ease);
   }
 
-  .amap__dot--base::before {
-    width: 1.35rem;
-    height: 1.35rem;
-    background: var(--color-river);
-    box-shadow: 0 0 0 4px rgb(0 173 239 / 0.35);
+  /* Las bases de JUCUM: maloca azul y más grande. */
+  .amap__dot--base .amap__icon {
+    --maloca-roof: var(--color-river);
+    --maloca-wall: #0a7fb0;
+    width: clamp(1.5rem, 5cqi, 2.8rem);
+    height: clamp(1.5rem, 5cqi, 2.8rem);
   }
 
-  .amap__dot:hover::before,
-  .amap__dot:focus-visible::before,
-  .amap__dot[aria-pressed='true']::before {
-    background: var(--color-white);
-    transform: translate(-50%, -50%) scale(1.5);
+  .amap__dot:hover .amap__icon,
+  .amap__dot:focus-visible .amap__icon,
+  .amap__dot[aria-pressed='true'] .amap__icon {
+    --maloca-roof: var(--color-white);
+    transform: translate(-50%, -55%) scale(1.35);
   }
 
   .amap__dot:focus-visible {
@@ -419,7 +428,7 @@ const detail = (c: Community) =>
   .amap__dot::after {
     content: attr(data-name);
     position: absolute;
-    bottom: calc(50% + 0.9rem);
+    bottom: calc(50% + 1.1rem);
     left: 50%;
     padding: 0.25rem 0.6rem;
     border-radius: var(--radius-sm);
@@ -497,7 +506,7 @@ const detail = (c: Community) =>
       animation: none;
     }
 
-    .amap__dot::before,
+    .amap__icon,
     .amap__dot::after,
     .amap__filter {
       transition: none;
