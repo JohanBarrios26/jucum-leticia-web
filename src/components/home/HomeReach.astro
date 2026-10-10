@@ -41,29 +41,33 @@ const stat = statsBlock && 'items' in statsBlock ? statsBlock.items[0] : undefin
       <div class="container reach__wide">
         <h2 id="reach-title" class="visually-hidden">{ui.title}</h2>
 
-        <div class="reach__head" data-reveal>
-          <p class="eyebrow eyebrow--line reach__eyebrow">{ui.eyebrow}</p>
+        <div class="reach__layout">
+          <div class="reach__head" data-reveal>
+            <p class="eyebrow eyebrow--line reach__eyebrow">{ui.eyebrow}</p>
+            {
+              stat && (
+                <p class="reach__stat">
+                  <span class="reach__num" data-count={stat.value}>{stat.value}</span>
+                  <span class="reach__label">{stat.label}</span>
+                </p>
+              )
+            }
+          </div>
+
+          <div class="reach__map">
+            <AmazonMap locale={locale} communities={communities} titleId="reach-title" large showList={false} />
+          </div>
+
           {
-            stat && (
-              <p class="reach__stat">
-                <span class="reach__num" data-count={stat.value}>{stat.value}</span>
-                <span class="reach__label">{stat.label}</span>
-              </p>
+            ministry && (
+              <div class="reach__cta" data-reveal>
+                <a class="btn btn--primary btn--lg" href={ministryAlternates(ministry.slug)[locale]} data-event="reach_cta_click">
+                  {ui.cta} <span class="btn__arrow" aria-hidden="true">→</span>
+                </a>
+              </div>
             )
           }
         </div>
-
-        <AmazonMap locale={locale} communities={communities} titleId="reach-title" large showList={false} />
-
-        {
-          ministry && (
-            <div class="reach__cta" data-reveal>
-              <a class="btn btn--primary btn--lg" href={ministryAlternates(ministry.slug)[locale]} data-event="reach_cta_click">
-                {ui.cta} <span class="btn__arrow" aria-hidden="true">→</span>
-              </a>
-            </div>
-          )
-        }
       </div>
     </section>
   )
@@ -110,12 +114,75 @@ const stat = statsBlock && 'items' in statsBlock ? statsBlock.items[0] : undefin
     max-width: 120rem;
   }
 
+  /*
+   * Distribución horizontal para que la sección no quede tan alta:
+   *   escritorio: cifra y botón a la izquierda, mapa a la derecha;
+   *   celular: cifra y frase en una fila, luego el mapa y el botón.
+   */
+  .reach__layout {
+    display: grid;
+    gap: var(--space-5);
+    grid-template-areas:
+      'head'
+      'map'
+      'cta';
+  }
+
+  @media (min-width: 64rem) {
+    .reach__layout {
+      grid-template-columns: minmax(16rem, 0.4fr) 1fr;
+      grid-template-areas:
+        'head map'
+        'cta map';
+      grid-template-rows: 1fr auto;
+      column-gap: var(--space-7);
+      row-gap: var(--space-6);
+      align-items: center;
+    }
+
+    .reach__head {
+      align-self: end;
+    }
+
+    .reach__cta {
+      align-self: start;
+    }
+  }
+
   .reach__head {
+    grid-area: head;
     display: grid;
     justify-items: center;
     gap: var(--space-3);
-    margin-bottom: var(--space-5);
     text-align: center;
+  }
+
+  .reach__map {
+    grid-area: map;
+    min-width: 0;
+  }
+
+  /* Celular: la cifra y su frase van lado a lado. */
+  @media (max-width: 39.99rem) {
+    .reach__head {
+      grid-template-columns: auto 1fr;
+      justify-items: start;
+      align-items: center;
+      column-gap: var(--space-4);
+      text-align: left;
+    }
+
+    .reach__eyebrow {
+      grid-column: 1 / -1;
+    }
+
+    .reach__head .reach__stat {
+      display: contents;
+    }
+
+    .reach__head .reach__stat::before {
+      display: none;
+    }
   }
 
   .reach__eyebrow {
@@ -159,7 +226,7 @@ const stat = statsBlock && 'items' in statsBlock ? statsBlock.items[0] : undefin
   .reach__num {
     position: relative;
     font-family: var(--font-display);
-    font-size: clamp(8.5rem, 27vw, 19rem);
+    font-size: clamp(6rem, 24vw, 8.5rem);
     line-height: 0.82;
     letter-spacing: 0.01em;
     background: linear-gradient(180deg, #ffffff 0%, var(--color-river) 55%, #0a7fb0 100%);
@@ -171,20 +238,26 @@ const stat = statsBlock && 'items' in statsBlock ? statsBlock.items[0] : undefin
     font-variant-numeric: tabular-nums;
   }
 
+  @media (min-width: 64rem) {
+    .reach__num {
+      font-size: clamp(8rem, 13vw, 14rem);
+    }
+  }
+
   .reach__label {
     position: relative;
-    max-width: 46rem;
+    max-width: 24rem;
     color: var(--color-text-on-dark);
-    font-size: var(--text-base);
+    font-size: var(--text-sm);
     font-weight: 800;
     letter-spacing: 0.14em;
     text-transform: uppercase;
   }
 
   .reach__cta {
+    grid-area: cta;
     display: flex;
     justify-content: center;
-    margin-top: var(--space-7);
   }
 
   .reach :global(.btn--lg) {
