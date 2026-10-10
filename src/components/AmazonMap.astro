@@ -29,9 +29,13 @@ interface Props {
   communities: Community[];
   /** Id del título que describe la sección (aria-labelledby del contenedor). */
   titleId?: string;
+  /** Mapa grande y con más presencia (inicio). */
+  large?: boolean;
+  /** Muestra la lista completa de comunidades (solo en la página del ministerio). */
+  showList?: boolean;
 }
 
-const { locale, communities, titleId } = Astro.props;
+const { locale, communities, titleId, large = false, showList = true } = Astro.props;
 const ui = t(locale).reach;
 
 // Solo se ofrecen filtros de los países que tienen al menos una comunidad.
@@ -64,7 +68,7 @@ const detail = (c: Community) =>
     .join(' · ');
 ---
 
-<div class="amap" data-amap aria-labelledby={titleId}>
+<div class:list={['amap', { 'amap--large': large }]} data-amap aria-labelledby={titleId}>
   <div class="amap__bar">
     <p class="amap__count"><strong data-amap-count>{communities.length}</strong> {ui.count}</p>
     <button type="button" class="amap__zoom" data-amap-zoom aria-pressed="false" data-label-on={ui.zoomOut} data-label-off={ui.zoomIn}>
@@ -139,12 +143,16 @@ const detail = (c: Community) =>
   <p class="amap__panel" role="status" aria-live="polite" data-amap-panel data-default={ui.select}>{ui.select}</p>
   <p class="amap__note">{ui.legend} {ui.note}</p>
 
-  <details class="amap__list">
-    <summary>{ui.listSummary}</summary>
-    <ul role="list">
-      {sorted.map((c) => <li><strong>{c.name}</strong> <span>{detail(c)}</span></li>)}
-    </ul>
-  </details>
+  {
+    showList && (
+      <details class="amap__list">
+        <summary>{ui.listSummary}</summary>
+        <ul role="list">
+          {sorted.map((c) => <li><strong>{c.name}</strong> <span>{detail(c)}</span></li>)}
+        </ul>
+      </details>
+    )
+  }
 </div>
 
 <script>
@@ -277,6 +285,46 @@ const detail = (c: Community) =>
     border-radius: var(--radius-lg);
     overflow: hidden;
     background: var(--color-night-deep);
+  }
+
+  /* Versión grande (inicio): más alto, con marco y resplandor. */
+  .amap--large .amap__stage {
+    width: min(100%, calc(88svh * var(--ratio, 1.4)));
+    border: 6px solid rgb(255 255 255 / 0.12);
+    box-shadow:
+      0 2rem 4rem rgb(0 0 0 / 0.5),
+      0 0 7rem rgb(0 173 239 / 0.18);
+  }
+
+  /* En el inicio no se muestra el conteo: la cifra de iglesias va aparte y el mapa deja curiosidad. */
+  .amap--large .amap__count {
+    display: none;
+  }
+
+  /* Las bases de JUCUM laten suavemente para llamar la atención. */
+  .amap__dot--base::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 1.4rem;
+    height: 1.4rem;
+    border: 2px solid var(--color-river);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    animation: amap-ping 2.4s ease-out infinite;
+    pointer-events: none;
+  }
+
+  @keyframes amap-ping {
+    from {
+      opacity: 0.9;
+      transform: translate(-50%, -50%) scale(0.6);
+    }
+    to {
+      opacity: 0;
+      transform: translate(-50%, -50%) scale(3.4);
+    }
   }
 
   /* Ampliado: más ancho que la pantalla; se desliza horizontalmente. */
@@ -504,6 +552,11 @@ const detail = (c: Community) =>
   @media (prefers-reduced-motion: reduce) {
     .amap__river {
       animation: none;
+    }
+
+    .amap__dot--base::before {
+      animation: none;
+      opacity: 0;
     }
 
     .amap__icon,

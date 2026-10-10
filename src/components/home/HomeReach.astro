@@ -3,9 +3,16 @@
  * INICIO · ALCANCE (mapa de iglesias en la triple frontera)
  * ----------------------------------------------------------------------------
  * Muestra el mapa ilustrado de las comunidades donde JUCUM Leticia ha plantado
- * iglesias (src/components/AmazonMap.astro). Los puntos se editan en el panel:
- * "Mapa: comunidades". Si no hay ninguna comunidad cargada, la sección no se
- * muestra. El enlace lleva al ministerio de plantación de iglesias.
+ * iglesias (src/components/AmazonMap.astro) en tamaño grande, con la cifra de
+ * iglesias bien visible. A propósito NO muestra la lista de comunidades: esa
+ * solo está en la página del ministerio, para dejar curiosidad por conocer más.
+ *
+ * De dónde sale cada cosa:
+ *   - Puntos del mapa: panel → "Mapa: comunidades".
+ *   - La cifra grande: el bloque "Cifras" del ministerio que tiene activado
+ *     "Mostrar el mapa de comunidades" (hoy: 116 iglesias). Si no hay, no se muestra.
+ *   - Textos fijos: ui.ts (reach.*).
+ * Si no hay comunidades cargadas, la sección no se muestra.
  */
 import AmazonMap from '@/components/AmazonMap.astro';
 import { ministryAlternates, type Locale } from '@/i18n/routes';
@@ -15,29 +22,48 @@ import type { Community, Ministry } from '@/lib/content';
 interface Props {
   locale: Locale;
   communities: Community[];
-  /** Ministerio que muestra el mapa (para el enlace "Conocer este ministerio"). */
+  /** Ministerio que muestra el mapa (para el botón y la cifra). */
   ministry?: Ministry;
 }
 
 const { locale, communities, ministry } = Astro.props;
 const ui = t(locale).reach;
+
+// Primera cifra del ministerio (ej. "116" · "Iglesias plantadas y construidas…").
+const statsBlock = ministry?.features.find((f) => f.type === 'stats');
+const stat = statsBlock && 'items' in statsBlock ? statsBlock.items[0] : undefined;
 ---
 
 {
   communities.length > 0 && (
     <section class="reach section surface-deep" aria-labelledby="reach-title">
-      <div class="container">
-        <div class="section-head" data-reveal>
-          <p class="eyebrow eyebrow--line">{ui.eyebrow}</p>
-          <h2 id="reach-title">{ui.title}</h2>
-          <p class="lead reach__intro">{ui.intro}</p>
+      <div class="reach__glow" aria-hidden="true" />
+      <div class="container reach__wide">
+        <div class="reach__head">
+          <div class="reach__intro" data-reveal>
+            <p class="eyebrow eyebrow--line">{ui.eyebrow}</p>
+            <h2 id="reach-title">{ui.title}</h2>
+            <p class="lead reach__lead">{ui.intro}</p>
+          </div>
+          {
+            stat && (
+              <p class="reach__stat" data-reveal style="--reveal-delay: 120ms">
+                <span class="reach__num">{stat.value}</span>
+                <span class="reach__label">{stat.label}</span>
+              </p>
+            )
+          }
         </div>
-        <AmazonMap locale={locale} communities={communities} titleId="reach-title" />
+
+        <AmazonMap locale={locale} communities={communities} titleId="reach-title" large showList={false} />
+
         {
           ministry && (
-            <a class="link-arrow reach__link" href={ministryAlternates(ministry.slug)[locale]}>
-              {ui.cta} <span aria-hidden="true">→</span>
-            </a>
+            <div class="reach__cta" data-reveal>
+              <a class="btn btn--primary btn--lg" href={ministryAlternates(ministry.slug)[locale]} data-event="reach_cta_click">
+                {ui.cta} <span class="btn__arrow" aria-hidden="true">→</span>
+              </a>
+            </div>
           )
         }
       </div>
@@ -46,16 +72,85 @@ const ui = t(locale).reach;
 }
 
 <style>
-  .reach__intro {
+  .reach {
+    position: relative;
+    overflow: hidden;
+    background:
+      radial-gradient(70rem 36rem at 15% 0%, rgb(0 173 239 / 0.2), transparent 60%),
+      radial-gradient(60rem 32rem at 100% 100%, rgb(31 106 86 / 0.5), transparent 60%),
+      var(--color-night-deep);
+  }
+
+  .reach__wide {
+    position: relative;
+    max-width: 96rem;
+  }
+
+  .reach__head {
+    display: grid;
+    gap: var(--space-5);
+    align-items: end;
+    margin-bottom: var(--space-6);
+  }
+
+  @media (min-width: 56rem) {
+    .reach__head {
+      grid-template-columns: 1.2fr 1fr;
+      gap: var(--space-8);
+    }
+  }
+
+  .reach__intro h2 {
+    margin-top: var(--space-3);
+    font-size: var(--text-h1, clamp(2.4rem, 5vw, 4rem));
+  }
+
+  .reach__lead {
     max-width: 40rem;
+    margin-top: var(--space-4);
     color: var(--color-text-on-dark-muted);
   }
 
-  .reach :global(.amap) {
-    margin-top: var(--space-6);
+  /* Cifra grande */
+  .reach__stat {
+    display: grid;
+    justify-items: start;
+    gap: var(--space-1, 0.25rem);
   }
 
-  .reach__link {
-    margin-top: var(--space-5);
+  @media (min-width: 56rem) {
+    .reach__stat {
+      justify-items: end;
+      text-align: right;
+    }
+  }
+
+  .reach__num {
+    font-family: var(--font-display);
+    font-size: clamp(5.5rem, 14vw, 10rem);
+    line-height: 0.85;
+    color: var(--color-river);
+    text-shadow: 0 0 3rem rgb(0 173 239 / 0.45);
+  }
+
+  .reach__label {
+    max-width: 18rem;
+    color: var(--color-text-on-dark);
+    font-size: var(--text-sm);
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .reach__cta {
+    display: flex;
+    justify-content: center;
+    margin-top: var(--space-7);
+  }
+
+  .reach :global(.btn--lg) {
+    min-height: 3.5rem;
+    padding-inline: var(--space-7);
+    font-size: var(--text-base);
   }
 </style>
