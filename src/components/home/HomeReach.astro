@@ -39,16 +39,14 @@ const stat = statsBlock && 'items' in statsBlock ? statsBlock.items[0] : undefin
     <section class="reach section surface-deep" aria-labelledby="reach-title">
       <div class="reach__glow" aria-hidden="true" />
       <div class="container reach__wide">
-        <div class="reach__head">
-          <div class="reach__intro" data-reveal>
-            <p class="eyebrow eyebrow--line">{ui.eyebrow}</p>
-            <h2 id="reach-title">{ui.title}</h2>
-            <p class="lead reach__lead">{ui.intro}</p>
-          </div>
+        <h2 id="reach-title" class="visually-hidden">{ui.title}</h2>
+
+        <div class="reach__head" data-reveal>
+          <p class="eyebrow eyebrow--line reach__eyebrow">{ui.eyebrow}</p>
           {
             stat && (
-              <p class="reach__stat" data-reveal style="--reveal-delay: 120ms">
-                <span class="reach__num">{stat.value}</span>
+              <p class="reach__stat">
+                <span class="reach__num" data-count={stat.value}>{stat.value}</span>
                 <span class="reach__label">{stat.label}</span>
               </p>
             )
@@ -71,74 +69,115 @@ const stat = statsBlock && 'items' in statsBlock ? statsBlock.items[0] : undefin
   )
 }
 
+<script>
+  /*
+   * La cifra "cuenta" desde 0 hasta su valor cuando llega a la pantalla.
+   * Sin JavaScript, o con "reducir movimiento", se ve el número final.
+   */
+  const num = document.querySelector<HTMLElement>('.reach__num[data-count]');
+  const target = Number(num?.dataset.count);
+  if (num && Number.isFinite(target) && target > 0 && 'IntersectionObserver' in window && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    num.textContent = '0';
+    const observer = new IntersectionObserver((entries) => {
+      if (!entries[0].isIntersecting) return;
+      observer.disconnect();
+      const start = performance.now();
+      const duration = 1800;
+      const tick = (now: number) => {
+        const p = Math.min(1, (now - start) / duration);
+        num.textContent = String(Math.round(target * (1 - Math.pow(1 - p, 3))));
+        if (p < 1) requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
+    }, { threshold: 0.6 });
+    observer.observe(num);
+  }
+</script>
+
 <style>
   .reach {
     position: relative;
     overflow: hidden;
     background:
-      radial-gradient(70rem 36rem at 15% 0%, rgb(0 173 239 / 0.2), transparent 60%),
+      radial-gradient(70rem 36rem at 50% 0%, rgb(0 173 239 / 0.28), transparent 60%),
       radial-gradient(60rem 32rem at 100% 100%, rgb(31 106 86 / 0.5), transparent 60%),
       var(--color-night-deep);
   }
 
+  /* Casi todo el ancho de la pantalla, para que el mapa sea lo más grande posible. */
   .reach__wide {
     position: relative;
-    max-width: 96rem;
+    max-width: 120rem;
   }
 
   .reach__head {
     display: grid;
-    gap: var(--space-5);
-    align-items: end;
-    margin-bottom: var(--space-6);
+    justify-items: center;
+    gap: var(--space-3);
+    margin-bottom: var(--space-5);
+    text-align: center;
   }
 
-  @media (min-width: 56rem) {
-    .reach__head {
-      grid-template-columns: 1.2fr 1fr;
-      gap: var(--space-8);
-    }
+  .reach__eyebrow {
+    color: var(--color-river);
   }
 
-  .reach__intro h2 {
-    margin-top: var(--space-3);
-    font-size: var(--text-h1, clamp(2.4rem, 5vw, 4rem));
-  }
-
-  .reach__lead {
-    max-width: 40rem;
-    margin-top: var(--space-4);
-    color: var(--color-text-on-dark-muted);
-  }
-
-  /* Cifra grande */
   .reach__stat {
+    position: relative;
     display: grid;
-    justify-items: start;
-    gap: var(--space-1, 0.25rem);
+    justify-items: center;
+    gap: var(--space-3);
   }
 
-  @media (min-width: 56rem) {
-    .reach__stat {
-      justify-items: end;
-      text-align: right;
+  /* Halo que late detrás de la cifra. */
+  .reach__stat::before {
+    content: '';
+    position: absolute;
+    top: 42%;
+    left: 50%;
+    width: min(90vw, 38rem);
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgb(0 173 239 / 0.45), transparent 68%);
+    transform: translate(-50%, -50%);
+    filter: blur(8px);
+    animation: reach-pulse 3.2s ease-in-out infinite alternate;
+    pointer-events: none;
+  }
+
+  @keyframes reach-pulse {
+    from {
+      opacity: 0.55;
+      transform: translate(-50%, -50%) scale(0.9);
+    }
+    to {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1.1);
     }
   }
 
   .reach__num {
+    position: relative;
     font-family: var(--font-display);
-    font-size: clamp(5.5rem, 14vw, 10rem);
-    line-height: 0.85;
-    color: var(--color-river);
-    text-shadow: 0 0 3rem rgb(0 173 239 / 0.45);
+    font-size: clamp(8.5rem, 27vw, 19rem);
+    line-height: 0.82;
+    letter-spacing: 0.01em;
+    background: linear-gradient(180deg, #ffffff 0%, var(--color-river) 55%, #0a7fb0 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 0 2.5rem rgb(0 173 239 / 0.55));
+    font-variant-numeric: tabular-nums;
   }
 
   .reach__label {
-    max-width: 18rem;
+    position: relative;
+    max-width: 46rem;
     color: var(--color-text-on-dark);
-    font-size: var(--text-sm);
-    font-weight: 700;
-    letter-spacing: 0.08em;
+    font-size: var(--text-base);
+    font-weight: 800;
+    letter-spacing: 0.14em;
     text-transform: uppercase;
   }
 
@@ -152,5 +191,11 @@ const stat = statsBlock && 'items' in statsBlock ? statsBlock.items[0] : undefin
     min-height: 3.5rem;
     padding-inline: var(--space-7);
     font-size: var(--text-base);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .reach__stat::before {
+      animation: none;
+    }
   }
 </style>

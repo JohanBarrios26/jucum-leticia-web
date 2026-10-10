@@ -75,7 +75,7 @@ const detail = (c: Community) =>
       <span data-amap-zoom-label>{ui.zoomIn}</span>
     </button>
     {
-      countries.length > 1 && (
+      countries.length > 1 && !large && (
         <div class="amap__filters" role="group" aria-label={ui.filterLabel}>
           <button type="button" class="amap__filter" data-country="all" aria-pressed="true">{ui.all}</button>
           {countries.map((c) => (
@@ -140,8 +140,8 @@ const detail = (c: Community) =>
     </div>
   </div>
 
-  <p class="amap__panel" role="status" aria-live="polite" data-amap-panel data-default={ui.select}>{ui.select}</p>
-  <p class="amap__note">{ui.legend} {ui.note}</p>
+  <p class="amap__panel" role="status" aria-live="polite" data-amap-panel data-default={large ? '' : ui.select}>{large ? '' : ui.select}</p>
+  {!large && <p class="amap__note">{ui.legend} {ui.note}</p>}
 
   {
     showList && (
@@ -289,16 +289,27 @@ const detail = (c: Community) =>
 
   /* Versión grande (inicio): más alto, con marco y resplandor. */
   .amap--large .amap__stage {
-    width: min(100%, calc(88svh * var(--ratio, 1.4)));
+    width: min(100%, calc(92svh * var(--ratio, 1.4)));
     border: 6px solid rgb(255 255 255 / 0.12);
     box-shadow:
       0 2rem 4rem rgb(0 0 0 / 0.5),
       0 0 7rem rgb(0 173 239 / 0.18);
   }
 
-  /* En el inicio no se muestra el conteo: la cifra de iglesias va aparte y el mapa deja curiosidad. */
+  /* En el inicio casi no hay texto: sin conteo, filtros ni leyenda; el mapa deja curiosidad. */
   .amap--large .amap__count {
     display: none;
+  }
+
+  .amap__panel:empty {
+    display: none;
+  }
+
+  /* El botón de ampliar solo se ofrece en pantallas pequeñas. */
+  @media (min-width: 40rem) {
+    .amap--large .amap__bar {
+      display: none;
+    }
   }
 
   /* Las bases de JUCUM laten suavemente para llamar la atención. */
