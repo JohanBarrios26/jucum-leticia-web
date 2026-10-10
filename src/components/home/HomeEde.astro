@@ -5,10 +5,14 @@
  * Sección destacada de la EDE, la escuela que es la puerta para ser parte de
  * JUCUM. Reemplaza a la antigua sección de OBT (OBT sigue en Ministerios).
  *
+ * Diseño llamativo: fondo con resplandor, letras "EDE" enormes de contorno
+ * detrás, foto inclinada con marco y un sello flotante "5–6 meses", etiquetas
+ * de por qué hacerla en Leticia y las dos fases como tarjetas grandes.
+ *
  * De dónde sale cada cosa:
  *   - Foto y nombre: la escuela "EDE" del panel (Escuelas).
  *   - Las dos fases (teórica y práctica): el bloque "Etapas" de esa escuela.
- *   - Textos fijos y frase de invitación: ui.ts (home.ede*).
+ *   - Textos fijos, sello y etiquetas: ui.ts (home.ede*).
  * Botones: "Conocer la EDE" (página de la escuela) y "Quiero estudiar la EDE"
  * (formulario de contacto con el motivo "Quiero estudiar" ya elegido).
  */
@@ -32,10 +36,20 @@ const steps = timeline && 'steps' in timeline ? timeline.steps : [];
 ---
 
 <section class="ede section surface-deep" aria-labelledby="ede-title">
+  <!-- Letras gigantes de contorno, solo decorativas -->
+  <p class="ede__ghost" aria-hidden="true">EDE</p>
+
   <div class="container ede__grid">
-    <div class="ede__media" data-reveal="scale">
-      {ede?.image ? <SmartImage image={ede.image} sizes="(min-width: 64rem) 45vw, 100vw" /> : <ImagePlaceholder label="EDE" />}
-      <p class="ede__quote">“{ui.home.edeQuote}”</p>
+    <div class="ede__media-wrap" data-reveal="scale">
+      <div class="ede__media" data-live>
+        {ede?.image ? <SmartImage image={ede.image} sizes="(min-width: 64rem) 45vw, 100vw" /> : <ImagePlaceholder label="EDE" />}
+        <p class="ede__quote">“{ui.home.edeQuote}”</p>
+      </div>
+      <!-- Sello flotante -->
+      <div class="ede__badge" aria-hidden="true" data-live>
+        <span class="ede__badge-value">{ui.home.edeBadgeValue}</span>
+        <span class="ede__badge-unit">{ui.home.edeBadgeUnit}</span>
+      </div>
     </div>
 
     <div class="ede__text">
@@ -43,15 +57,20 @@ const steps = timeline && 'steps' in timeline ? timeline.steps : [];
       <h2 id="ede-title" data-reveal style="--reveal-delay: 80ms">{ui.home.edeTitle}</h2>
       <p class="lead ede__lead" data-reveal style="--reveal-delay: 160ms">{ui.home.edeText}</p>
 
+      <ul role="list" class="ede__chips" data-reveal style="--reveal-delay: 200ms">
+        {ui.home.edeChips.map((chip) => <li>{chip}</li>)}
+      </ul>
+
       {
         steps.length > 0 && (
-          <div class="ede__steps" data-reveal style="--reveal-delay: 200ms">
+          <div class="ede__steps" data-reveal style="--reveal-delay: 240ms">
             <h3 class="ede__steps-title">{ui.home.edeHow}</h3>
             <ol role="list">
-              {steps.map((s) => (
+              {steps.map((s, i) => (
                 <li>
                   <span class="ede__step-label">{s.label}</span>
                   <span class="ede__step-title">{s.title}</span>
+                  <span class="ede__step-num" aria-hidden="true">{i + 1}</span>
                 </li>
               ))}
             </ol>
@@ -59,24 +78,48 @@ const steps = timeline && 'steps' in timeline ? timeline.steps : [];
         )
       }
 
-      <div class="ede__actions" data-reveal style="--reveal-delay: 240ms">
+      <div class="ede__actions" data-reveal style="--reveal-delay: 280ms">
+        <a class="btn btn--primary btn--lg" href={`${routes.contact[locale]}?motivo=study`} data-event="ede_home_contact_click">
+          {ui.home.edeContact} <span class="btn__arrow" aria-hidden="true">→</span>
+        </a>
         {
           ede && (
-            <a class="btn btn--primary" href={schoolAlternates(ede.slug)[locale]} data-event="ede_home_click">
-              {ui.home.edeCta} <span class="btn__arrow" aria-hidden="true">→</span>
+            <a class="btn btn--outline" href={schoolAlternates(ede.slug)[locale]} data-event="ede_home_click">
+              {ui.home.edeCta}
             </a>
           )
         }
-        <a class="btn btn--outline" href={`${routes.contact[locale]}?motivo=study`} data-event="ede_home_contact_click">
-          {ui.home.edeContact}
-        </a>
       </div>
     </div>
   </div>
 </section>
 
 <style>
+  .ede {
+    position: relative;
+    overflow: hidden;
+    background:
+      radial-gradient(60rem 30rem at 85% 10%, rgb(0 173 239 / 0.22), transparent 60%),
+      radial-gradient(50rem 28rem at 0% 100%, rgb(31 106 86 / 0.45), transparent 60%),
+      var(--color-night-deep);
+  }
+
+  /* "EDE" gigante de contorno detrás del contenido. */
+  .ede__ghost {
+    position: absolute;
+    right: -2%;
+    bottom: -0.18em;
+    font-family: var(--font-display);
+    font-size: clamp(10rem, 34vw, 30rem);
+    line-height: 0.8;
+    color: transparent;
+    -webkit-text-stroke: 2px rgb(255 255 255 / 0.1);
+    user-select: none;
+    pointer-events: none;
+  }
+
   .ede__grid {
+    position: relative;
     display: grid;
     gap: var(--space-8);
     align-items: center;
@@ -84,9 +127,16 @@ const steps = timeline && 'steps' in timeline ? timeline.steps : [];
 
   @media (min-width: 64rem) {
     .ede__grid {
-      grid-template-columns: 1.1fr 1fr;
+      grid-template-columns: 1fr 1.05fr;
       gap: var(--space-9);
     }
+  }
+
+  /* ---------- Foto inclinada con marco y sello ---------- */
+  .ede__media-wrap {
+    position: relative;
+    width: min(100%, 30rem);
+    margin-inline: auto;
   }
 
   .ede__media {
@@ -94,8 +144,11 @@ const steps = timeline && 'steps' in timeline ? timeline.steps : [];
     aspect-ratio: 4 / 5;
     max-height: min(34rem, 75svh);
     width: 100%;
+    border: 6px solid var(--color-sand);
     border-radius: var(--radius-lg);
     overflow: hidden;
+    transform: rotate(-2.5deg);
+    box-shadow: 0 1.5rem 3rem rgb(0 0 0 / 0.45);
   }
 
   @media (min-width: 40rem) and (max-width: 63.99rem) {
@@ -115,13 +168,12 @@ const steps = timeline && 'steps' in timeline ? timeline.steps : [];
     content: '';
     position: absolute;
     inset: 0;
-    background: linear-gradient(to top, rgb(10 29 29 / 0.9), transparent 55%);
+    background: linear-gradient(to top, rgb(10 29 29 / 0.92), transparent 60%);
   }
 
-  /* Frase de invitación sobre la foto. */
   .ede__quote {
     position: absolute;
-    inset: auto var(--space-6) var(--space-6);
+    inset: auto var(--space-5) var(--space-5);
     z-index: 1;
     font-family: var(--font-display);
     font-size: var(--text-2xl);
@@ -130,12 +182,58 @@ const steps = timeline && 'steps' in timeline ? timeline.steps : [];
     color: var(--color-text-on-dark);
   }
 
+  .ede__badge {
+    position: absolute;
+    top: -1.25rem;
+    right: -0.5rem;
+    z-index: 2;
+    display: grid;
+    place-content: center;
+    width: 7rem;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: var(--color-river);
+    color: var(--color-night);
+    text-align: center;
+    box-shadow: 0 0.75rem 1.5rem rgb(0 0 0 / 0.4);
+    transform: rotate(8deg);
+    animation: ede-float 5s ease-in-out infinite alternate;
+  }
+
+  @media (min-width: 64rem) {
+    .ede__badge {
+      right: -1.5rem;
+      width: 8.5rem;
+    }
+  }
+
+  .ede__badge-value {
+    font-family: var(--font-display);
+    font-size: 2.6rem;
+    line-height: 0.9;
+  }
+
+  .ede__badge-unit {
+    font-size: var(--text-xs);
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  @keyframes ede-float {
+    to {
+      transform: translateY(-0.6rem) rotate(4deg);
+    }
+  }
+
+  /* ---------- Texto ---------- */
   .ede__eyebrow {
     color: var(--color-river);
   }
 
   .ede__text h2 {
     margin-top: var(--space-4);
+    font-size: var(--text-h1, clamp(2.4rem, 5vw, 4rem));
   }
 
   .ede__lead {
@@ -143,6 +241,23 @@ const steps = timeline && 'steps' in timeline ? timeline.steps : [];
     color: var(--color-text-on-dark-muted);
   }
 
+  .ede__chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin-top: var(--space-5);
+  }
+
+  .ede__chips li {
+    padding: 0.4rem 0.9rem;
+    border: 1.5px solid rgb(255 255 255 / 0.28);
+    border-radius: 999px;
+    color: var(--color-text-on-dark);
+    font-size: var(--text-sm);
+    font-weight: 600;
+  }
+
+  /* ---------- Fases como tarjetas ---------- */
   .ede__steps {
     margin-top: var(--space-6);
   }
@@ -162,26 +277,51 @@ const steps = timeline && 'steps' in timeline ? timeline.steps : [];
     gap: var(--space-3);
   }
 
+  @media (min-width: 40rem) {
+    .ede__steps ol {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
   .ede__steps li {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: baseline;
-    gap: var(--space-2) var(--space-4);
-    padding: var(--space-3) var(--space-4);
-    border-left: 4px solid var(--color-river);
-    border-radius: var(--radius-sm);
-    background: rgb(255 255 255 / 0.06);
+    position: relative;
+    display: grid;
+    gap: var(--space-1, 0.25rem);
+    padding: var(--space-4) var(--space-5);
+    border-top: 4px solid var(--color-river);
+    border-radius: var(--radius-md);
+    background: rgb(255 255 255 / 0.07);
+    overflow: hidden;
+    transition:
+      transform var(--duration) var(--ease),
+      background var(--duration) var(--ease);
+  }
+
+  .ede__steps li:hover {
+    transform: translateY(-4px);
+    background: rgb(255 255 255 / 0.12);
   }
 
   .ede__step-label {
     font-family: var(--font-display);
-    font-size: var(--text-2xl);
+    font-size: clamp(2.2rem, 4vw, 3rem);
     line-height: 1;
+    color: var(--color-text-on-dark);
   }
 
   .ede__step-title {
     color: var(--color-text-on-dark-muted);
-    font-weight: 600;
+    font-weight: 700;
+  }
+
+  .ede__step-num {
+    position: absolute;
+    right: 0.6rem;
+    bottom: -0.9rem;
+    font-family: var(--font-display);
+    font-size: 6rem;
+    line-height: 1;
+    color: rgb(0 173 239 / 0.2);
   }
 
   .ede__actions {
@@ -189,5 +329,21 @@ const steps = timeline && 'steps' in timeline ? timeline.steps : [];
     flex-wrap: wrap;
     gap: var(--space-3) var(--space-4);
     margin-top: var(--space-6);
+  }
+
+  .ede__actions :global(.btn--lg) {
+    min-height: 3.5rem;
+    padding-inline: var(--space-6);
+    font-size: var(--text-base);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ede__badge {
+      animation: none;
+    }
+
+    .ede__steps li {
+      transition: none;
+    }
   }
 </style>

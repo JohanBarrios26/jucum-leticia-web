@@ -439,3 +439,55 @@ a {
     navigation: none;
   }
 }
+
+/* ---------------------------------------------------------------------------
+ * SEPARADORES EN OLA entre secciones
+ * ---------------------------------------------------------------------------
+ * Cada sección (menos la primera) y el pie de página tienen el borde superior
+ * en forma de ola, como el río y la visión de JUCUM. La sección siguiente se
+ * monta un poco sobre la anterior y su ola deja ver el color de la de arriba,
+ * sin importar cuál sea. Para cambiar la altura de la ola: --wave-h.
+ * Para quitarla en una sección: agrega la clase "no-wave".
+ */
+/* Debe ser menor que --space-section (3.5rem mínimo) para no tapar contenido. */
+:root {
+  --wave-h: clamp(1.25rem, 0.6rem + 2.4vw, 3rem);
+}
+
+/* Las secciones sin fondo propio toman el color de la página: sin él, la ola no se vería. */
+:where(main > .section:not(:first-child):not(.no-wave)) {
+  background-color: var(--color-cloud);
+}
+
+main > .section:not(:first-child):not(.no-wave),
+.site-footer {
+  position: relative; /* pinta por encima de la sección anterior (la ola se ve) */
+  --wave-svg: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 960 48' preserveAspectRatio='none'%3E%3Cpath d='M0 24C120 0 360 0 480 24C600 48 840 48 960 24V48H0Z'/%3E%3C/svg%3E");
+  margin-top: calc(var(--wave-h) * -1 + 1px);
+  padding-top: calc(var(--space-section) + var(--wave-h));
+  -webkit-mask-image: var(--wave-svg), linear-gradient(#000 0 0);
+  mask-image: var(--wave-svg), linear-gradient(#000 0 0);
+  -webkit-mask-size:
+    60rem var(--wave-h),
+    100% calc(100% - var(--wave-h) + 2px);
+  mask-size:
+    60rem var(--wave-h),
+    100% calc(100% - var(--wave-h) + 2px);
+  -webkit-mask-position:
+    left top,
+    left bottom;
+  mask-position:
+    left top,
+    left bottom;
+  -webkit-mask-repeat: repeat-x, no-repeat;
+  mask-repeat: repeat-x, no-repeat;
+}
+
+/*
+ * Bloques a pantalla completa (portadas, foto con texto) que van antes de una
+ * sección con ola: se reserva abajo una franja para que la ola no tape su
+ * contenido (el fondo del bloque sigue por debajo de la franja).
+ */
+main > :not(.section):not(.no-wave):has(+ .section:not(.no-wave)) {
+  border-bottom: var(--wave-h) solid transparent;
+}

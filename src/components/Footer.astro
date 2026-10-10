@@ -138,7 +138,8 @@ const socials = (Object.keys(socialNames) as (keyof SocialLinks)[])
   .site-footer {
     /* Permite medir el ancho del contenedor (unidades cqi) para el nombre gigante. */
     container-type: inline-size;
-    padding-top: var(--space-9);
+    /* La ola del borde superior (--wave-h) se define en global.css. */
+    padding-top: calc(var(--space-9) + var(--wave-h, 0px));
     font-size: var(--text-sm);
     overflow: hidden;
   }
