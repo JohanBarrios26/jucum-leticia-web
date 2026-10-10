@@ -10,7 +10,7 @@
  * (getSiteSettings): si JUCUM cambia un teléfono en el panel, cambia aquí solo.
  */
 import PendingContent from './PendingContent.astro';
-import { joinPathUrl, joinPaths, legalPages, legalRoutes, mainNav, routes, type Locale } from '@/i18n/routes';
+import { amazonRoute, joinPathUrl, joinPaths, legalPages, legalRoutes, mainNav, routes, type Locale } from '@/i18n/routes';
 import { t } from '@/i18n/ui';
 import { getAbout, whatsappUrl, type SiteSettings, type SocialLinks } from '@/lib/content';
 
@@ -53,6 +53,7 @@ const socials = (Object.keys(socialNames) as (keyof SocialLinks)[])
         <h2 class="footer-col__title" id="footer-nav-title">{ui.footer.navigation}</h2>
         <ul role="list">
           {mainNav.map((key) => <li><a href={routes[key][locale]}>{ui.nav[key]}</a></li>)}
+          <li><a href={amazonRoute[locale]}>{ui.amazon.eyebrow}</a></li>
         </ul>
       </nav>
 

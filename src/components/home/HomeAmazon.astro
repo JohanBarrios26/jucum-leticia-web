@@ -1,0 +1,146 @@
+---
+/**
+ * INICIO · TARJETA DESTACADA "VIVE EL AMAZONAS"
+ * ----------------------------------------------------------------------------
+ * Puerta de entrada a la página aparte /vive-el-amazonas/. Foto a todo ancho,
+ * título gigante, tres datos clave y un botón. La foto, el título y la frase
+ * salen del panel (Vive el Amazonas); si la página no existe, no se muestra.
+ */
+import SmartImage from '@/components/ui/SmartImage.astro';
+import { amazonRoute, type Locale } from '@/i18n/routes';
+import { t } from '@/i18n/ui';
+import type { AmazonPage, Maybe } from '@/lib/content';
+
+interface Props {
+  locale: Locale;
+  page: Maybe<AmazonPage>;
+}
+
+const { locale, page } = Astro.props;
+const ui = t(locale).amazon;
+---
+
+{
+  page && (
+    <section class="vive section" aria-labelledby="vive-title">
+      {page.heroImage && (
+        <div class="vive__bg" aria-hidden="true" data-live>
+          <SmartImage image={page.heroImage} decorative sizes="100vw" />
+        </div>
+      )}
+      <div class="container vive__inner">
+        <p class="eyebrow eyebrow--line vive__eyebrow" data-reveal>{ui.eyebrow}</p>
+        <h2 id="vive-title" class="vive__title" data-reveal style="--reveal-delay: 80ms">{page.title}</h2>
+        {page.tagline && <p class="vive__tagline" data-reveal style="--reveal-delay: 160ms">{page.tagline}</p>}
+        <ul role="list" class="vive__chips" data-reveal style="--reveal-delay: 220ms">
+          {ui.teaserChips.map((c) => <li>{c}</li>)}
+        </ul>
+        <a class="btn btn--primary btn--lg vive__cta" href={amazonRoute[locale]} data-reveal style="--reveal-delay: 280ms" data-event="amazon_teaser_click">
+          {ui.teaserCta} <span class="btn__arrow" aria-hidden="true">→</span>
+        </a>
+      </div>
+    </section>
+  )
+}
+
+<style>
+  .vive {
+    position: relative;
+    display: grid;
+    align-items: center;
+    min-height: min(40rem, 85svh);
+    overflow: hidden;
+    color: var(--color-text-on-dark);
+    background: var(--color-night-deep);
+    isolation: isolate;
+  }
+
+  .vive__bg {
+    position: absolute;
+    inset: 0;
+    z-index: -2;
+  }
+
+  .vive__bg :global(img),
+  .vive__bg :global(picture) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    animation: vive-drift 28s ease-in-out infinite alternate;
+  }
+
+  @keyframes vive-drift {
+    from {
+      transform: scale(1.04);
+    }
+    to {
+      transform: scale(1.14) translateX(-1.5%);
+    }
+  }
+
+  .vive::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background:
+      linear-gradient(90deg, rgb(10 29 29 / 0.88), rgb(10 29 29 / 0.35) 70%, rgb(10 29 29 / 0.6)),
+      linear-gradient(to top, rgb(10 29 29 / 0.7), transparent 50%);
+  }
+
+  .vive__inner {
+    position: relative;
+    display: grid;
+    justify-items: start;
+    gap: var(--space-4);
+  }
+
+  .vive__eyebrow {
+    color: var(--color-river);
+  }
+
+  .vive__title {
+    font-size: clamp(3.5rem, 11vw, 9.5rem);
+    line-height: 0.9;
+    text-transform: uppercase;
+    text-shadow: 0 0.5rem 2.5rem rgb(0 0 0 / 0.5);
+  }
+
+  .vive__tagline {
+    font-family: var(--font-display);
+    font-size: clamp(1.6rem, 3.4vw, 2.6rem);
+    line-height: 1;
+    color: var(--color-river);
+    text-transform: uppercase;
+  }
+
+  .vive__chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin-top: var(--space-2);
+  }
+
+  .vive__chips li {
+    padding: 0.4rem 0.9rem;
+    border: 1.5px solid rgb(255 255 255 / 0.45);
+    border-radius: 999px;
+    background: rgb(10 29 29 / 0.45);
+    font-size: var(--text-sm);
+    font-weight: 600;
+  }
+
+  .vive__cta {
+    margin-top: var(--space-4);
+    min-height: 3.5rem;
+    padding-inline: var(--space-7);
+    font-size: var(--text-base);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .vive__bg :global(img),
+    .vive__bg :global(picture) {
+      animation: none;
+    }
+  }
+</style>

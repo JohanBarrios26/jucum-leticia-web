@@ -14,6 +14,7 @@ import { joinPathUrl, joinPaths as joinPathOrder, type Locale } from '@/i18n/rou
 import { fetchCmsContent, type CmsContent } from '@/lib/sanity/fetch';
 import type {
   About,
+  AmazonPage,
   Community,
   Base,
   BaseRaw,
@@ -310,6 +311,21 @@ export async function getSchool(slug: string, locale: Locale): Promise<Maybe<Sch
   return s ? resolveSchool(s, locale, people) : null;
 }
 
+/* ------------------------------------------------------ Página "Vive el Amazonas" */
+
+export async function getAmazonPage(locale: Locale): Promise<Maybe<AmazonPage>> {
+  const p = (await source()).amazonPage;
+  if (!p) return null;
+  return {
+    title: localize(p.title, locale),
+    tagline: localizeMaybe(p.tagline, locale),
+    lead: localizeMaybe(p.lead, locale),
+    heroImage: resolveImageMaybe(p.heroImage, locale),
+    reasons: p.reasons.map((r) => ({ title: localize(r.title, locale), text: localizeMaybe(r.text, locale) })),
+    ways: p.ways.map((w) => ({ mode: w.mode, title: localize(w.title, locale), text: localizeMaybe(w.text, locale) })),
+  };
+}
+
 /* ------------------------------------------------------ Mapa de comunidades */
 
 /** Comunidades del mapa ilustrado (las desactivadas ya vienen filtradas). */
@@ -376,7 +392,7 @@ export async function getAbout(locale: Locale): Promise<About> {
     motto: localizeMaybe(a.motto, locale),
     global: localizeMaybe(a.global, locale),
     verse: a.verse ? { text: localize(a.verse.text, locale), reference: localize(a.verse.reference, locale) } : null,
-    values: a.values.map((v) => ({ title: localize(v.title, locale), text: localizeMaybe(v.text, locale) })),
+    values: a.values.map((v) => ({ title: localize(v.title, locale), text: localizeMaybe(v.text, locale), group: v.group })),
     history: a.history.map((h) => ({
       year: localize(h.year, locale),
       title: localize(h.title, locale),

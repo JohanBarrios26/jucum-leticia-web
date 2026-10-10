@@ -90,6 +90,12 @@ Para indicar en una escuela dónde se realiza: abre la escuela → pestaña **Fi
 ### Agregar fotos o videos a una escuela
 Abre la escuela → pestaña **Fotos y videos**: sube fotos (con su descripción) y pega enlaces de YouTube. La sección aparece sola en la página de la escuela, con visor ampliado; si no hay nada, no se muestra.
 
+### Valores de JUCUM
+En **Quiénes somos → Valores**: cada valor tiene título, texto y **Grupo** (Con Dios, Hacia el mundo, Con las personas, Cómo trabajamos). Se muestran en cuatro tarjetas, y al tocar un valor se abre su texto completo.
+
+### Página "Vive el Amazonas"
+Menú **Vive el Amazonas**: título, frase, introducción, foto de portada, las tarjetas de "Por qué no lo hace cualquiera" y las formas de llegar. Escribe solo hechos confirmados. Las cifras (años, iglesias, países, escuelas) y las fotos de la galería se toman solas del resto del sitio.
+
 ### Mapa de comunidades (iglesias plantadas)
 Menú **Mapa: comunidades**. Cada comunidad es un punto del mapa interactivo (inicio y página de "Comunidades ribereñas"). Para agregar una: nombre, tipo (iglesia o base), país y fase (opcionales; si faltan, el punto igual aparece) y su **posición** en el mapa (horizontal y vertical, de 0 a 100; 0,0 es arriba a la izquierda). El mapa es una ilustración: las posiciones son aproximadas. Para ocultar una sin borrarla, desactiva **Mostrar en el mapa**. Los filtros por país solo aparecen si hay comunidades con país asignado. Hoy la mayoría no tiene país ni fase: conviene completarlos.
 

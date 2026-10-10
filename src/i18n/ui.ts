@@ -114,6 +114,8 @@ const es = {
 
     motto: 'Lema',
     globalEyebrow: 'Parte de un movimiento global',
+    valuesHint: 'Toca un valor para leerlo completo.',
+    valueGroups: { god: 'Con Dios', world: 'Hacia el mundo', people: 'Con las personas', work: 'Cómo trabajamos' },
     verse: 'Nuestra palabra',
   },
 
@@ -287,6 +289,21 @@ const es = {
     location: 'Ubicación',
     whatsappMessage: 'Hola JUCUM Leticia, me gustaría recibir más información.',
   },
+  amazon: {
+    eyebrow: 'Vive el Amazonas',
+    years: 'años sirviendo',
+    countries: 'países',
+    churches: 'iglesias plantadas',
+    schools: 'escuelas',
+    reasonsTitle: 'Por qué no lo hace cualquiera',
+    waysTitle: 'Cómo llegar',
+    galleryTitle: 'La vida aquí',
+    ctaTitle: 'Tu lugar en esta historia',
+    ctaText: 'Venir, orar o apoyar: elige cómo ser parte.',
+    teaserCta: 'Descubre cómo se vive',
+    scroll: 'Desliza',
+    teaserChips: ['Sin carretera: solo por aire o río', 'Tres países, un solo paso', 'Desde el año 2000'],
+  },
   newTab: '(se abre en una pestaña nueva)',
   founders: {
     eyebrow: 'Directores fundadores',
@@ -412,6 +429,8 @@ const en: UIStrings = {
 
     motto: 'Motto',
     globalEyebrow: 'Part of a global movement',
+    valuesHint: 'Tap a value to read it in full.',
+    valueGroups: { god: 'With God', world: 'Toward the world', people: 'With people', work: 'How we work' },
     verse: 'Our verse',
   },
   lists: {
@@ -566,6 +585,21 @@ const en: UIStrings = {
     location: 'Location',
     whatsappMessage: 'Hello YWAM Leticia, I would like to receive more information.',
   },
+  amazon: {
+    eyebrow: 'Live the Amazon',
+    years: 'years serving',
+    countries: 'countries',
+    churches: 'churches planted',
+    schools: 'schools',
+    reasonsTitle: 'Why not just anyone does it',
+    waysTitle: 'How to get here',
+    galleryTitle: 'Life here',
+    ctaTitle: 'Your place in this story',
+    ctaText: 'Come, pray or support: choose how to be part.',
+    teaserCta: 'Discover what it is like',
+    scroll: 'Scroll',
+    teaserChips: ['No road in: only by air or river', 'Three countries, one step', 'Since the year 2000'],
+  },
   newTab: '(opens in a new tab)',
   founders: {
     eyebrow: 'Founding directors',
@@ -689,6 +723,8 @@ const pt: UIStrings = {
 
     motto: 'Lema',
     globalEyebrow: 'Parte de um movimento global',
+    valuesHint: 'Toque em um valor para lê-lo por completo.',
+    valueGroups: { god: 'Com Deus', world: 'Rumo ao mundo', people: 'Com as pessoas', work: 'Como trabalhamos' },
     verse: 'Nossa palavra',
   },
   lists: {
@@ -842,6 +878,21 @@ const pt: UIStrings = {
     writeWhatsapp: 'Escreva no WhatsApp',
     location: 'Localização',
     whatsappMessage: 'Olá JOCUM Letícia, gostaria de receber mais informações.',
+  },
+  amazon: {
+    eyebrow: 'Viva a Amazônia',
+    years: 'anos de serviço',
+    countries: 'países',
+    churches: 'igrejas plantadas',
+    schools: 'escolas',
+    reasonsTitle: 'Por que nem todo mundo faz isso',
+    waysTitle: 'Como chegar',
+    galleryTitle: 'A vida aqui',
+    ctaTitle: 'Seu lugar nesta história',
+    ctaText: 'Vir, orar ou apoiar: escolha como fazer parte.',
+    teaserCta: 'Descubra como é viver aqui',
+    scroll: 'Role',
+    teaserChips: ['Sem estrada: só por ar ou rio', 'Três países, um só passo', 'Desde o ano 2000'],
   },
   newTab: '(abre em uma nova aba)',
   founders: {

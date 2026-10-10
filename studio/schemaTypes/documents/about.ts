@@ -64,8 +64,22 @@ export const about = defineType({
           fields: [
             defineField({name: 'title', title: 'Valor', type: 'localeString', validation: (rule) => rule.required()}),
             defineField({name: 'text', title: 'Explicación', type: 'localeText'}),
+            defineField({
+              name: 'group',
+              title: 'Grupo',
+              type: 'string',
+              description: 'En qué grupo se muestra este valor en la página.',
+              options: {
+                list: [
+                  {title: 'Con Dios', value: 'god'},
+                  {title: 'Hacia el mundo', value: 'world'},
+                  {title: 'Con las personas', value: 'people'},
+                  {title: 'Cómo trabajamos', value: 'work'},
+                ],
+              },
+            }),
           ],
-          preview: {select: {title: 'title.es', subtitle: 'text.es'}},
+          preview: {select: {title: 'title.es', subtitle: 'group'}},
         }),
       ],
     }),

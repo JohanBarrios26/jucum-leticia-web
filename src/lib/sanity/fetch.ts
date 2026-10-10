@@ -12,6 +12,7 @@
 import { createClient } from '@sanity/client';
 import type {
   AboutRaw,
+  AmazonPageRaw,
   AccessMode,
   BaseRaw,
   FeatureBlockRaw,
@@ -22,6 +23,7 @@ import type {
   JoinPathRaw,
   Community,
   Localized,
+  Maybe,
   MinistryRaw,
   MotifName,
   PageTextsRaw,
@@ -30,7 +32,7 @@ import type {
   SiteSettingsRaw,
   StoryRaw,
 } from '@/lib/content/types';
-import { communityCountries, communityPhases } from '@/lib/content/types';
+import { communityCountries, communityPhases, valueGroups, type ValueGroup } from '@/lib/content/types';
 import { sanityConfig } from './config';
 
 const client = createClient({
@@ -83,6 +85,7 @@ const query = `{
     founders{..., photo${photo}, members[]{..., photo${photo}}}
   },
   "pageTexts": *[_id == "pageTexts"][0],
+  "amazonPage": *[_id == "amazonPage"][0]{..., heroImage${photo}},
   "people": *[_type == "person"] | order(orderRank){
     ..., "slug": slug.current, photo${photo}, "ministrySlug": ministry->slug.current,
     "schoolSlugs": schools[]->slug.current
@@ -119,6 +122,7 @@ export interface CmsContent {
   bases: BaseRaw[];
   about: AboutRaw;
   pageTexts: PageTextsRaw;
+  amazonPage: Maybe<AmazonPageRaw>;
   people: PersonRaw[];
   home: HomeRaw;
   ministries: MinistryRaw[];
@@ -234,7 +238,9 @@ function toAbout(d: Doc | null): AboutRaw {
     motto: lx(d.motto),
     global: lx(d.global),
     verse: d.verse?.text?.es ? { text: d.verse.text, reference: lz(d.verse.reference ?? '') } : null,
-    values: (d.values ?? []).filter((v: Doc) => v.title).map((v: Doc) => ({ title: v.title, text: lx(v.text) })),
+    values: (d.values ?? [])
+      .filter((v: Doc) => v.title)
+      .map((v: Doc) => ({ title: v.title, text: lx(v.text), group: (valueGroupList.includes(v.group) ? v.group : null) as ValueGroup | null })),
     history: (d.history ?? [])
       .filter((h: Doc) => h.year && h.title)
       .map((h: Doc) => ({ year: lz(h.year), title: h.title, text: lx(h.text), image: toImage(h.image) })),
@@ -414,6 +420,22 @@ function toCommunity(d: Doc): Community {
   };
 }
 
+const valueGroupList: readonly string[] = valueGroups;
+
+function toAmazonPage(d: Doc | null): Maybe<AmazonPageRaw> {
+  if (!d?.title) return null;
+  return {
+    title: d.title,
+    tagline: lx(d.tagline),
+    lead: lx(d.lead),
+    heroImage: toImage(d.heroImage),
+    reasons: (d.reasons ?? []).filter((r: Doc) => r.title).map((r: Doc) => ({ title: r.title, text: lx(r.text) })),
+    ways: (d.ways ?? [])
+      .filter((w: Doc) => w.title && ['air', 'river', 'walk'].includes(w.mode))
+      .map((w: Doc) => ({ mode: w.mode, title: w.title, text: lx(w.text) })),
+  };
+}
+
 function toStory(d: Doc): StoryRaw {
   return {
     slug: d.slug,
@@ -452,6 +474,7 @@ export function fetchCmsContent(): Promise<CmsContent> {
     siteSettings: toSiteSettings(r.siteSettings),
     bases: (r.bases ?? []).filter((b: Doc) => b.slug && b.name).map(toBase),
     about: toAbout(r.about),
+    amazonPage: toAmazonPage(r.amazonPage),
     pageTexts: {
       basesIntro: lx(r.pageTexts?.basesIntro),
       ministriesIntro: lx(r.pageTexts?.ministriesIntro),

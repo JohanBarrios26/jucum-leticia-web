@@ -66,6 +66,10 @@ export const structure: StructureResolver = (S, context) =>
         .title('Quiénes somos')
         .icon(InfoOutlineIcon)
         .child(S.document().schemaType('about').documentId('about').title('Quiénes somos')),
+      S.listItem()
+        .title('Vive el Amazonas')
+        .icon(ImagesIcon)
+        .child(S.document().schemaType('amazonPage').documentId('amazonPage').title('Vive el Amazonas')),
       S.divider(),
       orderableList(S, context, 'base', 'Bases', PinIcon),
       S.listItem().title('Mapa: comunidades').icon(PinIcon).child(S.documentTypeList('community').title('Mapa: comunidades')),

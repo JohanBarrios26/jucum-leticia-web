@@ -68,6 +68,13 @@ export const contactThanks: Alternates = {
   pt: '/pt/contato/obrigado/',
 };
 
+/** Página aparte "Vive el Amazonas" (no va en el menú: se destaca en el inicio y en el pie). */
+export const amazonRoute: Alternates = {
+  es: '/vive-el-amazonas/',
+  en: '/en/live-the-amazon/',
+  pt: '/pt/viva-a-amazonia/',
+};
+
 /* ------------------------------------------------------------ Páginas legales */
 // Políticas exigidas por la ley (privacidad, términos, cookies, donaciones).
 // Su texto está en src/i18n/legal.ts; aquí solo sus direcciones.

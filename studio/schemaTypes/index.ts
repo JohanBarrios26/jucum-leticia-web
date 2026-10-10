@@ -3,6 +3,7 @@
  * Para agregar un tipo nuevo: créalo en documents/ u objects/ e inclúyelo aquí.
  */
 import {about} from './documents/about'
+import {amazonPage} from './documents/amazonPage'
 import {base} from './documents/base'
 import {community} from './documents/community'
 import {galleryItem} from './documents/galleryItem'
@@ -29,6 +30,7 @@ export const schemaTypes = [
   siteSettings,
   home,
   about,
+  amazonPage,
   base,
   community,
   pageTexts,
@@ -45,8 +47,9 @@ export const singletonIds: Record<string, string> = {
   siteSettings: 'siteSettings',
   home: 'home',
   about: 'about',
+  amazonPage: 'amazonPage',
   pageTexts: 'pageTexts',
 }
 
 /** Tipos que no se pueden crear ni borrar desde el panel. */
-export const fixedTypes = ['siteSettings', 'home', 'about', 'pageTexts', 'joinPath']
+export const fixedTypes = ['siteSettings', 'home', 'about', 'amazonPage', 'pageTexts', 'joinPath']

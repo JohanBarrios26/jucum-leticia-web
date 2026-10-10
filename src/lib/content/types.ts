@@ -368,7 +368,7 @@ export interface AboutRaw {
   motto: Maybe<Localized>;
   global: Maybe<Localized>;
   verse: Maybe<{ text: Localized; reference: Localized }>;
-  values: { title: Localized; text: Maybe<Localized> }[];
+  values: { title: Localized; text: Maybe<Localized>; group: Maybe<ValueGroup> }[];
   history: { year: Localized; title: Localized; text: Maybe<Localized>; image: Maybe<ImageRawRef> }[];
   teamIntro: Maybe<Localized>;
   founders: FoundersRaw;
@@ -396,11 +396,35 @@ export interface About {
   motto: Maybe<string>;
   global: Maybe<string>;
   verse: Maybe<{ text: string; reference: string }>;
-  values: { title: string; text: Maybe<string> }[];
+  values: { title: string; text: Maybe<string>; group: Maybe<ValueGroup> }[];
   history: { year: string; title: string; text: Maybe<string>; image: Maybe<ImageRef> }[];
   teamIntro: Maybe<string>;
   /** null = sin autorización o sin datos todavía. */
   founders: Maybe<Founders>;
+}
+
+/** Grupos en que se muestran los valores de JUCUM (Quiénes somos). */
+export const valueGroups = ['god', 'world', 'people', 'work'] as const;
+export type ValueGroup = (typeof valueGroups)[number];
+
+/* ------------------------------------------------------- Página "Vive el Amazonas" */
+
+export interface AmazonPageRaw {
+  title: Localized;
+  tagline: Maybe<Localized>;
+  lead: Maybe<Localized>;
+  heroImage: Maybe<ImageRawRef>;
+  reasons: { title: Localized; text: Maybe<Localized> }[];
+  ways: { mode: 'air' | 'river' | 'walk'; title: Localized; text: Maybe<Localized> }[];
+}
+
+export interface AmazonPage {
+  title: string;
+  tagline: Maybe<string>;
+  lead: Maybe<string>;
+  heroImage: Maybe<ImageRef>;
+  reasons: { title: string; text: Maybe<string> }[];
+  ways: { mode: 'air' | 'river' | 'walk'; title: string; text: Maybe<string> }[];
 }
 
 /* ----------------------------------------------------------------- Personas */
