@@ -128,12 +128,13 @@ const icons = {
           <ul role="list" class="av-ways">
             {page.ways.map((w, i) => (
               <li data-reveal style={`--reveal-delay: ${i * 100}ms`}>
-                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d={icons[w.mode]} /></svg>
+                <svg class:list={{ 'av-ways__air': w.mode === 'air' }} viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d={icons[w.mode]} /></svg>
                 <h3>{w.title}</h3>
                 {w.text && <p>{w.text}</p>}
               </li>
             ))}
           </ul>
+          <p class="av-note">{ui.amazon.waysNote}</p>
         </div>
       </section>
     )
@@ -377,7 +378,7 @@ const icons = {
     stroke-linejoin: round;
   }
 
-  .av-ways li:first-child svg {
+  .av-ways li svg.av-ways__air {
     fill: var(--color-river);
     stroke: none;
   }
@@ -389,6 +390,12 @@ const icons = {
 
   .av-ways p {
     color: var(--color-text-on-dark-muted);
+  }
+
+  .av-note {
+    margin-top: var(--space-5);
+    color: var(--color-text-on-dark-muted);
+    font-size: var(--text-sm);
   }
 
   /* ---------- Llamado final ---------- */

@@ -25,12 +25,14 @@ interface Props {
   back?: { href: string; label: string };
   /** Título más pequeño, para frases largas (ej. página de agradecimiento). */
   compact?: boolean;
+  /** El nombre es el protagonista: título enorme y su primera palabra en contorno detrás (ministerios, escuelas, bases). */
+  bigName?: boolean;
 }
 
-const { title, eyebrow, lead, image, motif, back, compact = false } = Astro.props;
+const { title, eyebrow, lead, image, motif, back, compact = false, bigName = false } = Astro.props;
 ---
 
-<section class:list={['page-hero', 'on-photo', { 'page-hero--image': image, 'page-hero--motif': motif, 'page-hero--compact': compact }]}>
+<section class:list={['page-hero', 'on-photo', { 'page-hero--image': image, 'page-hero--motif': motif, 'page-hero--compact': compact, 'page-hero--name': bigName }]}>
   {
     image && (
       <div class="page-hero__media">
@@ -38,6 +40,8 @@ const { title, eyebrow, lead, image, motif, back, compact = false } = Astro.prop
       </div>
     )
   }
+
+  {bigName && <p class="page-hero__ghost" aria-hidden="true">{title.split(' ')[0]}</p>}
 
   <div class="container page-hero__inner">
     <div class="page-hero__text">
@@ -150,6 +154,33 @@ const { title, eyebrow, lead, image, motif, back, compact = false } = Astro.prop
     font-size: var(--text-display);
     line-height: 0.88;
     animation: hero-rise 1000ms var(--ease) both;
+  }
+
+  /* Variante "nombre protagonista" */
+  .page-hero--name {
+    min-height: min(38rem, 80svh);
+  }
+
+  .page-hero--name .page-hero__title {
+    font-size: clamp(3.4rem, 10.5vw, 9.5rem);
+    text-transform: uppercase;
+    text-shadow: 0 0.5rem 2.5rem rgb(0 0 0 / 0.45);
+  }
+
+  .page-hero__ghost {
+    position: absolute;
+    right: -1%;
+    bottom: -0.1em;
+    z-index: 0;
+    font-family: var(--font-display);
+    font-size: clamp(7rem, 24vw, 22rem);
+    line-height: 0.8;
+    text-transform: uppercase;
+    color: transparent;
+    -webkit-text-stroke: 2px rgb(255 255 255 / 0.1);
+    white-space: nowrap;
+    user-select: none;
+    pointer-events: none;
   }
 
   .page-hero--compact .page-hero__title {
