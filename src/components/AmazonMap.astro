@@ -31,11 +31,14 @@ interface Props {
   titleId?: string;
   /** Mapa grande y con más presencia (inicio). */
   large?: boolean;
+  /** Con `large`: conserva el conteo, los filtros y la leyenda (página del ministerio). */
+  rich?: boolean;
   /** Muestra la lista completa de comunidades (solo en la página del ministerio). */
   showList?: boolean;
 }
 
-const { locale, communities, titleId, large = false, showList = true } = Astro.props;
+const { locale, communities, titleId, large = false, rich = false, showList = true } = Astro.props;
+const minimal = large && !rich;
 const ui = t(locale).reach;
 
 // Solo se ofrecen filtros de los países que tienen al menos una comunidad.
@@ -68,14 +71,14 @@ const detail = (c: Community) =>
     .join(' · ');
 ---
 
-<div class:list={['amap', { 'amap--large': large }]} data-amap aria-labelledby={titleId}>
+<div class:list={['amap', { 'amap--large': large, 'amap--minimal': minimal }]} data-amap aria-labelledby={titleId}>
   <div class="amap__bar">
     <p class="amap__count"><strong data-amap-count>{communities.length}</strong> {ui.count}</p>
     <button type="button" class="amap__zoom" data-amap-zoom aria-pressed="false" data-label-on={ui.zoomOut} data-label-off={ui.zoomIn}>
       <span data-amap-zoom-label>{ui.zoomIn}</span>
     </button>
     {
-      countries.length > 1 && !large && (
+      countries.length > 1 && !minimal && (
         <div class="amap__filters" role="group" aria-label={ui.filterLabel}>
           <button type="button" class="amap__filter" data-country="all" aria-pressed="true">{ui.all}</button>
           {countries.map((c) => (
@@ -140,8 +143,8 @@ const detail = (c: Community) =>
     </div>
   </div>
 
-  <p class="amap__panel" role="status" aria-live="polite" data-amap-panel data-default={large ? '' : ui.select}>{large ? '' : ui.select}</p>
-  {!large && <p class="amap__note">{ui.legend} {ui.note}</p>}
+  <p class="amap__panel" role="status" aria-live="polite" data-amap-panel data-default={minimal ? '' : ui.select}>{minimal ? '' : ui.select}</p>
+  {!minimal && <p class="amap__note">{ui.legend} {ui.note}</p>}
 
   {
     showList && (
@@ -297,7 +300,7 @@ const detail = (c: Community) =>
   }
 
   /* En el inicio casi no hay texto: sin conteo, filtros ni leyenda; el mapa deja curiosidad. */
-  .amap--large .amap__count {
+  .amap--minimal .amap__count {
     display: none;
   }
 
@@ -307,7 +310,7 @@ const detail = (c: Community) =>
 
   /* El botón de ampliar solo se ofrece en pantallas pequeñas. */
   @media (min-width: 40rem) {
-    .amap--large .amap__bar {
+    .amap--minimal .amap__bar {
       display: none;
     }
   }
