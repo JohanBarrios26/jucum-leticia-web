@@ -181,7 +181,7 @@ function toFeatures(list: Doc[] | null | undefined): FeatureBlockRaw[] {
             .map((a: Doc) => ({
               language: a.language,
               community: a.community ?? null,
-              reference: a.reference,
+              reference: lz(a.reference),
               text: a.text,
               audioUrl: a.audioUrl,
               mimeType: a.mimeType ?? null,

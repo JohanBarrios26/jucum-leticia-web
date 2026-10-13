@@ -551,7 +551,7 @@ export type FeatureBlockRaw =
       samples: {
         language: string;
         community: Maybe<string>;
-        reference: string;
+        reference: Localized;
         text: Localized;
         audioUrl: string;
         mimeType: Maybe<string>;

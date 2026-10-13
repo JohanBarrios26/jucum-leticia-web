@@ -56,8 +56,8 @@ export const audioSamples = defineType({
             defineField({
               name: 'reference',
               title: 'Cita bíblica',
-              type: 'string',
-              description: 'Ej: "Juan 3:16".',
+              type: 'localeString',
+              description: 'Ej: "Juan 3:16" (en inglés "John 3:16").',
               validation: (rule) => rule.required(),
             }),
             defineField({

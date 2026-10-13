@@ -34,3 +34,6 @@ Thumbs.db
 
 # Material informativo del cliente (no se publica)
 Documentos Informacion/
+
+# Audios de OBT (se suben al panel, no al repositorio)
+AUDIOS OBT/

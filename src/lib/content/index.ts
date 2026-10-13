@@ -121,7 +121,7 @@ function resolveFeatures(list: FeatureBlockRaw[], locale: Locale): FeatureBlock[
             .map((a) => ({
               language: a.language,
               community: a.community,
-              reference: a.reference,
+              reference: localize(a.reference, locale),
               text: localize(a.text, locale),
               audioUrl: a.audioUrl,
               mimeType: a.mimeType,
