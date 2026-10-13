@@ -91,7 +91,7 @@ const site = Astro.site ?? Astro.url;
 const siteHost = new URL(site).hostname;
 const analyticsEnabled = Boolean(umamiWebsiteId) && siteHost !== 'localhost';
 const canonical = new URL(alternates[locale], site).href;
-const ogImageFinal = ogImage ?? ogImageUrl(home.hero.image) ?? new URL('/brand/logo-original.png', site).href;
+const ogImageFinal = ogImage ?? ogImageUrl(home.hero.image) ?? new URL('/brand/og-logo.jpg', site).href;
 const ogLocale = { es: 'es_CO', en: 'en_US', pt: 'pt_BR' } satisfies Record<Locale, string>;
 
 // ---- Datos estructurados (JSON-LD) para Google ----
@@ -104,7 +104,7 @@ if (organizationSchema) {
     name: settings.organizationName,
     description: settings.shortDescription,
     url: new URL(alternates[locale], site).href,
-    logo: new URL('/brand/logo-original.png', site).href,
+    logo: new URL('/brand/jucum-leticia.png', site).href,
     image: ogImageFinal,
     email: settings.email,
     telephone: settings.phones.map((p) => p.number),
@@ -219,8 +219,9 @@ if (breadcrumbs && breadcrumbs.length > 0) {
           })();
         </script>
     <meta name="theme-color" content="#102a2a" />
-    <link rel="icon" type="image/png" href="/brand/logo-dark.png" />
-    <link rel="apple-touch-icon" href="/brand/logo-original.png" />
+    <link rel="icon" type="image/svg+xml" href="/brand/favicon.svg" />
+    <link rel="icon" type="image/png" sizes="64x64" href="/brand/favicon-64.png" />
+    <link rel="apple-touch-icon" href="/brand/apple-touch-icon.png" />
     <link rel="sitemap" href="/sitemap-index.xml" />
     <meta name="generator" content={Astro.generator} />
   </head>
