@@ -237,6 +237,7 @@ function toAbout(d: Doc | null): AboutRaw {
     vision: lx(d.vision),
     motto: lx(d.motto),
     global: lx(d.global),
+    video: d.video?.url ? { title: lx(d.video.title), url: d.video.url } : null,
     verse: d.verse?.text?.es ? { text: d.verse.text, reference: lz(d.verse.reference ?? '') } : null,
     values: (d.values ?? [])
       .filter((v: Doc) => v.title)

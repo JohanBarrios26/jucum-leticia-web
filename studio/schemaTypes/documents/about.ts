@@ -155,6 +155,23 @@ export const about = defineType({
       ],
     }),
     defineField({
+      name: 'video',
+      title: 'Video de la historia (YouTube)',
+      type: 'object',
+      group: 'history',
+      description: 'Un video que cuenta la historia de JUCUM Leticia. Se muestra después de la línea de tiempo y solo carga al pulsar reproducir.',
+      fields: [
+        defineField({name: 'title', title: 'Título', type: 'localeString'}),
+        defineField({
+          name: 'url',
+          title: 'Enlace de YouTube',
+          type: 'url',
+          validation: (rule) =>
+            rule.custom((url) => (!url || /youtu\.?be/.test(String(url)) ? true : 'Por ahora solo se admiten videos de YouTube.')),
+        }),
+      ],
+    }),
+    defineField({
       name: 'teamIntro',
       title: 'Texto sobre el equipo',
       type: 'localeText',

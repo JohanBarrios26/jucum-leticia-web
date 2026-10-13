@@ -115,6 +115,7 @@ const es = {
 
     motto: 'Lema',
     globalEyebrow: 'Parte de un movimiento global',
+    videoTitle: '25 años de ministerio en video',
     valuesHint: 'Toca un valor para leerlo completo.',
     valueGroups: { god: 'Con Dios', world: 'Hacia el mundo', people: 'Con las personas', work: 'Cómo trabajamos' },
     verse: 'Nuestra palabra',
@@ -444,6 +445,7 @@ const en: UIStrings = {
 
     motto: 'Motto',
     globalEyebrow: 'Part of a global movement',
+    videoTitle: '25 years of ministry on video',
     valuesHint: 'Tap a value to read it in full.',
     valueGroups: { god: 'With God', world: 'Toward the world', people: 'With people', work: 'How we work' },
     verse: 'Our verse',
@@ -752,6 +754,7 @@ const pt: UIStrings = {
 
     motto: 'Lema',
     globalEyebrow: 'Parte de um movimento global',
+    videoTitle: '25 anos de ministério em vídeo',
     valuesHint: 'Toque em um valor para lê-lo por completo.',
     valueGroups: { god: 'Com Deus', world: 'Rumo ao mundo', people: 'Com as pessoas', work: 'Como trabalhamos' },
     verse: 'Nossa palavra',
