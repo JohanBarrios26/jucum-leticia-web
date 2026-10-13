@@ -155,6 +155,25 @@ export const about = defineType({
       ],
     }),
     defineField({
+      name: 'identity',
+      title: 'Nuestra identidad (qué nos hace distintos)',
+      type: 'array',
+      group: 'identity',
+      description: 'De 4 a 6 tarjetas con lo que hace única a JUCUM Leticia. Solo hechos confirmados.',
+      of: [
+        defineArrayMember({
+          type: 'object',
+          name: 'identityItem',
+          title: 'Tarjeta',
+          fields: [
+            defineField({name: 'title', title: 'Título corto', type: 'localeString', validation: (rule) => rule.required()}),
+            defineField({name: 'text', title: 'Texto', type: 'localeText'}),
+          ],
+          preview: {select: {title: 'title.es', subtitle: 'text.es'}},
+        }),
+      ],
+    }),
+    defineField({
       name: 'video',
       title: 'Video de la historia (YouTube)',
       type: 'object',

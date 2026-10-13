@@ -368,6 +368,7 @@ export interface AboutRaw {
   motto: Maybe<Localized>;
   global: Maybe<Localized>;
   video: Maybe<{ title: Maybe<Localized>; url: string }>;
+  identity: { title: Localized; text: Maybe<Localized> }[];
   verse: Maybe<{ text: Localized; reference: Localized }>;
   values: { title: Localized; text: Maybe<Localized>; group: Maybe<ValueGroup> }[];
   history: { year: Localized; title: Localized; text: Maybe<Localized>; image: Maybe<ImageRawRef> }[];
@@ -397,6 +398,7 @@ export interface About {
   motto: Maybe<string>;
   global: Maybe<string>;
   video: Maybe<{ title: Maybe<string>; url: string; youtubeId: Maybe<string> }>;
+  identity: { title: string; text: Maybe<string> }[];
   verse: Maybe<{ text: string; reference: string }>;
   values: { title: string; text: Maybe<string>; group: Maybe<ValueGroup> }[];
   history: { year: string; title: string; text: Maybe<string>; image: Maybe<ImageRef> }[];

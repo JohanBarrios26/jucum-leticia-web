@@ -78,6 +78,27 @@ const historyBlock = {
     )
   }
 
+  <!-- Nuestra identidad: lo que hace distinta a JUCUM Leticia -->
+  {
+    about.identity.length > 0 && (
+      <section class="section surface-deep" aria-labelledby="identity-cards-title">
+        <div class="container">
+          <p class="eyebrow eyebrow--line" data-reveal>{ui.about.eyebrow}</p>
+          <h2 id="identity-cards-title" class="idc-title" data-reveal>{ui.about.identityTitle}</h2>
+          <ul role="list" class="idc">
+            {about.identity.map((x, i) => (
+              <li data-reveal style={`--reveal-delay: ${(i % 3) * 90}ms`}>
+                <span class="idc__n" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
+                <h3>{x.title}</h3>
+                {x.text && <p>{x.text}</p>}
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+    )
+  }
+
   <!-- Misión y visión -->
   <section class="section surface-dark" aria-labelledby="identity-title">
     <div class="container">
@@ -237,6 +258,58 @@ const historyBlock = {
 </BaseLayout>
 
 <style>
+  .idc-title {
+    margin: var(--space-3) 0 var(--space-6);
+    font-size: clamp(2rem, 4vw, 3.2rem);
+    text-transform: uppercase;
+  }
+
+  .idc {
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  @media (min-width: 40rem) {
+    .idc {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .idc {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  .idc li {
+    display: grid;
+    gap: var(--space-2);
+    align-content: start;
+    padding: var(--space-5);
+    border: 1px solid rgb(255 255 255 / 0.16);
+    border-top: 4px solid var(--color-river);
+    border-radius: var(--radius-md);
+    background: linear-gradient(165deg, rgb(255 255 255 / 0.09), rgb(255 255 255 / 0.02));
+  }
+
+  .idc__n {
+    font-family: var(--font-display);
+    font-size: 2.6rem;
+    line-height: 0.8;
+    color: transparent;
+    -webkit-text-stroke: 1.5px var(--color-river);
+  }
+
+  .idc h3 {
+    font-size: var(--text-h3);
+    line-height: 1.05;
+    text-transform: uppercase;
+  }
+
+  .idc p {
+    color: var(--color-text-on-dark-muted);
+  }
+
   .identity__extra {
     display: grid;
     gap: var(--space-7);
