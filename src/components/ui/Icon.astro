@@ -1,0 +1,48 @@
+---
+/**
+ * ICONOS PROPIOS DE JUCUM LETICIA
+ * ----------------------------------------------------------------------------
+ * Pequeño juego de iconos dibujados para el sitio, con el mismo trazo
+ * (redondeado, 2 px) y temas de la región:
+ *   - menu  → casa sobre pilotes (palafito), como las de las bases y comunidades.
+ *   - close → cerrar (dos ramas cruzadas).
+ *   - globe → idioma: un globo cuyo ecuador es el río Amazonas.
+ *   - top   → volver arriba: flecha que nace del río.
+ *
+ * Uso: <Icon name="globe" />. Toma el color del texto (currentColor) y el
+ * tamaño de la clase `size` o del CSS del contenedor (1em por defecto).
+ * ¿Un icono nuevo? Agrega su dibujo (viewBox 24×24) a `paths`.
+ */
+export type IconName = 'menu' | 'close' | 'globe' | 'top';
+
+interface Props {
+  name: IconName;
+  class?: string;
+}
+
+const paths: Record<IconName, string> = {
+  menu: 'M2.5 10.5 12 3.5l9.5 7M5 13h14M7 13v8M17 13v8M7 17.5h10',
+  close: 'M5 5l14 14M19 5 5 19',
+  globe: 'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18ZM12 3c2.8 2.6 4 5.6 4 9s-1.2 6.4-4 9M12 3c-2.8 2.6-4 5.6-4 9s1.2 6.4 4 9M3.2 12.4c2.6-2.2 4.3 1.8 8.8 0s6.2 1.8 8.8 0',
+  top: 'M12 16V4.5M6 10.5l6-6 6 6M4.5 20.5c2.4-1.8 4.2 1.4 7.5 0s5.1 1.8 7.5 0',
+};
+
+const { name, class: className } = Astro.props;
+---
+
+<svg class:list={['icon', className]} viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+  <path d={paths[name]}></path>
+</svg>
+
+<style>
+  .icon {
+    width: 1em;
+    height: 1em;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    overflow: visible;
+  }
+</style>

@@ -13,6 +13,7 @@
  * Los enlaces del menú salen de `mainNav` (src/i18n/routes.ts) y sus textos de
  * src/i18n/ui.ts. Para agregar/quitar una opción del menú, edita esos archivos.
  */
+import Icon from '@/components/ui/Icon.astro';
 import { locales, mainNav, routes, type Alternates, type Locale } from '@/i18n/routes';
 import { t } from '@/i18n/ui';
 import { whatsappUrl, type SiteSettings } from '@/lib/content';
@@ -27,6 +28,9 @@ interface Props {
 
 const { locale, alternates, settings, overlay = false } = Astro.props;
 const ui = t(locale);
+
+// "Contacto" no va en el menú del encabezado (sigue en el pie de página y en "Sé parte").
+const headerNav = mainNav.filter((key) => key !== 'contact');
 
 // Ruta actual normalizada con "/" final, para marcar el enlace activo del menú.
 const current = Astro.url.pathname.replace(/\/?$/, '/');
@@ -55,14 +59,17 @@ function isActive(href: string): boolean {
       data-label-close={ui.closeMenu}
     >
       <span class="visually-hidden" data-menu-label>{ui.openMenu}</span>
-      <span class="menu-toggle__bars" aria-hidden="true"><span></span><span></span><span></span></span>
+      <span class="menu-toggle__icon" aria-hidden="true">
+        <Icon name="menu" class="menu-toggle__open" />
+        <Icon name="close" class="menu-toggle__close" />
+      </span>
     </button>
 
     <div class="site-menu" id="site-menu" data-menu>
       <nav aria-label={ui.mainNavLabel}>
         <ul role="list" class="nav-list">
           {
-            mainNav.map((key, i) => {
+            headerNav.map((key, i) => {
               const href = routes[key][locale];
               return (
                 <li style={`--i: ${i}`}>
@@ -82,24 +89,21 @@ function isActive(href: string): boolean {
       </nav>
 
       <!-- Selector de idioma: lleva a la MISMA página en el otro idioma. -->
-      <ul role="list" class="lang-switch" aria-label={ui.switchLanguage}>
-        {
-          locales.map((l) => (
-            <li>
-              <a
-                href={alternates[l]}
-                hreflang={l}
-                lang={l}
-                aria-current={l === locale ? 'true' : undefined}
-                title={t(l).languageName}
-              >
-                {l.toUpperCase()}
-                <span class="visually-hidden"> ({t(l).languageName})</span>
-              </a>
-            </li>
-          ))
-        }
-      </ul>
+      <div class="lang" role="group" aria-label={ui.switchLanguage}>
+        <Icon name="globe" class="lang__icon" />
+        <ul role="list" class="lang-switch">
+          {
+            locales.map((l) => (
+              <li>
+                <a href={alternates[l]} hreflang={l} lang={l} aria-current={l === locale ? 'true' : undefined} title={t(l).languageName}>
+                  <span class="lang-switch__code" aria-hidden="true">{l.toUpperCase()}</span>
+                  <span class="lang-switch__name">{t(l).languageName}</span>
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
 
       {
         settings.whatsapp && (
@@ -274,32 +278,39 @@ function isActive(href: string): boolean {
     color: var(--color-text-on-dark);
   }
 
-  .menu-toggle__bars {
+  /* Icono propio: casa sobre pilotes; al abrir se cambia por una X. */
+  .menu-toggle__icon {
+    position: relative;
     display: grid;
-    gap: 5px;
-    width: 1.5rem;
+    width: 1.75rem;
+    height: 1.75rem;
+    font-size: 1.75rem;
   }
 
-  .menu-toggle__bars span {
-    height: 2px;
-    background: currentColor;
-    border-radius: 2px;
+  .menu-toggle__icon :global(.icon) {
+    grid-area: 1 / 1;
     transition:
       transform var(--duration) var(--ease),
       opacity var(--duration) var(--ease);
   }
 
-  /* Las tres barras se convierten en una X al abrir. */
-  [data-open] .menu-toggle__bars span:nth-child(1) {
-    transform: translateY(7px) rotate(45deg);
-  }
-
-  [data-open] .menu-toggle__bars span:nth-child(2) {
+  .menu-toggle__icon :global(.menu-toggle__close) {
     opacity: 0;
+    transform: rotate(-90deg) scale(0.6);
   }
 
-  [data-open] .menu-toggle__bars span:nth-child(3) {
-    transform: translateY(-7px) rotate(-45deg);
+  [data-open] .menu-toggle__icon :global(.menu-toggle__open) {
+    opacity: 0;
+    transform: rotate(90deg) scale(0.6);
+  }
+
+  [data-open] .menu-toggle__icon :global(.menu-toggle__close) {
+    opacity: 1;
+    transform: none;
+  }
+
+  .menu-toggle:hover .menu-toggle__icon :global(.menu-toggle__open) {
+    color: var(--color-river);
   }
 
   /* Panel del menú móvil: ocupa toda la pantalla debajo del encabezado. */
@@ -361,29 +372,48 @@ function isActive(href: string): boolean {
     color: var(--color-river);
   }
 
+  /* Selector de idioma: globo (con el río) + nombres completos en el celular. */
+  .lang {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    color: var(--color-text-on-dark-muted);
+  }
+
+  .lang :global(.lang__icon) {
+    flex: none;
+    width: 1.5rem;
+    height: 1.5rem;
+    color: var(--color-river);
+  }
+
   .lang-switch {
     display: flex;
+    flex-wrap: wrap;
     gap: var(--space-2);
   }
 
   .lang-switch a {
     display: grid;
     place-items: center;
-    min-width: 2.75rem;
     min-height: 2.75rem;
-    padding-inline: var(--space-2);
+    padding-inline: var(--space-4);
     border: 1px solid var(--color-border-on-dark);
     border-radius: var(--radius-pill);
     color: var(--color-text-on-dark-muted);
     font-size: var(--text-sm);
     font-weight: 700;
-    letter-spacing: 0.08em;
     text-decoration: none;
+  }
+
+  .lang-switch__code {
+    display: none;
   }
 
   .lang-switch a[aria-current] {
     border-color: var(--color-river);
-    color: var(--color-text-on-dark);
+    background: var(--color-river);
+    color: var(--color-night);
   }
 
   .menu-whatsapp {
@@ -478,19 +508,43 @@ function isActive(href: string): boolean {
       display: none;
     }
 
+    /* En escritorio: globo + siglas, la activa rellena en azul. */
+    .lang {
+      gap: var(--space-2);
+      padding-left: var(--space-4);
+      border-left: 1px solid var(--color-border-on-dark);
+    }
+
+    .lang :global(.lang__icon) {
+      width: 1.375rem;
+      height: 1.375rem;
+    }
+
     .lang-switch {
-      gap: var(--space-1);
+      flex-wrap: nowrap;
+      gap: 2px;
     }
 
     .lang-switch a {
-      min-width: 2.5rem;
-      min-height: 2.25rem;
-      font-size: 0.75rem;
+      min-height: 2rem;
+      min-width: 2.25rem;
+      padding-inline: var(--space-2);
       border-color: transparent;
+      font-size: 0.75rem;
+      letter-spacing: 0.08em;
     }
 
-    .lang-switch a:hover {
+    .lang-switch__code {
+      display: inline;
+    }
+
+    .lang-switch__name {
+      display: none;
+    }
+
+    .lang-switch a:not([aria-current]):hover {
       color: var(--color-text-on-dark);
+      border-color: var(--color-border-on-dark);
     }
 
     .menu-whatsapp {
