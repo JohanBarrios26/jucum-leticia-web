@@ -11,7 +11,7 @@
 import {PinIcon} from '@sanity/icons/Pin'
 import {defineArrayMember, defineField, defineType} from 'sanity'
 import {orderRankField, orderRankOrdering} from '../../lib/orderRank'
-import {motifField} from '../objects/features'
+import {featuresField, motifField} from '../objects/features'
 
 export const accessModes = [
   {title: 'A pie', value: 'walk'},
@@ -28,6 +28,7 @@ export const base = defineType({
   orderings: [orderRankOrdering],
   groups: [
     {name: 'main', title: 'General', default: true},
+    {name: 'features', title: 'Bloques especiales'},
     {name: 'access', title: 'Cómo llegar'},
     {name: 'media', title: 'Fotos y videos'},
   ],
@@ -120,6 +121,8 @@ export const base = defineType({
         }),
       ],
     }),
+
+    featuresField('features'),
 
     // Fotos y videos
     defineField({

@@ -16,6 +16,7 @@ import MinistryCard from '@/components/MinistryCard.astro';
 import PageHero from '@/components/PageHero.astro';
 import PendingContent from '@/components/PendingContent.astro';
 import PersonCard from '@/components/PersonCard.astro';
+import PhotoGallery from '@/components/ui/PhotoGallery.astro';
 import HomeReach from '@/components/home/HomeReach.astro';
 import Participate from '@/components/Participate.astro';
 import ThemeStrip from '@/components/ThemeStrip.astro';
@@ -102,6 +103,20 @@ const contactHref = settings.whatsapp
   <!-- Si el ministerio muestra el mapa, su cifra (stats) va en la sección de Alcance, no repetida aquí -->
   <FeatureBlocks locale={locale} blocks={ministry.showMap ? ministry.features.filter((f) => f.type !== 'stats') : ministry.features} />
 
+  <!-- Fotos de este ministerio (solo si hay) -->
+  {
+    ministry.gallery.length > 0 && (
+      <section class="section surface-dark" aria-labelledby="ministry-photos-title">
+        <div class="container">
+          <h2 id="ministry-photos-title" class="ministry-photos-title" data-reveal>
+            {ui.bases.photos}
+          </h2>
+          <PhotoGallery locale={locale} images={ministry.gallery} />
+        </div>
+      </section>
+    )
+  }
+
   <!-- Alcance: cifra + mapa grande con filtros y lista (solo en el ministerio con mapa) -->
   {ministry.showMap && communities.length > 0 && <HomeReach locale={locale} communities={communities} ministry={ministry} detailed />}
 
@@ -154,6 +169,10 @@ const contactHref = settings.whatsapp
 </BaseLayout>
 
 <style>
+  .ministry-photos-title {
+    margin-bottom: var(--space-6);
+  }
+
   .detail-grid {
     display: grid;
     gap: var(--space-8);

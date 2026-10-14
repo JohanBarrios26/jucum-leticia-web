@@ -160,6 +160,8 @@ export interface MinistryRaw {
   features: FeatureBlockRaw[];
   /** Muestra el mapa interactivo de comunidades en su página. */
   showMap: boolean;
+  /** Fotos propias del ministerio (carpeta de este ministerio). */
+  gallery: ImageRawRef[];
 }
 
 /* ------------------------------------------------------ Mapa de comunidades */
@@ -191,6 +193,7 @@ export interface Ministry {
   motif: Maybe<MotifName>;
   features: FeatureBlock[];
   showMap: boolean;
+  gallery: ImageRef[];
 }
 
 /* ------------------------------------------------------------------ Escuelas */
@@ -514,6 +517,8 @@ export interface BaseRaw {
   accessRoutes: { mode: AccessMode; duration: Localized; note: Maybe<Localized> }[];
   gallery: ImageRawRef[];
   videos: { title: Maybe<Localized>; url: string }[];
+  /** Bloques especiales (tarjetas, cifras, etapas…), igual que en escuelas y ministerios. */
+  features: FeatureBlockRaw[];
   active: boolean;
   order: number;
 }
@@ -531,6 +536,7 @@ export interface Base {
   accessRoutes: { mode: AccessMode; duration: string; note: Maybe<string> }[];
   gallery: ImageRef[];
   videos: { title: Maybe<string>; url: string; youtubeId: Maybe<string> }[];
+  features: FeatureBlock[];
   order: number;
 }
 
@@ -576,7 +582,13 @@ export type FeatureBlockRaw =
   | { type: 'verse'; text: Localized; reference: Localized }
   | { type: 'video'; title: Maybe<Localized>; url: string }
   | { type: 'checklist'; title: Maybe<Localized>; items: Localized<string[]> }
-  | { type: 'stats'; title: Maybe<Localized>; items: { value: string; label: Localized }[] };
+  | { type: 'stats'; title: Maybe<Localized>; items: { value: string; label: Localized }[] }
+  | {
+      type: 'highlights';
+      title: Maybe<Localized>;
+      intro: Maybe<Localized>;
+      items: { icon: string; title: Localized; text: Maybe<Localized> }[];
+    };
 
 /** Los mismos bloques ya resueltos a un idioma (lo que reciben los componentes). */
 export type FeatureBlock =
@@ -603,4 +615,10 @@ export type FeatureBlock =
   | { type: 'verse'; text: string; reference: string }
   | { type: 'video'; title: Maybe<string>; url: string; youtubeId: Maybe<string> }
   | { type: 'checklist'; title: Maybe<string>; items: string[] }
-  | { type: 'stats'; title: Maybe<string>; items: { value: string; label: string }[] };
+  | { type: 'stats'; title: Maybe<string>; items: { value: string; label: string }[] }
+  | {
+      type: 'highlights';
+      title: Maybe<string>;
+      intro: Maybe<string>;
+      items: { icon: string; title: string; text: Maybe<string> }[];
+    };

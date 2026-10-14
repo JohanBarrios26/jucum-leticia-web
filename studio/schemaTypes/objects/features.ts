@@ -12,6 +12,7 @@
  *   video        → Video de YouTube (se carga solo al hacer clic)
  *   checklist    → Lista (ej. "Qué llevar")
  *   stats        → Cifras (solo datos verificados)
+ *   highlights   → Tarjetas con icono (qué vivirás, pilares, beneficios)
  *
  * ¿Agregar un tipo de bloque nuevo? Créalo aquí, súmalo a `featureTypes`, y en
  * el sitio: tipos (types.ts), consulta (sanity/fetch.ts) y un componente en
@@ -222,8 +223,55 @@ export const stats = defineType({
   preview: {prepare: () => ({title: 'Cifras'})},
 })
 
+/** Iconos disponibles para las tarjetas (dibujados en components/ui/Icon.astro). */
+export const highlightIcons = [
+  {title: 'Barco / río', value: 'boat'},
+  {title: 'Biblia / libro', value: 'book'},
+  {title: 'Personas', value: 'people'},
+  {title: 'Corazón', value: 'heart'},
+  {title: 'Hoja / selva', value: 'leaf'},
+  {title: 'Micrófono / voz', value: 'mic'},
+  {title: 'Brújula / camino', value: 'compass'},
+  {title: 'Gota / agua', value: 'drop'},
+  {title: 'Estrella', value: 'star'},
+  {title: 'Sol', value: 'sun'},
+  {title: 'Casa', value: 'menu'},
+  {title: 'Globo / naciones', value: 'globe'},
+  {title: 'Cruz', value: 'cross'},
+  {title: 'Salud', value: 'medical'},
+]
+
+export const highlights = defineType({
+  name: 'highlights',
+  title: 'Tarjetas con icono',
+  type: 'object',
+  fields: [
+    blockTitle,
+    blockIntro,
+    defineField({
+      name: 'items',
+      title: 'Tarjetas',
+      type: 'array',
+      of: [
+        defineArrayMember({
+          type: 'object',
+          name: 'highlightItem',
+          title: 'Tarjeta',
+          fields: [
+            defineField({name: 'icon', title: 'Icono', type: 'string', options: {list: highlightIcons}, initialValue: 'star'}),
+            defineField({name: 'title', title: 'Título', type: 'localeString', validation: (rule) => rule.required()}),
+            defineField({name: 'text', title: 'Texto', type: 'localeText', description: 'Una o dos frases.'}),
+          ],
+          preview: {select: {title: 'title.es', subtitle: 'text.es'}},
+        }),
+      ],
+    }),
+  ],
+  preview: {select: {title: 'title.es'}, prepare: ({title}) => ({title: title ?? 'Tarjetas con icono'})},
+})
+
 /** Todos los bloques, para registrarlos en schemaTypes/index.ts. */
-export const featureTypes = [audioSamples, riverRoute, timeline, verse, video, checklist, stats]
+export const featureTypes = [audioSamples, riverRoute, timeline, verse, video, checklist, stats, highlights]
 
 /** Campo "Bloques especiales" para ministerios y escuelas. */
 export const featuresField = (group?: string) =>
@@ -232,7 +280,7 @@ export const featuresField = (group?: string) =>
     title: 'Bloques especiales',
     type: 'array',
     group,
-    description: 'Secciones únicas de esta página: audios, ruta por el río, etapas, versículo, video, lista o cifras.',
+    description: 'Secciones únicas de esta página: audios, ruta por el río, etapas, versículo, video, lista, cifras o tarjetas con icono.',
     of: featureTypes.map((t) => defineArrayMember({type: t.name})),
   })
 

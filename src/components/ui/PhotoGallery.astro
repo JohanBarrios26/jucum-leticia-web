@@ -17,9 +17,11 @@ import type { ImageRef } from '@/lib/content';
 interface Props {
   locale: Locale;
   images: ImageRef[];
+  /** Cuántas fotos se ven al inicio; el resto se despliega con un botón. */
+  limit?: number;
 }
 
-const { locale, images } = Astro.props;
+const { locale, images, limit = 12 } = Astro.props;
 const ui = t(locale).gallery;
 
 /** URL grande para el visor: del CDN de Sanity o el archivo local original. */
@@ -34,7 +36,7 @@ const layout = images.length === 1 ? 'one' : images.length === 2 ? 'two' : image
   <ul role="list" class={`pg__grid pg__grid--${layout}`}>
     {
       images.map((img, i) => (
-        <li class="pg__item" data-reveal="scale" style={`--reveal-delay: ${(i % 3) * 80}ms`}>
+        <li class="pg__item" data-reveal="scale" style={`--reveal-delay: ${(i % 3) * 80}ms`} hidden={i >= limit ? true : undefined} data-extra={i >= limit ? '' : undefined}>
           <button
             type="button"
             class="pg__button"
@@ -54,6 +56,16 @@ const layout = images.length === 1 ? 'one' : images.length === 2 ? 'two' : image
       ))
     }
   </ul>
+
+  {
+    images.length > limit && (
+      <div class="pg__more">
+        <button type="button" class="btn btn--outline" data-more>
+          {ui.showAll} ({images.length})
+        </button>
+      </div>
+    )
+  }
 
   <!-- Visor a pantalla completa -->
   <dialog class="pg__viewer" aria-label={ui.viewer} data-viewer>
@@ -80,6 +92,12 @@ const layout = images.length === 1 ? 'one' : images.length === 2 ? 'two' : image
     let index = 0;
 
     viewer.toggleAttribute('data-single', !multiple);
+
+    // "Ver todas": despliega las fotos que estaban ocultas.
+    gallery.querySelector<HTMLButtonElement>('[data-more]')?.addEventListener('click', (e) => {
+      gallery.querySelectorAll<HTMLElement>('[data-extra]').forEach((li) => (li.hidden = false));
+      (e.currentTarget as HTMLElement).closest('.pg__more')?.remove();
+    });
 
     // La foto aparece con un fundido cuando termina de cargar (sin mostrar la anterior).
     img.addEventListener('load', () => img.removeAttribute('data-loading'));
@@ -128,6 +146,16 @@ const layout = images.length === 1 ? 'one' : images.length === 2 ? 'two' : image
   .pg__item {
     border-radius: var(--radius);
     overflow: hidden;
+  }
+
+  .pg__item[hidden] {
+    display: none;
+  }
+
+  .pg__more {
+    display: flex;
+    justify-content: center;
+    margin-top: var(--space-6);
   }
 
   /* 1 foto: ancha. */

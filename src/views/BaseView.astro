@@ -11,6 +11,7 @@ import BaseAccess from '@/components/BaseAccess.astro';
 import PageHero from '@/components/PageHero.astro';
 import PendingContent from '@/components/PendingContent.astro';
 import ThemeStrip from '@/components/ThemeStrip.astro';
+import FeatureBlocks from '@/components/features/FeatureBlocks.astro';
 import LiteVideo from '@/components/features/LiteVideo.astro';
 import PhotoGallery from '@/components/ui/PhotoGallery.astro';
 import { baseAlternates, ministryAlternates, routes, schoolAlternates, type Locale } from '@/i18n/routes';
@@ -102,6 +103,9 @@ const mediaTitle =
       </div>
     </div>
   </section>
+
+  <!-- Bloques especiales de la base (tarjetas, cifras, etapas…) -->
+  <FeatureBlocks locale={locale} blocks={base.features} />
 
   <!-- Cómo llegar -->
   {

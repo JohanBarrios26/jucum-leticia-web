@@ -9,7 +9,7 @@
  */
 import {HeartIcon} from '@sanity/icons/Heart'
 import {orderRankField, orderRankOrdering} from '../../lib/orderRank'
-import {defineField, defineType} from 'sanity'
+import {defineArrayMember, defineField, defineType} from 'sanity'
 import {featuresField, motifField} from '../objects/features'
 
 export const ministry = defineType({
@@ -21,6 +21,7 @@ export const ministry = defineType({
   groups: [
     {name: 'main', title: 'General', default: true},
     {name: 'features', title: 'Bloques especiales'},
+    {name: 'media', title: 'Fotos'},
   ],
   fields: [
     orderRankField({type: 'ministry'}),
@@ -78,6 +79,15 @@ export const ministry = defineType({
     }),
     motifField('features'),
     featuresField('features'),
+    defineField({
+      name: 'gallery',
+      title: 'Fotos',
+      type: 'array',
+      group: 'media',
+      description: 'Solo fotos de este ministerio y con autorización de las personas que aparecen.',
+      of: [defineArrayMember({type: 'photo'})],
+      options: {layout: 'grid'},
+    }),
   ],
   preview: {
     select: {title: 'name.es', subtitle: 'shortDescription.es', media: 'image', active: 'active'},

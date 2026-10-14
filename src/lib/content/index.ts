@@ -157,6 +157,13 @@ function resolveFeatures(list: FeatureBlockRaw[], locale: Locale): FeatureBlock[
           title: localizeMaybe(b.title, locale),
           items: b.items.map((x) => ({ value: x.value, label: localize(x.label, locale) })),
         };
+      case 'highlights':
+        return {
+          type: b.type,
+          title: localizeMaybe(b.title, locale),
+          intro: localizeMaybe(b.intro, locale),
+          items: b.items.map((x) => ({ icon: x.icon, title: localize(x.title, locale), text: localizeMaybe(x.text, locale) })),
+        };
     }
   });
 }
@@ -220,6 +227,7 @@ function resolveMinistry(m: MinistryRaw, locale: Locale): Ministry {
     motif: m.motif,
     features: resolveFeatures(m.features, locale),
     showMap: m.showMap,
+    gallery: m.gallery.map((g) => resolveImage(g, locale)),
   };
 }
 
@@ -493,6 +501,7 @@ function resolveBase(b: BaseRaw, locale: Locale): Base {
     })),
     gallery: b.gallery.map((g) => resolveImage(g, locale)),
     videos: b.videos.map((v) => ({ title: localizeMaybe(v.title, locale), url: v.url, youtubeId: youtubeId(v.url) })),
+    features: resolveFeatures(b.features, locale),
     order: b.order,
   };
 }

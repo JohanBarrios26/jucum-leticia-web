@@ -11,6 +11,7 @@
  */
 import AudioSamples from './AudioSamples.astro';
 import Checklist from './Checklist.astro';
+import Highlights from './Highlights.astro';
 import LiteVideo from './LiteVideo.astro';
 import RiverRoute from './RiverRoute.astro';
 import Stats from './Stats.astro';
@@ -36,6 +37,7 @@ const surfaces: Record<FeatureBlock['type'], string> = {
   timeline: '',
   checklist: '',
   stats: 'surface-sand',
+  highlights: '',
 };
 
 // Un bloque vacío solo se muestra (como "pendiente") mientras se revisa el sitio.
@@ -50,6 +52,7 @@ function isVisible(b: FeatureBlock): boolean {
     case 'checklist':
       return b.items.length > 0 || showPending;
     case 'stats':
+    case 'highlights':
       return b.items.length > 0;
     default:
       return true;
@@ -70,6 +73,7 @@ const visible = blocks.map((block, i) => ({ block, id: `feature-${i}-title` })).
         {block.type === 'video' && <LiteVideo locale={locale} block={block} titleId={id} />}
         {block.type === 'checklist' && <Checklist locale={locale} block={block} titleId={id} />}
         {block.type === 'stats' && <Stats locale={locale} block={block} titleId={id} />}
+        {block.type === 'highlights' && <Highlights block={block} titleId={id} />}
       </div>
     </section>
   ))

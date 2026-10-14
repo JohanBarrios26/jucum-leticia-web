@@ -182,6 +182,7 @@ const es = {
 
   /* Visor de fotos */
   gallery: {
+    showAll: 'Ver todas las fotos',
     open: 'Ampliar foto',
     viewer: 'Visor de fotos',
     prev: 'Foto anterior',
@@ -524,6 +525,7 @@ const en: UIStrings = {
     atBase: 'Takes place at',
   },
   gallery: {
+    showAll: 'See all photos',
     open: 'Enlarge photo',
     viewer: 'Photo viewer',
     prev: 'Previous photo',
@@ -855,6 +857,7 @@ const pt: UIStrings = {
     atBase: 'Acontece em',
   },
   gallery: {
+    showAll: 'Ver todas as fotos',
     open: 'Ampliar foto',
     viewer: 'Visualizador de fotos',
     prev: 'Foto anterior',

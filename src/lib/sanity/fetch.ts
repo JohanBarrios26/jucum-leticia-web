@@ -69,7 +69,7 @@ const query = `{
     shortTerm{..., image${photo}}
   },
   "ministries": *[_type == "ministry"] | order(orderRank){
-    ..., "slug": slug.current, image${photo}, ${features}
+    ..., "slug": slug.current, image${photo}, gallery[]${photo}, ${features}
   },
   "schools": *[_type == "school"] | order(orderRank){
     ..., "slug": slug.current, image${photo},
@@ -77,7 +77,7 @@ const query = `{
     "baseRef": base->{"slug": slug.current, name, active}
   },
   "bases": *[_type == "base"] | order(orderRank){
-    ..., "slug": slug.current, image${photo}, gallery[]${photo},
+    ..., "slug": slug.current, image${photo}, gallery[]${photo}, ${features},
     "programs": programs[]->{_type, "slug": slug.current, name, active}
   },
   "about": *[_id == "about"][0]{
@@ -223,6 +223,14 @@ function toFeatures(list: Doc[] | null | undefined): FeatureBlockRaw[] {
           items: (b.items ?? []).filter((x: Doc) => x.value && x.label).map((x: Doc) => ({ value: x.value, label: x.label })),
         });
         break;
+      case 'highlights':
+        out.push({
+          type: 'highlights',
+          title: lx(b.title),
+          intro: lx(b.intro),
+          items: (b.items ?? []).filter((x: Doc) => x.title).map((x: Doc) => ({ icon: x.icon ?? 'star', title: x.title, text: lx(x.text) })),
+        });
+        break;
     }
   }
   return out;
@@ -345,6 +353,7 @@ function toMinistry(d: Doc, i: number): MinistryRaw {
     motif: toMotif(d.motif),
     features: toFeatures(d.features),
     showMap: d.showMap === true,
+    gallery: (d.gallery ?? []).map(toImage).filter(Boolean) as ImageRawRef[],
   };
 }
 
@@ -402,6 +411,7 @@ function toBase(d: Doc, i: number): BaseRaw {
       .map((r: Doc) => ({ mode: r.mode as AccessMode, duration: r.duration, note: lx(r.note) })),
     gallery: (d.gallery ?? []).map(toImage).filter(Boolean) as ImageRawRef[],
     videos: (d.videos ?? []).filter((v: Doc) => v.url).map((v: Doc) => ({ title: lx(v.title), url: v.url })),
+    features: toFeatures(d.features),
     active: d.active !== false,
     order: i,
   };
