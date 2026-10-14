@@ -84,7 +84,11 @@ const query = `{
     ..., image${photo}, history[]{..., image${photo}},
     founders{..., photo${photo}, members[]{..., photo${photo}}}
   },
-  "pageTexts": *[_id == "pageTexts"][0],
+  "pageTexts": *[_id == "pageTexts"][0]{
+    ...,
+    basesImage${photo}, ministriesImage${photo}, peopleImage${photo},
+    schoolsImage${photo}, joinImage${photo}, contactImage${photo}
+  },
   "amazonPage": *[_id == "amazonPage"][0]{..., heroImage${photo}},
   "people": *[_type == "person"] | order(orderRank){
     ..., "slug": slug.current, photo${photo}, "ministrySlug": ministry->slug.current,
@@ -494,6 +498,14 @@ export function fetchCmsContent(): Promise<CmsContent> {
       schoolsIntro: lx(r.pageTexts?.schoolsIntro),
       joinIntro: lx(r.pageTexts?.joinIntro),
       contactIntro: lx(r.pageTexts?.contactIntro),
+      images: {
+        bases: toImage(r.pageTexts?.basesImage),
+        ministries: toImage(r.pageTexts?.ministriesImage),
+        people: toImage(r.pageTexts?.peopleImage),
+        schools: toImage(r.pageTexts?.schoolsImage),
+        join: toImage(r.pageTexts?.joinImage),
+        contact: toImage(r.pageTexts?.contactImage),
+      },
     },
     people: (r.people ?? []).filter((x: Doc) => x.name && x.slug).map(toPerson),
     home: toHome(r.home),

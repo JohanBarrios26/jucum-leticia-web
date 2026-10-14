@@ -547,9 +547,12 @@ export interface PageTextsRaw {
   schoolsIntro: Maybe<Localized>;
   joinIntro: Maybe<Localized>;
   contactIntro: Maybe<Localized>;
+  /** Fotos de portada de las páginas de lista (se cargan en el panel: Textos de las páginas). */
+  images: Record<'bases' | 'ministries' | 'people' | 'schools' | 'join' | 'contact', Maybe<ImageRawRef>>;
 }
 
-export type PageTexts = { [K in keyof PageTextsRaw]: Maybe<string> };
+export type PageTexts = { [K in Exclude<keyof PageTextsRaw, 'images'>]: Maybe<string> };
+export type PageImages = Record<'bases' | 'ministries' | 'people' | 'schools' | 'join' | 'contact', Maybe<ImageRef>>;
 
 /* -------------------------------------------- Detalle diferencial: motivos y bloques */
 

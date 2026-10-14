@@ -12,7 +12,7 @@ import MinistryCard from '@/components/MinistryCard.astro';
 import PageHero from '@/components/PageHero.astro';
 import { routes, type Locale } from '@/i18n/routes';
 import { t } from '@/i18n/ui';
-import { getMinistries, getPageTexts, getSiteSettings } from '@/lib/content';
+import { getMinistries, getPageImages, getPageTexts, getSiteSettings } from '@/lib/content';
 
 interface Props {
   locale: Locale;
@@ -25,6 +25,7 @@ const [ministries, texts, settings] = await Promise.all([
   getPageTexts(locale),
   getSiteSettings(locale),
 ]);
+const images = await getPageImages(locale);
 ---
 
 <BaseLayout
@@ -34,7 +35,7 @@ const [ministries, texts, settings] = await Promise.all([
   description={texts.ministriesIntro ?? undefined}
   headerOverlay
 >
-  <PageHero title={ui.nav.ministries} eyebrow={settings.organizationName} lead={texts.ministriesIntro} motif="river" />
+  <PageHero title={ui.nav.ministries} eyebrow={settings.organizationName} lead={texts.ministriesIntro} image={images.ministries} motif="river" />
 
   <section class="section surface-dark" aria-labelledby="list-title">
     <div class="container">

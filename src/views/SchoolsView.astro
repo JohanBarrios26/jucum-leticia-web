@@ -15,7 +15,7 @@ import Motif from '@/components/ui/Motif.astro';
 import SmartImage from '@/components/ui/SmartImage.astro';
 import { routes, schoolAlternates, type Locale } from '@/i18n/routes';
 import { t } from '@/i18n/ui';
-import { getPageTexts, getSchools, getSiteSettings } from '@/lib/content';
+import { getPageImages, getPageTexts, getSchools, getSiteSettings } from '@/lib/content';
 
 interface Props {
   locale: Locale;
@@ -25,6 +25,7 @@ const { locale } = Astro.props;
 const ui = t(locale);
 const [schools, texts, settings] = await Promise.all([getSchools(locale), getPageTexts(locale), getSiteSettings(locale)]);
 const pad = (n: number) => String(n).padStart(2, '0');
+const images = await getPageImages(locale);
 ---
 
 <BaseLayout
@@ -34,7 +35,7 @@ const pad = (n: number) => String(n).padStart(2, '0');
   description={texts.schoolsIntro ?? undefined}
   headerOverlay
 >
-  <PageHero title={ui.nav.schools} eyebrow={settings.organizationName} lead={texts.schoolsIntro} motif="path" />
+  <PageHero title={ui.nav.schools} eyebrow={settings.organizationName} lead={texts.schoolsIntro} image={images.schools} motif="path" />
 
   <section class="section" aria-labelledby="schools-list-title">
     <div class="container">

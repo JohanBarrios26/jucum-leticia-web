@@ -16,7 +16,7 @@ import ImagePlaceholder from '@/components/ui/ImagePlaceholder.astro';
 import { routes, type Locale } from '@/i18n/routes';
 import { t } from '@/i18n/ui';
 import { showPending } from '@/lib/config';
-import { getAbout, getPageTexts, getPeople, getSiteSettings } from '@/lib/content';
+import { getAbout, getPageImages, getPageTexts, getPeople, getSiteSettings } from '@/lib/content';
 
 interface Props {
   locale: Locale;
@@ -30,6 +30,7 @@ const [people, texts, settings, about] = await Promise.all([
   getSiteSettings(locale),
   getAbout(locale),
 ]);
+const images = await getPageImages(locale);
 ---
 
 <BaseLayout
@@ -39,7 +40,7 @@ const [people, texts, settings, about] = await Promise.all([
   description={texts.peopleIntro ?? undefined}
   headerOverlay
 >
-  <PageHero title={ui.nav.people} eyebrow={settings.organizationName} lead={texts.peopleIntro} motif="crown" />
+  <PageHero title={ui.nav.people} eyebrow={settings.organizationName} lead={texts.peopleIntro} image={images.people} motif="crown" />
 
   <!-- Los directores fundadores van primero. -->
   <Founders locale={locale} founders={about.founders} />

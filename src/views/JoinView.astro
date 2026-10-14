@@ -14,7 +14,7 @@ import PageHero from '@/components/PageHero.astro';
 import PendingContent from '@/components/PendingContent.astro';
 import { joinAnchorId, routes, type Locale } from '@/i18n/routes';
 import { t } from '@/i18n/ui';
-import { getJoinPaths, getPageTexts, getSiteSettings, whatsappUrl } from '@/lib/content';
+import { getJoinPaths, getPageImages, getPageTexts, getSiteSettings, whatsappUrl } from '@/lib/content';
 
 interface Props {
   locale: Locale;
@@ -25,10 +25,11 @@ const ui = t(locale);
 const [paths, texts, settings] = await Promise.all([getJoinPaths(locale), getPageTexts(locale), getSiteSettings(locale)]);
 
 const eventName = { pray: 'cta_pray_click', serve: 'cta_serve_click', come: 'cta_come_click', support: 'cta_support_click' };
+const images = await getPageImages(locale);
 ---
 
 <BaseLayout locale={locale} alternates={routes.join} title={ui.nav.join} description={texts.joinIntro ?? undefined} headerOverlay>
-  <PageHero title={ui.nav.join} eyebrow={settings.organizationName} lead={texts.joinIntro} motif="path" />
+  <PageHero title={ui.nav.join} eyebrow={settings.organizationName} lead={texts.joinIntro} image={images.join} motif="path" />
 
   <div class="container join-layout">
     <!-- Menú lateral (escritorio) / índice horizontal (móvil) -->

@@ -13,7 +13,7 @@ import PageHero from '@/components/PageHero.astro';
 import PendingContent from '@/components/PendingContent.astro';
 import { routes, type Locale } from '@/i18n/routes';
 import { t } from '@/i18n/ui';
-import { getPageTexts, getSiteSettings, type SocialLinks } from '@/lib/content';
+import { getPageImages, getPageTexts, getSiteSettings, type SocialLinks } from '@/lib/content';
 
 interface Props {
   locale: Locale;
@@ -32,6 +32,7 @@ const socialNames: Record<keyof SocialLinks, string> = {
 const socials = (Object.keys(socialNames) as (keyof SocialLinks)[])
   .filter((k) => settings.social[k])
   .map((k) => ({ name: socialNames[k], href: settings.social[k]! }));
+const images = await getPageImages(locale);
 ---
 
 <BaseLayout
@@ -41,7 +42,7 @@ const socials = (Object.keys(socialNames) as (keyof SocialLinks)[])
   description={texts.contactIntro ?? undefined}
   headerOverlay
 >
-  <PageHero title={ui.home.contactTitle} eyebrow={ui.nav.contact} lead={texts.contactIntro} motif="river" />
+  <PageHero title={ui.home.contactTitle} eyebrow={ui.nav.contact} lead={texts.contactIntro} image={images.contact} motif="river" />
 
   <section class="section">
     <div class="container contact-layout">

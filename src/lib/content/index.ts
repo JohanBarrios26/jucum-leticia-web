@@ -29,6 +29,7 @@ import type {
   Maybe,
   Ministry,
   MinistryRaw,
+  PageImages,
   PageTexts,
   Person,
   PersonRaw,
@@ -478,6 +479,20 @@ export async function getPageTexts(locale: Locale): Promise<PageTexts> {
     schoolsIntro: localizeMaybe(t.schoolsIntro, locale),
     joinIntro: localizeMaybe(t.joinIntro, locale),
     contactIntro: localizeMaybe(t.contactIntro, locale),
+  };
+}
+
+/** Fotos de portada de las páginas de lista (Bases, Ministerios, Escuelas…). */
+export async function getPageImages(locale: Locale): Promise<PageImages> {
+  const t = (await source()).pageTexts;
+  const one = (img: Maybe<ImageRawRef>) => resolveImageMaybe(img, locale);
+  return {
+    bases: one(t.images.bases),
+    ministries: one(t.images.ministries),
+    people: one(t.images.people),
+    schools: one(t.images.schools),
+    join: one(t.images.join),
+    contact: one(t.images.contact),
   };
 }
 

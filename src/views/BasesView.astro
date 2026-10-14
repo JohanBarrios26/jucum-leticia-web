@@ -11,7 +11,7 @@ import CtaBand from '@/components/CtaBand.astro';
 import PageHero from '@/components/PageHero.astro';
 import { routes, type Locale } from '@/i18n/routes';
 import { t } from '@/i18n/ui';
-import { getBases, getPageTexts, getSiteSettings } from '@/lib/content';
+import { getBases, getPageImages, getPageTexts, getSiteSettings } from '@/lib/content';
 
 interface Props {
   locale: Locale;
@@ -20,10 +20,11 @@ interface Props {
 const { locale } = Astro.props;
 const ui = t(locale);
 const [bases, texts, settings] = await Promise.all([getBases(locale), getPageTexts(locale), getSiteSettings(locale)]);
+const images = await getPageImages(locale);
 ---
 
 <BaseLayout locale={locale} alternates={routes.bases} title={ui.nav.bases} description={texts.basesIntro ?? undefined} headerOverlay>
-  <PageHero title={ui.bases.eyebrow} eyebrow={settings.organizationName} lead={texts.basesIntro} motif="bridge" />
+  <PageHero title={ui.bases.eyebrow} eyebrow={settings.organizationName} lead={texts.basesIntro} image={images.bases} motif="bridge" />
 
   <section class="section" aria-label={ui.bases.eyebrow}>
     <div class="container">
