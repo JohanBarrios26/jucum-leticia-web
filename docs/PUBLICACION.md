@@ -31,7 +31,7 @@ Cuando el cliente apruebe y compre su dominio, esta es la lista de pasos para pu
    | `NODE_VERSION` | `24` |
 
 5. **Custom domains** → agregar el dominio y `www`.
-6. El archivo `public/_headers` ya define los encabezados de seguridad y caché para Cloudflare (y **no** incluye `noindex`, así Google sí indexará).
+6. El archivo `public/_headers` ya define los encabezados de seguridad y caché para Cloudflare . **Ojo:** mientras se usa la dirección de prueba (`*.pages.dev`) incluye `X-Robots-Tag: noindex`; **al publicar con el dominio definitivo hay que borrar esa línea** para que Google indexe el sitio.
 
 ## 3. Reconectar los servicios al nuevo dominio
 

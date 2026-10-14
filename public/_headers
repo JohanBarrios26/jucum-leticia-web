@@ -1,5 +1,8 @@
 # Encabezados HTTP de seguridad y caché (los leen Cloudflare Pages y Netlify; en Vercel ver vercel.json).
+# VISTA PREVIA: mientras no exista el dominio propio, Google no debe indexar la copia de *.pages.dev.
+# AL PUBLICAR CON EL DOMINIO DEFINITIVO: borrar la línea X-Robots-Tag de abajo.
 /*
+  X-Robots-Tag: noindex, nofollow
   X-Content-Type-Options: nosniff
   X-Frame-Options: DENY
   Referrer-Policy: strict-origin-when-cross-origin
