@@ -27,6 +27,7 @@ export const routes = {
   bases: { es: '/bases/', en: '/en/bases/', pt: '/pt/bases/' },
   ministries: { es: '/ministerios/', en: '/en/ministries/', pt: '/pt/ministerios/' },
   schools: { es: '/escuelas/', en: '/en/schools/', pt: '/pt/escolas/' },
+  gallery: { es: '/galeria/', en: '/en/gallery/', pt: '/pt/galeria/' },
   join: { es: '/se-parte/', en: '/en/get-involved/', pt: '/pt/participe/' },
   people: { es: '/personas/', en: '/en/people/', pt: '/pt/pessoas/' },
   contact: { es: '/contacto/', en: '/en/contact/', pt: '/pt/contato/' },
@@ -35,8 +36,8 @@ export const routes = {
 export type RouteKey = keyof typeof routes;
 
 /** Orden del menú principal (definido en la especificación §3). */
-// "Bases" se agregó a pedido del cliente (no estaba en la especificación original).
-export const mainNav: RouteKey[] = ['home', 'about', 'bases', 'ministries', 'schools', 'join', 'contact'];
+// "Bases" se agregó a pedido del cliente y "Galería" para dar protagonismo a las fotos (ninguna estaba en la especificación original).
+export const mainNav: RouteKey[] = ['home', 'about', 'bases', 'ministries', 'schools', 'gallery', 'join', 'contact'];
 
 /* ------------------------------------------------ Páginas dinámicas (por slug) */
 // El slug es el mismo en ambos idiomas (viene del CMS), solo cambia la carpeta.

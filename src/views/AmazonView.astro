@@ -148,7 +148,7 @@ const icons = {
       <section class="section surface-dark" aria-labelledby="life-title">
         <div class="container">
           <h2 id="life-title" class="av-title" data-reveal>{ui.amazon.galleryTitle}</h2>
-          <PhotoGallery locale={locale} images={gallery.map((g) => g.image)} />
+          <PhotoGallery locale={locale} images={gallery.slice(0, 9).map((g) => g.image)} />
         </div>
       </section>
     )

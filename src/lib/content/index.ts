@@ -356,7 +356,7 @@ export async function getJoinPaths(locale: Locale): Promise<JoinPathItem[]> {
 export async function getGallery(locale: Locale): Promise<GalleryItem[]> {
   return (await source()).gallery
     .filter((g) => g.publishable)
-    .map((g) => ({ image: resolveImage(g.image, locale), title: localizeMaybe(g.title, locale), category: g.category }));
+    .map((g) => ({ image: resolveImage(g.image, locale), title: localizeMaybe(g.title, locale), category: g.category, featured: g.featured }));
 }
 
 /* --------------------------------------------------------- Historias / testimonios */

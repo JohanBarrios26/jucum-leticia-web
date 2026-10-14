@@ -154,7 +154,7 @@ En **Historias** crea una por persona. Si es del equipo, elígela en **Persona d
 ### Publicar una historia o foto de personas
 Por respeto y por ley, **solo publica con autorización**:
 - **Historias:** deben estar marcadas las tres autorizaciones (nombre, foto e historia) **y** "Publicar en el sitio".
-- **Galería:** marca "Autorizada para publicar" solo si las personas de la foto dieron permiso.
+- **Galería:** marca "Autorizada para publicar" solo si las personas de la foto dieron permiso. Todas las fotos se ven en la página **Galería** (con filtros por tema y visor). Las que tengan marcado **"Destacada en el inicio"** (recomendado: 11) forman el gran mosaico de la página de inicio, en el orden de la lista. Cada foto necesita una **Categoría** y una descripción (texto alternativo).
 
 ---
 

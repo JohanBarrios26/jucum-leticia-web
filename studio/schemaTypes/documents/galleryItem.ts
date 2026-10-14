@@ -19,6 +19,7 @@ export const galleryCategories = [
   {title: 'Equipo', value: 'team'},
   {title: 'Viajes / misiones', value: 'trips'},
   {title: 'Historia', value: 'history'},
+  {title: 'Cruzadas y conferencias', value: 'events'},
 ]
 
 export const galleryItem = defineType({
@@ -39,6 +40,13 @@ export const galleryItem = defineType({
       validation: (rule) => rule.required(),
     }),
     defineField({
+      name: 'featured',
+      title: 'Destacada en el inicio',
+      type: 'boolean',
+      initialValue: false,
+      description: 'Las fotos destacadas forman el gran mosaico de la página de inicio (se recomiendan 12). Todas las demás se ven en la página de la galería.',
+    }),
+    defineField({
       name: 'publishable',
       title: 'Autorizada para publicar',
       type: 'boolean',
@@ -47,9 +55,9 @@ export const galleryItem = defineType({
     }),
   ],
   preview: {
-    select: {title: 'title.es', subtitle: 'category', media: 'image', publishable: 'publishable'},
-    prepare: ({title, subtitle, media, publishable}) => ({
-      title: `${title ?? 'Sin título'}${publishable ? '' : ' (no autorizada)'}`,
+    select: {title: 'title.es', subtitle: 'category', media: 'image', publishable: 'publishable', featured: 'featured'},
+    prepare: ({title, subtitle, media, publishable, featured}) => ({
+      title: `${featured ? '★ ' : ''}${title ?? 'Sin título'}${publishable ? '' : ' (no autorizada)'}`,
       subtitle: galleryCategories.find((c) => c.value === subtitle)?.title,
       media,
     }),

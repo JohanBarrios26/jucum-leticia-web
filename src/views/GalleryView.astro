@@ -1,0 +1,53 @@
+---
+/**
+ * VISTA: GALERÍA (/galeria/)
+ * ----------------------------------------------------------------------------
+ * Todas las fotos publicables de la misión, con filtros por tema y visor a
+ * pantalla completa (components/GalleryExplorer.astro). Las fotos se cargan
+ * y ordenan desde el panel (Foto de la galería).
+ */
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import CtaBand from '@/components/CtaBand.astro';
+import GalleryExplorer from '@/components/GalleryExplorer.astro';
+import PageHero from '@/components/PageHero.astro';
+import { routes, type Locale } from '@/i18n/routes';
+import { t } from '@/i18n/ui';
+import { getGallery, getSiteSettings, ogImageUrl } from '@/lib/content';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const ui = t(locale);
+const [items, settings] = await Promise.all([getGallery(locale), getSiteSettings(locale)]);
+
+// La portada usa la primera foto destacada (la más impactante del inicio).
+const cover = (items.find((i) => i.featured) ?? items[0])?.image ?? null;
+---
+
+<BaseLayout
+  locale={locale}
+  alternates={routes.gallery}
+  title={ui.gallery.pageTitle}
+  description={ui.gallery.pageLead}
+  headerOverlay
+  preloadImage={cover}
+  ogImage={ogImageUrl(cover) ?? undefined}
+>
+  <PageHero title={ui.gallery.pageTitle} eyebrow={settings.organizationName} lead={ui.gallery.pageLead} image={cover} />
+
+  <section class="section gallery-page" aria-label={ui.gallery.pageTitle}>
+    <div class="container">
+      <GalleryExplorer locale={locale} items={items} />
+    </div>
+  </section>
+
+  <CtaBand locale={locale} motif="path" />
+</BaseLayout>
+
+<style>
+  .gallery-page {
+    padding-top: var(--space-6);
+  }
+</style>

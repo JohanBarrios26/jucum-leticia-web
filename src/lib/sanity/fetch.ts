@@ -509,6 +509,7 @@ export function fetchCmsContent(): Promise<CmsContent> {
         image: toImage(g.image),
         title: g.title ?? null,
         category: g.category as GalleryCategory,
+        featured: g.featured === true,
         publishable: g.publishable === true,
       }))
       .filter((g: { image: ImageRawRef | null }) => g.image) as GalleryItemRaw[],

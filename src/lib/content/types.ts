@@ -308,6 +308,7 @@ export const galleryCategories = [
   'team',
   'trips',
   'history',
+  'events',
 ] as const;
 export type GalleryCategory = (typeof galleryCategories)[number];
 
@@ -315,6 +316,8 @@ export interface GalleryItemRaw {
   image: ImageRawRef;
   title: Maybe<Localized>;
   category: GalleryCategory;
+  /** Aparece en el mosaico de la página de inicio. */
+  featured: boolean;
   /** Solo se publica si es `true` (especificación §32: autorización de publicación). */
   publishable: boolean;
 }
@@ -323,6 +326,7 @@ export interface GalleryItem {
   image: ImageRef;
   title: Maybe<string>;
   category: GalleryCategory;
+  featured: boolean;
 }
 
 /* --------------------------------------------------------- Historias / testimonios */
