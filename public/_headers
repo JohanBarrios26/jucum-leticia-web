@@ -15,7 +15,7 @@
   Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=()
   Cross-Origin-Opener-Policy: same-origin
   Strict-Transport-Security: max-age=31536000
-  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://cloud.umami.is; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://cdn.sanity.io https://i.ytimg.com; media-src 'self' https://cdn.sanity.io; frame-src https://www.youtube-nocookie.com; connect-src 'self' https://api.web3forms.com https://cloud.umami.is https://api-gateway.umami.dev; font-src 'self' data:; form-action 'self' https://api.web3forms.com; base-uri 'self'; object-src 'none'; frame-ancestors 'none'
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://cloud.umami.is; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://cdn.sanity.io https://i.ytimg.com; media-src 'self' https://cdn.sanity.io; frame-src https://www.youtube-nocookie.com; connect-src 'self' https://api.web3forms.com https://cloud.umami.is https://api-gateway.umami.dev https://gateway.umami.is; font-src 'self' data:; form-action 'self' https://api.web3forms.com; base-uri 'self'; object-src 'none'; frame-ancestors 'none'
 
 /_astro/*
   Cache-Control: public, max-age=31536000, immutable
