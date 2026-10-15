@@ -1,12 +1,21 @@
-# Encabezados HTTP de seguridad y caché (los leen Cloudflare Pages y Netlify; en Vercel ver vercel.json).
-# VISTA PREVIA: mientras no exista el dominio propio, Google no debe indexar la copia de *.pages.dev.
+# Encabezados HTTP de seguridad y caché (los leen Cloudflare y Netlify; en Vercel ver vercel.json).
+#
+# VISTA PREVIA: mientras no exista el dominio propio, Google no debe indexar la copia de prueba.
 # AL PUBLICAR CON EL DOMINIO DEFINITIVO: borrar la línea X-Robots-Tag de abajo.
+#
+# Content-Security-Policy: solo permite lo que el sitio realmente usa:
+#   - fotos y audios de Sanity (cdn.sanity.io), miniaturas y reproductor de YouTube (sin cookies),
+#   - Umami (analítica sin cookies) y Web3Forms (formulario de contacto).
+# Si algún día se agrega otro servicio externo (mapa, chat, etc.), hay que sumarlo aquí o el navegador lo bloqueará.
 /*
   X-Robots-Tag: noindex, nofollow
   X-Content-Type-Options: nosniff
   X-Frame-Options: DENY
   Referrer-Policy: strict-origin-when-cross-origin
-  Permissions-Policy: camera=(), microphone=(), geolocation=()
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=()
+  Cross-Origin-Opener-Policy: same-origin
+  Strict-Transport-Security: max-age=31536000
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://cloud.umami.is; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://cdn.sanity.io https://i.ytimg.com; media-src 'self' https://cdn.sanity.io; frame-src https://www.youtube-nocookie.com; connect-src 'self' https://api.web3forms.com https://cloud.umami.is https://api-gateway.umami.dev; font-src 'self' data:; form-action 'self' https://api.web3forms.com; base-uri 'self'; object-src 'none'; frame-ancestors 'none'
 
 /_astro/*
   Cache-Control: public, max-age=31536000, immutable

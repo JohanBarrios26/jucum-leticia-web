@@ -8,6 +8,8 @@
  * - Al tocar una foto se abre un visor a pantalla completa (<dialog>) con
  *   flechas, teclado (← → Esc) y la descripción de la foto.
  * - Las fotos grandes del visor se descargan solo al abrirlo.
+ * - `variant="carousel"`: en vez de cuadrícula, una fila a todo lo ancho que se
+ *   desliza de lado, con flechas (lo usa PhotoShowcase en ministerios, escuelas y bases).
  */
 import SmartImage from '@/components/ui/SmartImage.astro';
 import type { Locale } from '@/i18n/routes';
@@ -19,9 +21,12 @@ interface Props {
   images: ImageRef[];
   /** Cuántas fotos se ven al inicio; el resto se despliega con un botón. */
   limit?: number;
+  /** 'grid' (mosaico) o 'carousel' (fila deslizable a todo lo ancho). */
+  variant?: 'grid' | 'carousel';
 }
 
-const { locale, images, limit = 12 } = Astro.props;
+const { locale, images, limit = 12, variant = 'grid' } = Astro.props;
+const carousel = variant === 'carousel';
 const ui = t(locale).gallery;
 
 /** URL grande para el visor: del CDN de Sanity o el archivo local original. */
@@ -32,11 +37,19 @@ const fullUrl = (img: ImageRef) =>
 const layout = images.length === 1 ? 'one' : images.length === 2 ? 'two' : images.length === 3 ? 'three' : 'many';
 ---
 
-<div class="pg" data-gallery>
-  <ul role="list" class={`pg__grid pg__grid--${layout}`}>
+<div class:list={['pg', { 'pg--carousel': carousel }]} data-gallery>
+  {
+    carousel && images.length > 1 && (
+      <div class="pg__arrows">
+        <button type="button" class="pg__arrow" data-rail-prev aria-label={ui.prev}>←</button>
+        <button type="button" class="pg__arrow" data-rail-next aria-label={ui.next}>→</button>
+      </div>
+    )
+  }
+  <ul role="list" class={carousel ? 'pg__rail' : `pg__grid pg__grid--${layout}`} tabindex={carousel ? 0 : undefined} data-rail={carousel ? '' : undefined}>
     {
       images.map((img, i) => (
-        <li class="pg__item" data-reveal="scale" style={`--reveal-delay: ${(i % 3) * 80}ms`} hidden={i >= limit ? true : undefined} data-extra={i >= limit ? '' : undefined}>
+        <li class="pg__item" data-reveal={carousel ? undefined : 'scale'} style={carousel ? undefined : `--reveal-delay: ${(i % 3) * 80}ms`} hidden={!carousel && i >= limit ? true : undefined} data-extra={!carousel && i >= limit ? '' : undefined}>
           <button
             type="button"
             class="pg__button"
@@ -48,7 +61,7 @@ const layout = images.length === 1 ? 'one' : images.length === 2 ? 'two' : image
             <SmartImage
               image={img}
               decorative
-              sizes={layout === 'one' ? '(min-width: 64rem) 80rem, 100vw' : '(min-width: 64rem) 45vw, 90vw'}
+              sizes={carousel ? '(min-width: 64rem) 45vw, 85vw' : layout === 'one' ? '(min-width: 64rem) 80rem, 100vw' : '(min-width: 64rem) 45vw, 90vw'}
               widths={[480, 768, 1080, 1440]}
             />
           </button>
@@ -58,7 +71,7 @@ const layout = images.length === 1 ? 'one' : images.length === 2 ? 'two' : image
   </ul>
 
   {
-    images.length > limit && (
+    !carousel && images.length > limit && (
       <div class="pg__more">
         <button type="button" class="btn btn--outline" data-more>
           {ui.showAll} ({images.length})
@@ -92,6 +105,14 @@ const layout = images.length === 1 ? 'one' : images.length === 2 ? 'two' : image
     let index = 0;
 
     viewer.toggleAttribute('data-single', !multiple);
+
+    // Carrusel: las flechas desplazan la fila casi un ancho de pantalla.
+    const rail = gallery.querySelector<HTMLElement>('[data-rail]');
+    if (rail) {
+      const go = (dir: number) => rail.scrollBy({ left: dir * rail.clientWidth * 0.8, behavior: 'smooth' });
+      gallery.querySelector('[data-rail-prev]')?.addEventListener('click', () => go(-1));
+      gallery.querySelector('[data-rail-next]')?.addEventListener('click', () => go(1));
+    }
 
     // "Ver todas": despliega las fotos que estaban ocultas.
     gallery.querySelector<HTMLButtonElement>('[data-more]')?.addEventListener('click', (e) => {
@@ -136,6 +157,81 @@ const layout = images.length === 1 ? 'one' : images.length === 2 ? 'two' : image
 </script>
 
 <style>
+  /* ---------- Carrusel a todo lo ancho ---------- */
+  .pg--carousel {
+    position: relative;
+  }
+
+  .pg__rail {
+    display: flex;
+    gap: clamp(0.5rem, 1.2vw, 1rem);
+    padding: 0 var(--gutter) var(--space-4);
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x proximity;
+    scroll-padding-inline: var(--gutter);
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-river) transparent;
+  }
+
+  .pg__rail:focus-visible {
+    outline: 2px solid var(--color-river);
+    outline-offset: 4px;
+  }
+
+  .pg--carousel .pg__item {
+    flex: none;
+    height: clamp(14rem, min(36vw, 52svh), 28rem);
+    scroll-snap-align: start;
+    background: var(--color-night-deep, #0a1d1d);
+  }
+
+  .pg--carousel .pg__button :global(img) {
+    width: auto;
+    height: 100%;
+    max-width: none;
+  }
+
+  /* Flechas flotando a los lados de la fila (solo con mouse; en el celular se desliza con el dedo). */
+  .pg__arrows {
+    position: absolute;
+    inset: 0 0 var(--space-4);
+    z-index: 2;
+    display: none;
+    align-items: center;
+    justify-content: space-between;
+    padding-inline: calc(var(--gutter) * 0.5);
+    pointer-events: none;
+  }
+
+  @media (min-width: 48rem) and (hover: hover) {
+    .pg__arrows {
+      display: flex;
+    }
+  }
+
+  .pg__arrow {
+    display: grid;
+    place-items: center;
+    width: 3rem;
+    height: 3rem;
+    border: 1px solid var(--color-border-on-dark);
+    border-radius: 50%;
+    background: rgb(10 29 29 / 0.72);
+    backdrop-filter: blur(6px);
+    color: var(--color-cloud);
+    font-size: 1.25rem;
+    pointer-events: auto;
+    transition:
+      background-color var(--duration) var(--ease),
+      color var(--duration) var(--ease);
+  }
+
+  .pg__arrow:hover {
+    background: var(--color-river);
+    color: var(--color-night);
+  }
+
   .pg__grid {
     display: grid;
     gap: clamp(0.5rem, 1vw, 1rem);

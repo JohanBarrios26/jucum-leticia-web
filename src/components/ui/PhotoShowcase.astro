@@ -1,0 +1,96 @@
+---
+/**
+ * VITRINA DE FOTOS DE LA PÁGINA ("Así se vive")
+ * ----------------------------------------------------------------------------
+ * Sección oscura a todo lo ancho con TODAS las fotos de la escuela, ministerio
+ * o base en un carrusel deslizable (flechas en escritorio, dedo en el celular).
+ * Al tocar una foto se abre el visor a pantalla completa.
+ *
+ * Reemplaza a la antigua galería en cuadrícula del final de la página. Con
+ * menos de 3 fotos no se muestra. Las fotos se cargan en el panel (campo
+ * "Fotos" de cada página) y deben ser solo de esa escuela, ministerio o base.
+ */
+import PhotoGallery from '@/components/ui/PhotoGallery.astro';
+import type { Locale } from '@/i18n/routes';
+import { t } from '@/i18n/ui';
+import type { ImageRef } from '@/lib/content';
+
+interface Props {
+  locale: Locale;
+  /** Nombre de la escuela, ministerio o base (aparece sobre el título). */
+  name: string;
+  images: ImageRef[];
+}
+
+const { locale, name, images } = Astro.props;
+const ui = t(locale).detail;
+---
+
+{
+  images.length >= 3 && (
+    <section class="show section surface-dark" aria-labelledby="show-title">
+      <div class="container show__head" data-reveal>
+        <div>
+          <p class="eyebrow eyebrow--line">{name}</p>
+          <h2 id="show-title" class="show__title">
+            {ui.lived}
+          </h2>
+        </div>
+        <p class="show__meta">
+          <span class="show__count">{images.length}</span> {ui.photosWord}
+          <span class="show__hint" aria-hidden="true">{ui.swipe} →</span>
+        </p>
+      </div>
+      <PhotoGallery locale={locale} images={images} variant="carousel" />
+    </section>
+  )
+}
+
+<style>
+  .show {
+    padding-bottom: calc(var(--space-section) * 0.8);
+    overflow: clip;
+  }
+
+  .show__head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: end;
+    justify-content: space-between;
+    gap: var(--space-4);
+    margin-bottom: var(--space-6);
+  }
+
+  .show__title {
+    margin-top: var(--space-3);
+  }
+
+  .show__meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--space-2);
+    color: var(--color-text-on-dark-muted);
+    font-size: var(--text-sm);
+  }
+
+  .show__count {
+    color: var(--color-river);
+    font-family: var(--font-display);
+    font-size: 2rem;
+    line-height: 1;
+  }
+
+  .show__hint {
+    margin-left: var(--space-3);
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  @media (min-width: 48rem) {
+    .show__hint {
+      display: none;
+    }
+  }
+</style>

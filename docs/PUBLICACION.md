@@ -30,6 +30,8 @@ Cuando el cliente apruebe y compre su dominio, esta es la lista de pasos para pu
    | `PUBLIC_SHOW_PENDING` | `false` (oculta las marcas "Pendiente de contenido") |
    | `NODE_VERSION` | `24` |
 
+   > Mientras no haya dominio, el sitio usa la dirección de prueba `*.workers.dev` (está en `astro.config.mjs`). **Al comprar el dominio, define `SITE_URL` en Cloudflare** para que el canonical, el sitemap y el hreflang apunten al dominio real.
+
 5. **Custom domains** → agregar el dominio y `www`.
 6. El archivo `public/_headers` ya define los encabezados de seguridad y caché para Cloudflare . **Ojo:** mientras se usa la dirección de prueba (`*.pages.dev`) incluye `X-Robots-Tag: noindex`; **al publicar con el dominio definitivo hay que borrar esa línea** para que Google indexe el sitio.
 

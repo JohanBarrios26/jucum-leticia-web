@@ -286,6 +286,9 @@ const es = {
     message: 'Hola, quiero saber más sobre',
   },
   detail: {
+    lived: 'Así se vive',
+    photosWord: 'fotos',
+    swipe: 'Desliza',
     readMore: 'Leer más',
     readLess: 'Leer menos',
     activities: 'Qué hacemos',
@@ -628,6 +631,9 @@ const en: UIStrings = {
     message: 'Hello, I would like to know more about',
   },
   detail: {
+    lived: 'See it up close',
+    photosWord: 'photos',
+    swipe: 'Swipe',
     readMore: 'Read more',
     readLess: 'Read less',
     activities: 'What we do',
@@ -967,6 +973,9 @@ const pt: UIStrings = {
     message: 'Olá, quero saber mais sobre',
   },
   detail: {
+    lived: 'Assim se vive',
+    photosWord: 'fotos',
+    swipe: 'Deslize',
     readMore: 'Ler mais',
     readLess: 'Ler menos',
     activities: 'O que fazemos',

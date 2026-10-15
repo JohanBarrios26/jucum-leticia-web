@@ -10,13 +10,12 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
 import BaseAccess from '@/components/BaseAccess.astro';
 import PageHero from '@/components/PageHero.astro';
 import CallBand from '@/components/CallBand.astro';
-import PhotoStrip from '@/components/ui/PhotoStrip.astro';
+import PhotoShowcase from '@/components/ui/PhotoShowcase.astro';
 import ReadMore from '@/components/ui/ReadMore.astro';
 import PendingContent from '@/components/PendingContent.astro';
 import ThemeStrip from '@/components/ThemeStrip.astro';
 import FeatureBlocks from '@/components/features/FeatureBlocks.astro';
 import LiteVideo from '@/components/features/LiteVideo.astro';
-import PhotoGallery from '@/components/ui/PhotoGallery.astro';
 import { baseAlternates, ministryAlternates, routes, schoolAlternates, type Locale } from '@/i18n/routes';
 import { t } from '@/i18n/ui';
 import { showPending } from '@/lib/config';
@@ -33,16 +32,10 @@ const settings = await getSiteSettings(locale);
 const visitHref = settings.whatsapp
   ? whatsappUrl(settings.whatsapp, `${ui.bases.visitMessage} ${base.name}.`)
   : routes.contact[locale];
+// Las fotos van en la vitrina (PhotoShowcase); esta sección es solo para videos.
 const hasPhotos = base.gallery.length > 0;
 const hasVideos = base.videos.length > 0;
 const hasMedia = hasPhotos || hasVideos;
-// El título dice solo lo que hay: "Fotos", "Videos" o "Fotos · Videos".
-const mediaTitle =
-  hasPhotos && !hasVideos
-    ? ui.bases.photos
-    : hasVideos && !hasPhotos
-      ? ui.bases.videos
-      : `${ui.bases.photos} · ${ui.bases.videos}`;
 ---
 
 <BaseLayout
@@ -107,8 +100,8 @@ const mediaTitle =
     </div>
   </section>
 
-  <!-- Cinta de fotos: da vida a la página justo después de la descripción -->
-  <PhotoStrip images={base.gallery} />
+  <!-- Vitrina de fotos: todas las fotos de esta base, en carrusel -->
+  <PhotoShowcase locale={locale} name={base.name} images={base.gallery} />
 
   <!-- Bloques especiales de la base (tarjetas, cifras, etapas…) -->
   <FeatureBlocks locale={locale} blocks={base.features} />
@@ -127,16 +120,14 @@ const mediaTitle =
   <!-- Frase de llamado sobre una foto -->
   <CallBand locale={locale} title={base.calling} name={base.name} image={base.gallery[1] ?? base.gallery[0] ?? base.image} whatsapp={settings.whatsapp} />
 
-  <!-- Fotos y videos -->
+  <!-- Videos de la base -->
   {
-    (hasMedia || showPending) && (
+    (hasVideos || (showPending && !hasMedia)) && (
       <section class="section surface-dark" aria-labelledby="media-title">
         <div class="container">
           <h2 id="media-title" class="media-title" data-reveal>
-            {mediaTitle}
+            {ui.bases.videos}
           </h2>
-
-          {hasPhotos && <PhotoGallery locale={locale} images={base.gallery} />}
 
           {hasVideos && (
             <div class="videos">

@@ -20,6 +20,9 @@ const site =
   (process.env.VERCEL_PROJECT_PRODUCTION_URL && `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`) ??
   // Cloudflare Pages: URL de la publicación actual.
   process.env.CF_PAGES_URL ??
+  // Cloudflare Workers Builds (el panel nuevo de Cloudflare) no define CF_PAGES_URL: mientras no haya
+  // dominio propio se usa la dirección de prueba. Con dominio, definir SITE_URL en Cloudflare.
+  (process.env.WORKERS_CI ? 'https://jucum-leticia-web.farith2699.workers.dev' : undefined) ??
   'http://localhost:4321';
 
 export default defineConfig({

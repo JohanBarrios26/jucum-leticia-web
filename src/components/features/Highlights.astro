@@ -30,6 +30,7 @@ const { block, titleId } = Astro.props;
       <ul role="list" class="hl__grid">
         {block.items.map((item, i) => (
           <li class="hl__card" data-reveal style={`--reveal-delay: ${(i % 3) * 90}ms`}>
+            <span class="hl__num" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
             <span class="hl__icon" aria-hidden="true">
               <Icon name={item.icon as IconName} />
             </span>
@@ -97,7 +98,29 @@ const { block, titleId } = Astro.props;
     transform: scaleX(1);
   }
 
+  /* Número grande y tenue en la esquina: da ritmo a la fila de tarjetas. */
+  .hl__num {
+    position: absolute;
+    top: var(--space-3);
+    right: var(--space-4);
+    color: var(--color-night);
+    font-family: var(--font-display);
+    font-size: 3.25rem;
+    line-height: 1;
+    opacity: 0.07;
+    transition: opacity var(--duration) var(--ease);
+  }
+
+  .hl__card:hover .hl__num {
+    opacity: 0.18;
+  }
+
+  .hl__card:hover .hl__icon {
+    box-shadow: 0 0 0 0.5rem rgb(0 173 239 / 0.16);
+  }
+
   .hl__icon {
+    transition: box-shadow 400ms var(--ease);
     display: grid;
     place-items: center;
     width: 3.25rem;

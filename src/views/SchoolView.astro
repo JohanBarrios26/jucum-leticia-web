@@ -16,11 +16,10 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
 import PageHero from '@/components/PageHero.astro';
 import FeatureBlocks from '@/components/features/FeatureBlocks.astro';
 import LiteVideo from '@/components/features/LiteVideo.astro';
-import PhotoGallery from '@/components/ui/PhotoGallery.astro';
 import ImagePlaceholder from '@/components/ui/ImagePlaceholder.astro';
 import SmartImage from '@/components/ui/SmartImage.astro';
 import CallBand from '@/components/CallBand.astro';
-import PhotoStrip from '@/components/ui/PhotoStrip.astro';
+import PhotoShowcase from '@/components/ui/PhotoShowcase.astro';
 import ReadMore from '@/components/ui/ReadMore.astro';
 import PendingContent from '@/components/PendingContent.astro';
 import ThemeStrip from '@/components/ThemeStrip.astro';
@@ -37,12 +36,8 @@ const { locale, school } = Astro.props;
 const ui = t(locale);
 const settings = await getSiteSettings(locale);
 
-// Fotos y videos: la sección solo aparece si hay alguno. El título dice lo que hay.
-const hasPhotos = school.gallery.length > 0;
+// Las fotos van en la vitrina (PhotoShowcase); esta sección es solo para videos.
 const hasVideos = school.videos.length > 0;
-const hasMedia = hasPhotos || hasVideos;
-const mediaTitle =
-  hasPhotos && !hasVideos ? ui.bases.photos : hasVideos && !hasPhotos ? ui.bases.videos : `${ui.bases.photos} · ${ui.bases.videos}`;
 
 // Ficha técnica: etiqueta + valor (null = pendiente).
 const facts = [
@@ -117,8 +112,8 @@ const facts = [
     </div>
   </section>
 
-  <!-- Cinta de fotos: da vida a la página justo después de la descripción -->
-  <PhotoStrip images={school.gallery} />
+  <!-- Vitrina de fotos: todas las fotos de esta escuela, en carrusel -->
+  <PhotoShowcase locale={locale} name={school.name} images={school.gallery} />
 
   <!-- Bloques especiales de esta escuela -->
   <FeatureBlocks locale={locale} blocks={school.features} />
@@ -126,16 +121,14 @@ const facts = [
   <!-- Frase de llamado sobre una foto -->
   <CallBand locale={locale} title={school.calling} name={school.name} image={school.gallery[1] ?? school.gallery[0] ?? school.image} whatsapp={settings.whatsapp} />
 
-  <!-- Fotos y videos de la escuela (solo si hay) -->
+  <!-- Videos de la escuela (solo si hay) -->
   {
-    hasMedia && (
+    hasVideos && (
       <section class="section surface-dark" aria-labelledby="media-title">
         <div class="container">
           <h2 id="media-title" class="media-title" data-reveal>
-            {mediaTitle}
+            {ui.bases.videos}
           </h2>
-
-          {hasPhotos && <PhotoGallery locale={locale} images={school.gallery} />}
 
           {hasVideos && (
             <div class="videos">

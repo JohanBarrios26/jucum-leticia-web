@@ -29,13 +29,59 @@ const ui = t(locale).features;
         {block.items.map((item, i) => (
           <div class="stats__item" data-reveal style={`--reveal-delay: ${i * 90}ms`}>
             <dt class="stats__label">{item.label}</dt>
-            <dd class="stats__value">{item.value}</dd>
+            <dd class="stats__value" data-count>{item.value}</dd>
           </div>
         ))}
       </dl>
     </div>
   )
 }
+
+<script>
+  /*
+   * Las cifras suben desde 0 hasta su valor cuando aparecen en pantalla.
+   * Sin JavaScript, o con "reducir movimiento", se ve el número final de una vez.
+   * Respeta el formato original: "945 000+", "1 000+", "116"…
+   */
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const els = document.querySelectorAll<HTMLElement>('[data-count]');
+  const parse = (text: string) => {
+    const m = text.match(/^(D*)([d][ds.,]*)(D*)$/);
+    if (!m) return null;
+    const digits = m[2].replace(/D/g, '');
+    if (digits.length > 9 || /^0d/.test(digits)) return null;
+    // Años como "2000" no deben "contar" (son fechas, no cantidades).
+    if (/^(19|20)dd$/.test(digits) && m[2].length === 4) return null;
+    const sep = (m[2].match(/[s.,]/) ?? [''])[0];
+    return { prefix: m[1], target: Number(digits), sep, suffix: m[3] };
+  };
+  const fmt = (n: number, sep: string) => (sep ? String(n).replace(/B(?=(d{3})+(?!d))/g, sep) : String(n));
+
+  if (!reduce && 'IntersectionObserver' in window) {
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) {
+          if (!e.isIntersecting) continue;
+          io.unobserve(e.target);
+          const el = e.target as HTMLElement;
+          const p = parse(el.textContent?.trim() ?? '');
+          if (!p) continue;
+          const start = performance.now();
+          const dur = 1400;
+          const tick = (now: number) => {
+            const t = Math.min(1, (now - start) / dur);
+            const eased = 1 - Math.pow(1 - t, 3);
+            el.textContent = p.prefix + fmt(Math.round(p.target * eased), p.sep) + p.suffix;
+            if (t < 1) requestAnimationFrame(tick);
+          };
+          requestAnimationFrame(tick);
+        }
+      },
+      { threshold: 0.6 },
+    );
+    els.forEach((el) => io.observe(el));
+  }
+</script>
 
 <style>
   .stats__list {

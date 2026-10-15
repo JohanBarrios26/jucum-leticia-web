@@ -77,6 +77,26 @@ const wa = whatsapp ? whatsappUrl(whatsapp, `${ui.message} ${name}.`) : null;
     object-fit: cover;
   }
 
+  /* Paralaje: la foto se desplaza un poco más lento que la página (solo navegadores que lo soportan). */
+  @media (prefers-reduced-motion: no-preference) {
+    @supports (animation-timeline: view()) {
+      .call__media :global(img) {
+        height: 120%;
+        animation: call-parallax linear both;
+        animation-timeline: view();
+      }
+    }
+  }
+
+  @keyframes call-parallax {
+    from {
+      transform: translateY(-8%);
+    }
+    to {
+      transform: translateY(0);
+    }
+  }
+
   /* Velo oscuro para que la frase siempre se lea sobre la foto. */
   .call__media::after {
     content: '';
