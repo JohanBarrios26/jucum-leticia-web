@@ -158,6 +158,8 @@ export interface MinistryRaw {
   motif: Maybe<MotifName>;
   /** Bloques especiales: audios, ruta, etapas… */
   features: FeatureBlockRaw[];
+  /** Frase de llamado (banda con foto al final de la página). */
+  calling: Maybe<Localized>;
   /** Muestra el mapa interactivo de comunidades en su página. */
   showMap: boolean;
   /** Fotos propias del ministerio (carpeta de este ministerio). */
@@ -192,6 +194,7 @@ export interface Ministry {
   order: number;
   motif: Maybe<MotifName>;
   features: FeatureBlock[];
+  calling: Maybe<string>;
   showMap: boolean;
   gallery: ImageRef[];
 }
@@ -225,6 +228,8 @@ export interface SchoolContact {
 /** Escuela / programa (especificación §11). Los campos `null` se muestran como pendientes. */
 export interface SchoolRaw {
   slug: string;
+  /** Frase de llamado (banda con foto al final de la página). */
+  calling: Maybe<Localized>;
   /** Nombre corto o sigla, ej. "EDE". */
   name: Localized;
   /** Nombre completo, ej. "Escuela de Discipulado y Entrenamiento". */
@@ -253,6 +258,7 @@ export interface SchoolRaw {
 
 export interface School {
   slug: string;
+  calling: Maybe<string>;
   name: string;
   fullName: Maybe<string>;
   description: Maybe<string>;
@@ -505,6 +511,8 @@ export type AccessMode = (typeof accessModes)[number];
 /** Base física de JUCUM Leticia (ej. Leticia, JUCUM El Puente en Ronda). */
 export interface BaseRaw {
   slug: string;
+  /** Frase de llamado (banda con foto al final de la página). */
+  calling: Maybe<Localized>;
   name: Localized;
   tagline: Maybe<Localized>;
   location: Maybe<Localized>;
@@ -525,6 +533,7 @@ export interface BaseRaw {
 
 export interface Base {
   slug: string;
+  calling: Maybe<string>;
   name: string;
   tagline: Maybe<string>;
   location: Maybe<string>;

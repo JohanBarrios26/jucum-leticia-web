@@ -1,0 +1,115 @@
+---
+/**
+ * BANDA DE LLAMADO (foto a pantalla completa + una frase que invita)
+ * ----------------------------------------------------------------------------
+ * Aparece en cada ministerio, escuela y base, después del contenido principal.
+ * La frase sale del campo "Frase de llamado" en el panel; la foto, de la
+ * galería de la propia página. Si la página no tiene frase, no se muestra.
+ * Dos botones: "Quiero ser parte" (formulario) y WhatsApp con el nombre ya escrito.
+ */
+import SmartImage from '@/components/ui/SmartImage.astro';
+import { routes, type Locale } from '@/i18n/routes';
+import { t } from '@/i18n/ui';
+import { whatsappUrl, type ImageRef, type Maybe } from '@/lib/content';
+
+interface Props {
+  locale: Locale;
+  /** Frase grande. Sin frase no se dibuja la banda. */
+  title: Maybe<string>;
+  /** Nombre de la escuela, ministerio o base (va en el mensaje de WhatsApp). */
+  name: string;
+  image?: Maybe<ImageRef>;
+  whatsapp: Maybe<string>;
+}
+
+const { locale, title, name, image = null, whatsapp } = Astro.props;
+const ui = t(locale).callBand;
+const wa = whatsapp ? whatsappUrl(whatsapp, `${ui.message} ${name}.`) : null;
+---
+
+{
+  title && (
+    <section class="call on-photo" aria-label={name}>
+      {image && (
+        <div class="call__media" aria-hidden="true">
+          <SmartImage image={image} decorative sizes="100vw" widths={[768, 1440, 1920]} />
+        </div>
+      )}
+      <div class="container call__inner" data-reveal>
+        <p class="eyebrow eyebrow--line call__eyebrow">{name}</p>
+        <p class="call__title">{title}</p>
+        <div class="call__actions">
+          <a class="btn btn--primary" href={`${routes.contact[locale]}?motivo=come`} data-event="cta_join_click">
+            {ui.primary} <span class="btn__arrow" aria-hidden="true">→</span>
+          </a>
+          {wa && (
+            <a class="btn btn--outline" href={wa} target="_blank" rel="noopener" data-event="whatsapp_click">
+              {ui.secondary}
+            </a>
+          )}
+        </div>
+      </div>
+    </section>
+  )
+}
+
+<style>
+  .call {
+    position: relative;
+    display: grid;
+    align-items: center;
+    min-height: clamp(22rem, 62svh, 38rem);
+    padding-block: var(--space-section);
+    background: var(--color-night);
+    color: var(--color-text-on-dark);
+    overflow: hidden;
+  }
+
+  .call__media {
+    position: absolute;
+    inset: 0;
+  }
+
+  .call__media :global(img),
+  .call__media :global(picture) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* Velo oscuro para que la frase siempre se lea sobre la foto. */
+  .call__media::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(100deg, rgb(10 29 29 / 0.92) 8%, rgb(10 29 29 / 0.55) 60%, rgb(10 29 29 / 0.25));
+  }
+
+  .call__inner {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    gap: var(--space-5);
+    justify-items: start;
+  }
+
+  .call__eyebrow {
+    color: var(--color-river);
+  }
+
+  .call__title {
+    max-width: 18ch;
+    font-family: var(--font-display);
+    font-size: clamp(2.5rem, 1.5rem + 5vw, 5.25rem);
+    line-height: 0.98;
+    letter-spacing: var(--tracking-display);
+    text-transform: uppercase;
+    text-wrap: balance;
+  }
+
+  .call__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+  }
+</style>

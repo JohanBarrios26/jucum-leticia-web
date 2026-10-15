@@ -128,6 +128,13 @@ export const school = defineType({
         }),
       ],
     }),
+    defineField({
+      name: 'calling',
+      group: 'main',
+      title: 'Frase de llamado',
+      type: 'localeString',
+      description: 'Una frase corta y fuerte que invita a participar. Aparece en grande sobre una foto, al final de la página. Ej: "Una iglesia en cada orilla del río".',
+    }),
     motifField('features'),
     featuresField('features'),
     // Fotos y videos

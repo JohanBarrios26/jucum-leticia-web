@@ -1,0 +1,105 @@
+---
+/**
+ * TEXTO LARGO CON "LEER MÁS"
+ * ----------------------------------------------------------------------------
+ * Para que la página no abrume con párrafos: se muestran las primeras frases
+ * (la idea central) y el resto queda plegado con un botón "Leer más". No se
+ * quita información: solo se ordena. Funciona sin JavaScript (<details>).
+ *
+ * Si el texto es corto (menos de ~320 caracteres) se muestra completo.
+ */
+import type { Locale } from '@/i18n/routes';
+import { t } from '@/i18n/ui';
+
+interface Props {
+  text: string;
+  locale: Locale;
+  /** Clase del párrafo (por defecto el estilo "lead" del sitio). */
+  class?: string;
+}
+
+const { text, locale, class: className = 'lead' } = Astro.props;
+const ui = t(locale).detail;
+
+// Se cortan las frases completas hasta pasar ~200 caracteres.
+const sentences = text.split(/(?<=[.!?])\s+/);
+let head = '';
+let i = 0;
+while (i < sentences.length && head.length < 200) {
+  head += (head ? ' ' : '') + sentences[i];
+  i++;
+}
+const rest = sentences.slice(i).join(' ');
+const fold = text.length > 320 && rest.length > 60;
+---
+
+{
+  fold ? (
+    <div class="rm">
+      <p class={className}>{head}</p>
+      <details class="rm__more">
+        <summary>
+          <span class="rm__open">{ui.readMore}</span>
+          <span class="rm__close">{ui.readLess}</span>
+        </summary>
+        <p class={className}>{rest}</p>
+      </details>
+    </div>
+  ) : (
+    <p class={className}>{text}</p>
+  )
+}
+
+<style>
+  .rm__more {
+    margin-top: var(--space-3);
+  }
+
+  .rm__more summary {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-height: 2.75rem;
+    color: var(--color-green);
+    font-weight: 700;
+    cursor: pointer;
+    list-style: none;
+  }
+
+  .rm__more summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .rm__more summary::after {
+    content: '+';
+    display: grid;
+    place-items: center;
+    width: 1.75rem;
+    height: 1.75rem;
+    border: 1.5px solid currentColor;
+    border-radius: 50%;
+    line-height: 1;
+    transition: transform var(--duration) var(--ease);
+  }
+
+  .rm__more[open] summary::after {
+    content: '–';
+  }
+
+  .rm__close,
+  .rm__more[open] .rm__open {
+    display: none;
+  }
+
+  .rm__more[open] .rm__close {
+    display: inline;
+  }
+
+  .rm__more p {
+    margin-top: var(--space-3);
+  }
+
+  .rm__more summary:hover {
+    color: var(--color-night);
+  }
+</style>

@@ -280,7 +280,14 @@ const es = {
   },
 
   /* Plantillas de ministerio y escuela */
+  callBand: {
+    primary: 'Quiero ser parte',
+    secondary: 'Escríbenos por WhatsApp',
+    message: 'Hola, quiero saber más sobre',
+  },
   detail: {
+    readMore: 'Leer más',
+    readLess: 'Leer menos',
     activities: 'Qué hacemos',
     participate: '¿Cómo puedes participar?',
     participateText: 'Escríbenos y te contamos cómo sumarte a este trabajo.',
@@ -615,7 +622,14 @@ const en: UIStrings = {
     unavailable: 'The form will be available very soon. Meanwhile, write to us on WhatsApp or by email.',
     subject: 'New message from the website',
   },
+  callBand: {
+    primary: 'I want to be part',
+    secondary: 'Write to us on WhatsApp',
+    message: 'Hello, I would like to know more about',
+  },
   detail: {
+    readMore: 'Read more',
+    readLess: 'Read less',
     activities: 'What we do',
     participate: 'How can you take part?',
     participateText: 'Write to us and we’ll tell you how to join this work.',
@@ -947,7 +961,14 @@ const pt: UIStrings = {
     unavailable: 'O formulário estará disponível em breve. Enquanto isso, escreva pelo WhatsApp ou por e-mail.',
     subject: 'Nova mensagem do site',
   },
+  callBand: {
+    primary: 'Quero participar',
+    secondary: 'Escreva no WhatsApp',
+    message: 'Olá, quero saber mais sobre',
+  },
   detail: {
+    readMore: 'Ler mais',
+    readLess: 'Ler menos',
     activities: 'O que fazemos',
     participate: 'Como você pode participar?',
     participateText: 'Escreva para nós e contaremos como se juntar a este trabalho.',

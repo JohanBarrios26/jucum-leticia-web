@@ -227,6 +227,7 @@ function resolveMinistry(m: MinistryRaw, locale: Locale): Ministry {
     order: m.order,
     motif: m.motif,
     features: resolveFeatures(m.features, locale),
+    calling: localizeMaybe(m.calling, locale),
     showMap: m.showMap,
     gallery: m.gallery.map((g) => resolveImage(g, locale)),
   };
@@ -279,6 +280,7 @@ function resolveSchool(s: SchoolRaw, locale: Locale, people: PersonRaw[]): Schoo
     }));
   return {
     slug: s.slug,
+    calling: localizeMaybe(s.calling, locale),
     name: localize(s.name, locale),
     fullName: localizeMaybe(s.fullName, locale),
     description: localizeMaybe(s.description, locale),
@@ -501,6 +503,7 @@ export async function getPageImages(locale: Locale): Promise<PageImages> {
 function resolveBase(b: BaseRaw, locale: Locale): Base {
   return {
     slug: b.slug,
+    calling: localizeMaybe(b.calling, locale),
     name: localize(b.name, locale),
     tagline: localizeMaybe(b.tagline, locale),
     location: localizeMaybe(b.location, locale),

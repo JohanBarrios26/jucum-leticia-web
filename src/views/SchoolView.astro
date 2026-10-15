@@ -19,11 +19,14 @@ import LiteVideo from '@/components/features/LiteVideo.astro';
 import PhotoGallery from '@/components/ui/PhotoGallery.astro';
 import ImagePlaceholder from '@/components/ui/ImagePlaceholder.astro';
 import SmartImage from '@/components/ui/SmartImage.astro';
+import CallBand from '@/components/CallBand.astro';
+import PhotoStrip from '@/components/ui/PhotoStrip.astro';
+import ReadMore from '@/components/ui/ReadMore.astro';
 import PendingContent from '@/components/PendingContent.astro';
 import ThemeStrip from '@/components/ThemeStrip.astro';
 import { baseAlternates, personAlternates, routes, schoolAlternates, type Locale } from '@/i18n/routes';
 import { t } from '@/i18n/ui';
-import { ogImageUrl, whatsappUrl, type School } from '@/lib/content';
+import { getSiteSettings, ogImageUrl, whatsappUrl, type School } from '@/lib/content';
 
 interface Props {
   locale: Locale;
@@ -32,6 +35,7 @@ interface Props {
 
 const { locale, school } = Astro.props;
 const ui = t(locale);
+const settings = await getSiteSettings(locale);
 
 // Fotos y videos: la sección solo aparece si hay alguno. El título dice lo que hay.
 const hasPhotos = school.gallery.length > 0;
@@ -84,7 +88,7 @@ const facts = [
     <div class="container detail-grid">
       <div data-reveal>
         <h2 class="eyebrow eyebrow--line detail-label">{ui.detail.about}</h2>
-        {school.description ? <p class="lead">{school.description}</p> : <PendingContent locale={locale} />}
+        {school.description ? <ReadMore text={school.description} locale={locale} /> : <PendingContent locale={locale} />}
       </div>
 
       <div data-reveal style="--reveal-delay: 100ms">
@@ -113,8 +117,14 @@ const facts = [
     </div>
   </section>
 
+  <!-- Cinta de fotos: da vida a la página justo después de la descripción -->
+  <PhotoStrip images={school.gallery} />
+
   <!-- Bloques especiales de esta escuela -->
   <FeatureBlocks locale={locale} blocks={school.features} />
+
+  <!-- Frase de llamado sobre una foto -->
+  <CallBand locale={locale} title={school.calling} name={school.name} image={school.gallery[1] ?? school.gallery[0] ?? school.image} whatsapp={settings.whatsapp} />
 
   <!-- Fotos y videos de la escuela (solo si hay) -->
   {

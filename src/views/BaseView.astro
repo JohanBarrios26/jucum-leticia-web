@@ -9,6 +9,9 @@
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import BaseAccess from '@/components/BaseAccess.astro';
 import PageHero from '@/components/PageHero.astro';
+import CallBand from '@/components/CallBand.astro';
+import PhotoStrip from '@/components/ui/PhotoStrip.astro';
+import ReadMore from '@/components/ui/ReadMore.astro';
 import PendingContent from '@/components/PendingContent.astro';
 import ThemeStrip from '@/components/ThemeStrip.astro';
 import FeatureBlocks from '@/components/features/FeatureBlocks.astro';
@@ -75,7 +78,7 @@ const mediaTitle =
     <div class="container base-intro">
       <div data-reveal>
         <h2 class="eyebrow eyebrow--line base-label">{ui.detail.about}</h2>
-        {base.description ? <p class="lead">{base.description}</p> : <PendingContent locale={locale} />}
+        {base.description ? <ReadMore text={base.description} locale={locale} /> : <PendingContent locale={locale} />}
       </div>
 
       <div data-reveal style="--reveal-delay: 100ms">
@@ -104,6 +107,9 @@ const mediaTitle =
     </div>
   </section>
 
+  <!-- Cinta de fotos: da vida a la página justo después de la descripción -->
+  <PhotoStrip images={base.gallery} />
+
   <!-- Bloques especiales de la base (tarjetas, cifras, etapas…) -->
   <FeatureBlocks locale={locale} blocks={base.features} />
 
@@ -117,6 +123,9 @@ const mediaTitle =
       </section>
     )
   }
+
+  <!-- Frase de llamado sobre una foto -->
+  <CallBand locale={locale} title={base.calling} name={base.name} image={base.gallery[1] ?? base.gallery[0] ?? base.image} whatsapp={settings.whatsapp} />
 
   <!-- Fotos y videos -->
   {

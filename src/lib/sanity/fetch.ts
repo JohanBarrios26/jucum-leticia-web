@@ -356,6 +356,7 @@ function toMinistry(d: Doc, i: number): MinistryRaw {
     order: i,
     motif: toMotif(d.motif),
     features: toFeatures(d.features),
+    calling: lx(d.calling),
     showMap: d.showMap === true,
     gallery: (d.gallery ?? []).map(toImage).filter(Boolean) as ImageRawRef[],
   };
@@ -364,6 +365,7 @@ function toMinistry(d: Doc, i: number): MinistryRaw {
 function toSchool(d: Doc, i: number): SchoolRaw {
   return {
     slug: d.slug,
+    calling: lx(d.calling),
     name: d.name,
     fullName: d.fullName ?? null,
     description: d.description ?? null,
@@ -399,6 +401,7 @@ function toBase(d: Doc, i: number): BaseRaw {
   const modes = ['walk', 'river', 'road', 'air'];
   return {
     slug: d.slug,
+    calling: lx(d.calling),
     name: d.name,
     tagline: lx(d.tagline),
     location: lx(d.location),
