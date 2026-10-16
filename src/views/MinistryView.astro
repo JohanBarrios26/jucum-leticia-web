@@ -109,7 +109,7 @@ const contactHref = settings.whatsapp
   <FeatureBlocks locale={locale} blocks={ministry.showMap ? ministry.features.filter((f) => f.type !== 'stats') : ministry.features} />
 
   <!-- Frase de llamado sobre una foto -->
-  <CallBand locale={locale} title={ministry.calling} name={ministry.name} image={ministry.gallery[1] ?? ministry.gallery[0] ?? ministry.image} whatsapp={settings.whatsapp} />
+  <CallBand locale={locale} title={ministry.calling} text={ministry.callingText} name={ministry.name} image={ministry.callingImage ?? ministry.gallery[1] ?? ministry.gallery[0] ?? ministry.image} whatsapp={settings.whatsapp} />
 
   <!-- Alcance: cifra + mapa grande con filtros y lista (solo en el ministerio con mapa) -->
   {ministry.showMap && communities.length > 0 && <HomeReach locale={locale} communities={communities} ministry={ministry} detailed />}

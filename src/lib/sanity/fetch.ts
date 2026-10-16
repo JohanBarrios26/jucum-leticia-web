@@ -69,15 +69,15 @@ const query = `{
     shortTerm{..., image${photo}}
   },
   "ministries": *[_type == "ministry"] | order(orderRank){
-    ..., "slug": slug.current, image${photo}, gallery[]${photo}, ${features}
+    ..., "slug": slug.current, image${photo}, callingImage${photo}, gallery[]${photo}, ${features}
   },
   "schools": *[_type == "school"] | order(orderRank){
-    ..., "slug": slug.current, image${photo},
+    ..., "slug": slug.current, image${photo}, callingImage${photo},
     contacts[]{..., photo${photo}}, gallery[]${photo}, ${features},
     "baseRef": base->{"slug": slug.current, name, active}
   },
   "bases": *[_type == "base"] | order(orderRank){
-    ..., "slug": slug.current, image${photo}, gallery[]${photo}, ${features},
+    ..., "slug": slug.current, image${photo}, callingImage${photo}, gallery[]${photo}, ${features},
     "programs": programs[]->{_type, "slug": slug.current, name, active}
   },
   "about": *[_id == "about"][0]{
@@ -357,6 +357,8 @@ function toMinistry(d: Doc, i: number): MinistryRaw {
     motif: toMotif(d.motif),
     features: toFeatures(d.features),
     calling: lx(d.calling),
+    callingText: lx(d.callingText),
+    callingImage: toImage(d.callingImage),
     showMap: d.showMap === true,
     gallery: (d.gallery ?? []).map(toImage).filter(Boolean) as ImageRawRef[],
   };
@@ -366,6 +368,8 @@ function toSchool(d: Doc, i: number): SchoolRaw {
   return {
     slug: d.slug,
     calling: lx(d.calling),
+    callingText: lx(d.callingText),
+    callingImage: toImage(d.callingImage),
     name: d.name,
     fullName: d.fullName ?? null,
     description: d.description ?? null,
@@ -402,6 +406,8 @@ function toBase(d: Doc, i: number): BaseRaw {
   return {
     slug: d.slug,
     calling: lx(d.calling),
+    callingText: lx(d.callingText),
+    callingImage: toImage(d.callingImage),
     name: d.name,
     tagline: lx(d.tagline),
     location: lx(d.location),

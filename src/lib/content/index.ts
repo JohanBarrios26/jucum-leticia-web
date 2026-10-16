@@ -228,6 +228,8 @@ function resolveMinistry(m: MinistryRaw, locale: Locale): Ministry {
     motif: m.motif,
     features: resolveFeatures(m.features, locale),
     calling: localizeMaybe(m.calling, locale),
+    callingText: localizeMaybe(m.callingText, locale),
+    callingImage: resolveImageMaybe(m.callingImage, locale),
     showMap: m.showMap,
     gallery: m.gallery.map((g) => resolveImage(g, locale)),
   };
@@ -281,6 +283,8 @@ function resolveSchool(s: SchoolRaw, locale: Locale, people: PersonRaw[]): Schoo
   return {
     slug: s.slug,
     calling: localizeMaybe(s.calling, locale),
+    callingText: localizeMaybe(s.callingText, locale),
+    callingImage: resolveImageMaybe(s.callingImage, locale),
     name: localize(s.name, locale),
     fullName: localizeMaybe(s.fullName, locale),
     description: localizeMaybe(s.description, locale),
@@ -504,6 +508,8 @@ function resolveBase(b: BaseRaw, locale: Locale): Base {
   return {
     slug: b.slug,
     calling: localizeMaybe(b.calling, locale),
+    callingText: localizeMaybe(b.callingText, locale),
+    callingImage: resolveImageMaybe(b.callingImage, locale),
     name: localize(b.name, locale),
     tagline: localizeMaybe(b.tagline, locale),
     location: localizeMaybe(b.location, locale),

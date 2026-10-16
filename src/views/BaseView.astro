@@ -118,7 +118,7 @@ const hasMedia = hasPhotos || hasVideos;
   }
 
   <!-- Frase de llamado sobre una foto -->
-  <CallBand locale={locale} title={base.calling} name={base.name} image={base.gallery[1] ?? base.gallery[0] ?? base.image} whatsapp={settings.whatsapp} />
+  <CallBand locale={locale} title={base.calling} text={base.callingText} name={base.name} image={base.callingImage ?? base.gallery[1] ?? base.gallery[0] ?? base.image} whatsapp={settings.whatsapp} />
 
   <!-- Videos de la base -->
   {

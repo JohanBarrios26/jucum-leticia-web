@@ -119,7 +119,7 @@ const facts = [
   <FeatureBlocks locale={locale} blocks={school.features} />
 
   <!-- Frase de llamado sobre una foto -->
-  <CallBand locale={locale} title={school.calling} name={school.name} image={school.gallery[1] ?? school.gallery[0] ?? school.image} whatsapp={settings.whatsapp} />
+  <CallBand locale={locale} title={school.calling} text={school.callingText} name={school.name} image={school.callingImage ?? school.gallery[1] ?? school.gallery[0] ?? school.image} whatsapp={settings.whatsapp} />
 
   <!-- Videos de la escuela (solo si hay) -->
   {

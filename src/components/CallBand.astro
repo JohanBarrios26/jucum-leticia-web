@@ -16,13 +16,15 @@ interface Props {
   locale: Locale;
   /** Frase grande. Sin frase no se dibuja la banda. */
   title: Maybe<string>;
+  /** Frase de apoyo bajo el título (cita bíblica o explicación breve). */
+  text?: Maybe<string>;
   /** Nombre de la escuela, ministerio o base (va en el mensaje de WhatsApp). */
   name: string;
   image?: Maybe<ImageRef>;
   whatsapp: Maybe<string>;
 }
 
-const { locale, title, name, image = null, whatsapp } = Astro.props;
+const { locale, title, text = null, name, image = null, whatsapp } = Astro.props;
 const ui = t(locale).callBand;
 const wa = whatsapp ? whatsappUrl(whatsapp, `${ui.message} ${name}.`) : null;
 ---
@@ -38,6 +40,7 @@ const wa = whatsapp ? whatsappUrl(whatsapp, `${ui.message} ${name}.`) : null;
       <div class="container call__inner" data-reveal>
         <p class="eyebrow eyebrow--line call__eyebrow">{name}</p>
         <p class="call__title">{title}</p>
+        {text && <p class="call__text">{text}</p>}
         <div class="call__actions">
           <a class="btn btn--primary" href={`${routes.contact[locale]}?motivo=come`} data-event="cta_join_click">
             {ui.primary} <span class="btn__arrow" aria-hidden="true">→</span>
@@ -125,6 +128,13 @@ const wa = whatsapp ? whatsappUrl(whatsapp, `${ui.message} ${name}.`) : null;
     letter-spacing: var(--tracking-display);
     text-transform: uppercase;
     text-wrap: balance;
+  }
+
+  .call__text {
+    max-width: 40rem;
+    color: var(--color-text-on-dark-muted, rgb(255 255 255 / 0.8));
+    font-size: var(--text-lg, 1.125rem);
+    line-height: 1.55;
   }
 
   .call__actions {
