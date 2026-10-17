@@ -40,3 +40,6 @@ AUDIOS OBT/
 
 # Fotos originales del cliente (~600 MB; las usadas están subidas a Sanity)
 FOTOS JUCUM/
+
+# Servidores: fotos y descripciones con teléfonos y datos personales (nunca se suben a Git)
+SERVIDORES/

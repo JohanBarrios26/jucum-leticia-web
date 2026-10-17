@@ -115,6 +115,7 @@ const es = {
     prayFor: 'Petición de oración',
 
     motto: 'Lema',
+    purpose: 'Nuestro propósito',
     globalEyebrow: 'Parte de un movimiento global',
     identityTitle: 'Lo que nos hace distintos',
     videoTitle: '25 años de ministerio en video',
@@ -478,6 +479,7 @@ const en: UIStrings = {
     prayFor: 'Prayer request',
 
     motto: 'Motto',
+    purpose: 'Our purpose',
     globalEyebrow: 'Part of a global movement',
     identityTitle: 'What makes us different',
     videoTitle: '25 years of ministry on video',
@@ -820,6 +822,7 @@ const pt: UIStrings = {
     prayFor: 'Pedido de oração',
 
     motto: 'Lema',
+    purpose: 'Nosso propósito',
     globalEyebrow: 'Parte de um movimento global',
     identityTitle: 'O que nos torna diferentes',
     videoTitle: '25 anos de ministério em vídeo',

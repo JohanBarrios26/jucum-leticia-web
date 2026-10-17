@@ -14,6 +14,7 @@
  */
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import HomeHero from '@/components/home/HomeHero.astro';
+import PurposeBanner from '@/components/PurposeBanner.astro';
 import HomeAbout from '@/components/home/HomeAbout.astro';
 import HomeBases from '@/components/home/HomeBases.astro';
 import HomeActivities from '@/components/home/HomeActivities.astro';
@@ -36,6 +37,7 @@ import {
   getMinistries,
   getSchools,
   getSiteSettings,
+  getAbout,
   getAmazonPage,
   getCommunities,
   getStories,
@@ -48,7 +50,7 @@ interface Props {
 const { locale } = Astro.props;
 
 // Todo el contenido se pide en paralelo (importa cuando venga del CMS).
-const [home, settings, ministries, schools, stories, gallery, joinPaths, bases, communities, amazon] = await Promise.all([
+const [home, settings, ministries, schools, stories, gallery, joinPaths, bases, communities, amazon, about] = await Promise.all([
   getHome(locale),
   getSiteSettings(locale),
   getMinistries(locale),
@@ -59,6 +61,7 @@ const [home, settings, ministries, schools, stories, gallery, joinPaths, bases, 
   getBases(locale),
   getCommunities(),
   getAmazonPage(locale),
+  getAbout(locale),
 ]);
 
 // La EDE tiene su propia sección destacada (además de su tarjeta en Escuelas).
@@ -75,6 +78,7 @@ const ede = schools.find((s) => s.slug === 'ede');
   preloadImage={home.hero.image}
 >
   <HomeHero locale={locale} hero={home.hero} />
+  {about.motto && <PurposeBanner locale={locale} motto={about.motto} id="home-purpose-title" />}
   <HomeAbout locale={locale} about={home.about} />
   <HomeBases locale={locale} bases={bases} />
   <HomeAmazon locale={locale} page={amazon} />

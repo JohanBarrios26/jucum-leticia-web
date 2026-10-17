@@ -33,21 +33,25 @@ const names = founders ? joinNames(founders.members.map((m) => m.name), locale) 
   (founders || showPending) && (
     <section class="founders surface-deep section" aria-labelledby={id}>
       <div class="container">
-        <p class="eyebrow eyebrow--line">{ui.founders.eyebrow}</p>
-        <h2 id={id}>{founders ? names : ui.founders.title}</h2>
+        <div class:list={['founders__head', { 'founders__head--photo': founders?.photo }]}>
+          <div class="founders__intro">
+            <p class="eyebrow eyebrow--line">{ui.founders.eyebrow}</p>
+            <h2 id={id}>{founders ? names : ui.founders.title}</h2>
+            {founders && <p class="founders__together">{ui.founders.together}</p>}
+            {founders?.story && <p class="lead founders__story" data-reveal>{founders.story}</p>}
+          </div>
+          {founders?.photo && (
+            <figure class="founders__photo" data-reveal="scale">
+              <div class="founders__frame">
+                <SmartImage image={founders.photo} sizes="(min-width: 64rem) 28rem, 90vw" widths={[480, 768, 1080]} ratio={1.25} />
+              </div>
+            </figure>
+          )}
+        </div>
 
         {
           founders ? (
             <>
-              <p class="founders__together">{ui.founders.together}</p>
-              <div class="founders__top">
-                {founders.photo && (
-                  <div class="founders__photo" data-reveal="scale">
-                    <SmartImage image={founders.photo} sizes="(min-width: 64rem) 45vw, 100vw" />
-                  </div>
-                )}
-                {founders.story && <p class="lead founders__story" data-reveal>{founders.story}</p>}
-              </div>
               <ul role="list" class="founders__list">
                 {founders.members.map((m, i) => (
                   <li class="founder" data-reveal style={`--reveal-delay: ${i * 100}ms`}>
@@ -76,25 +80,74 @@ const names = founders ? joinNames(founders.members.map((m) => m.name), locale) 
 
 <style>
   .founders h2 {
-    margin-top: var(--space-3);
+    margin-top: var(--space-1);
   }
 
   .founders__together {
-    margin-top: var(--space-2);
     color: var(--color-text-on-dark-muted);
   }
 
-  .founders__top {
+  /* Encabezado: texto a la izquierda y, si hay foto de familia, la foto al lado. */
+  .founders__head {
     display: grid;
-    gap: var(--space-6);
+    gap: var(--space-7);
     align-items: center;
-    margin-top: var(--space-6);
+  }
+
+  .founders__intro {
+    display: grid;
+    gap: var(--space-3);
+    align-content: center;
   }
 
   .founders__photo {
+    position: relative;
+    justify-self: center;
+    width: min(100%, 24rem);
+    margin: 0;
+    padding: 0 var(--space-4) var(--space-4) 0;
+  }
+
+  /* Marco de color desplazado detrás de la foto: la destaca sin recargarla. */
+  .founders__photo::before {
+    content: '';
+    position: absolute;
+    inset: var(--space-4) 0 0 var(--space-4);
+    z-index: 0;
+    border: 2px solid var(--color-river);
+    border-radius: var(--radius-lg);
+    transition: transform 600ms var(--ease);
+  }
+
+  .founders__photo:hover::before {
+    transform: translate(0.4rem, 0.4rem);
+  }
+
+  .founders__frame {
+    position: relative;
+    z-index: 1;
     overflow: hidden;
     border-radius: var(--radius-lg);
-    aspect-ratio: 16 / 10;
+    aspect-ratio: 4 / 5;
+    box-shadow: 0 1.5rem 3rem rgb(0 0 0 / 0.35);
+  }
+
+  .founders__frame :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  @media (min-width: 64rem) {
+    .founders__head--photo {
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: var(--space-9, 5rem);
+    }
+
+    .founders__photo {
+      justify-self: end;
+      width: min(100%, 26rem);
+    }
   }
 
   .founders__story {

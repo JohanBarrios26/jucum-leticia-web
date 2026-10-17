@@ -10,6 +10,7 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
 import Founders from '@/components/Founders.astro';
 import LiteVideo from '@/components/features/LiteVideo.astro';
 import PageHero from '@/components/PageHero.astro';
+import PurposeBanner from '@/components/PurposeBanner.astro';
 import PendingContent from '@/components/PendingContent.astro';
 import PersonCard from '@/components/PersonCard.astro';
 import Timeline from '@/components/features/Timeline.astro';
@@ -57,6 +58,9 @@ const historyBlock = {
   headerOverlay
 >
   <PageHero title={ui.nav.about} eyebrow={settings.organizationName} image={about.image} />
+
+  <!-- Declaración de propósito: lo central de la base, con todo el protagonismo -->
+  {about.motto && <PurposeBanner locale={locale} motto={about.motto} />}
 
   <!-- Introducción -->
   <section class="section">
@@ -115,14 +119,8 @@ const historyBlock = {
       </div>
 
       {
-        (about.motto || about.verse) && (
+        about.verse && (
           <div class="identity__extra">
-            {about.motto && (
-              <div data-reveal>
-                <p class="eyebrow eyebrow--line identity__label">{ui.about.motto}</p>
-                <p class="identity__motto">{about.motto}</p>
-              </div>
-            )}
             {about.verse && (
               <figure data-reveal style="--reveal-delay: 120ms">
                 <p class="eyebrow eyebrow--line identity__label">{ui.about.verse}</p>
