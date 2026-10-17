@@ -489,6 +489,8 @@ export interface PersonRaw {
   quote: Maybe<Localized>;
   bio: Maybe<Localized>;
   prayerRequest: Maybe<Localized>;
+  /** Momentos clave de su historia (línea de tiempo). */
+  milestones: { label: Maybe<string>; title: Localized; text: Maybe<Localized> }[];
   /** Solo se publica si la persona lo autorizó. */
   authorized: boolean;
 }
@@ -507,6 +509,7 @@ export interface Person {
   quote: Maybe<string>;
   bio: Maybe<string>;
   prayerRequest: Maybe<string>;
+  milestones: { label: Maybe<string>; title: string; text: Maybe<string> }[];
 }
 
 /* ------------------------------------------------------- Textos de las páginas */

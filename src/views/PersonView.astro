@@ -13,6 +13,9 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
 import PersonCard from '@/components/PersonCard.astro';
 import ImagePlaceholder from '@/components/ui/ImagePlaceholder.astro';
 import RiverLine from '@/components/ui/RiverLine.astro';
+import ReadMore from '@/components/ui/ReadMore.astro';
+import Icon from '@/components/ui/Icon.astro';
+import Timeline from '@/components/features/Timeline.astro';
 import SmartImage from '@/components/ui/SmartImage.astro';
 import { ministryAlternates, personAlternates, routes, type Locale } from '@/i18n/routes';
 import { t } from '@/i18n/ui';
@@ -44,6 +47,22 @@ const contactHref = wa(ui.people.contactMessage);
 const adults = p.members.filter((m) => m.relation === 'adult').map((m) => m.name);
 const children = p.members.filter((m) => m.relation === 'child').map((m) => m.name);
 const isFamily = p.members.length > 0;
+
+// Camino: línea de tiempo con los momentos clave de su historia.
+const journey = {
+  type: 'timeline' as const,
+  title: ui.people.journey,
+  intro: null,
+  steps: p.milestones.map((m) => ({ label: m.label, title: m.title, text: m.text })),
+};
+
+// Petición de oración: si trae varias ideas, se muestran como tarjetas (no como un párrafo largo).
+const prayerPoints = (p.prayerRequest ?? '')
+  .split(/(?<=[.;])\s+/)
+  .map((x) => x.trim().replace(/[.;]$/, ''))
+  .filter((x) => x.length > 8)
+  .map((x) => x.charAt(0).toUpperCase() + x.slice(1));
+const prayerAsCards = prayerPoints.length >= 3;
 ---
 
 <BaseLayout
@@ -130,9 +149,41 @@ const isFamily = p.members.length > 0;
           <h2 id="story-title" class="eyebrow eyebrow--line profile__label">
             {ui.people.story}
           </h2>
-          <p class="lead profile__bio" data-reveal>
-            {p.bio}
-          </p>
+          <div data-reveal>
+            <ReadMore text={p.bio} locale={locale} class="lead profile__bio" />
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  <!-- Su camino: momentos clave en línea de tiempo -->
+  {
+    p.milestones.length > 0 && (
+      <section class="section surface-sand" aria-labelledby="journey-title">
+        <div class="container">
+          <Timeline locale={locale} block={journey} titleId="journey-title" />
+        </div>
+      </section>
+    )
+  }
+
+  <!-- Cómo orar: ideas separadas en tarjetas -->
+  {
+    prayerAsCards && (
+      <section class="section surface-dark" aria-labelledby="pray-points-title">
+        <div class="container">
+          <h2 id="pray-points-title" class="pray-title" data-reveal>
+            {ui.people.prayFor} {p.name}
+          </h2>
+          <ul role="list" class="pray-grid">
+            {prayerPoints.map((point, i) => (
+              <li class="pray-card" data-reveal style={`--reveal-delay: ${(i % 3) * 80}ms`}>
+                <span class="pray-card__icon" aria-hidden="true"><Icon name="heart" /></span>
+                <p>{point}.</p>
+              </li>
+            ))}
+          </ul>
         </div>
       </section>
     )
@@ -151,7 +202,7 @@ const isFamily = p.members.length > 0;
 
       <article class="action" data-reveal style="--reveal-delay: 60ms">
         <h2 class="action__title">{ui.people.pray} {p.name}</h2>
-        <p>{p.prayerRequest ?? ui.people.prayText}</p>
+        <p>{prayerAsCards ? ui.people.prayText : (p.prayerRequest ?? ui.people.prayText)}</p>
         <a class="btn btn--dark" href={prayHref} target="_blank" rel="noopener" data-event="cta_pray_click">
           {ui.people.pray} {p.name} <span class="btn__arrow" aria-hidden="true">→</span>
         </a>
@@ -194,6 +245,42 @@ const isFamily = p.members.length > 0;
 </BaseLayout>
 
 <style>
+  .pray-title {
+    margin-bottom: var(--space-6);
+  }
+
+  .pray-grid {
+    display: grid;
+    gap: var(--space-4);
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr));
+  }
+
+  .pray-card {
+    display: grid;
+    gap: var(--space-3);
+    align-content: start;
+    padding: var(--space-5);
+    border: 1px solid var(--color-border-on-dark);
+    border-radius: var(--radius);
+    background: rgb(255 255 255 / 0.04);
+  }
+
+  .pray-card__icon {
+    display: grid;
+    place-items: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: 50%;
+    background: var(--color-river);
+    color: var(--color-night);
+    font-size: 1.375rem;
+  }
+
+  .pray-card p {
+    font-size: var(--text-lg, 1.125rem);
+    line-height: 1.4;
+  }
+
   .profile {
     padding-top: calc(var(--header-height) + var(--space-8));
   }

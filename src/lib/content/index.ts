@@ -471,6 +471,7 @@ function resolvePerson(p: PersonRaw, locale: Locale): Person {
       quote: localizeMaybe(p.quote, locale),
       bio: localizeMaybe(p.bio, locale),
       prayerRequest: localizeMaybe(p.prayerRequest, locale),
+      milestones: p.milestones.map((m) => ({ label: m.label, title: localize(m.title, locale), text: localizeMaybe(m.text, locale) })),
   };
 }
 

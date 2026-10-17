@@ -3,66 +3,74 @@
  * DECLARACIÓN DE PROPÓSITO (el corazón de JUCUM Leticia)
  * ----------------------------------------------------------------------------
  * "Trayendo el Reino de Dios, uniendo el Cuerpo de Cristo para discipular las
- * naciones." Se muestra enorme, en tres líneas, justo debajo de la portada del
- * Inicio y de "Quiénes somos". El texto se edita en el panel:
- * Quiénes somos → Lema (se traduce al inglés y al portugués en el mismo campo).
+ * naciones." Franja compacta y llamativa que va justo debajo de la portada del
+ * Inicio y de "Quiénes somos": la corona de plumas (el símbolo de JUCUM
+ * Leticia) a la izquierda y la frase a la derecha, con la última parte en azul.
+ * El texto se edita en el panel: Quiénes somos → Lema (se traduce al inglés y
+ * al portugués en el mismo campo).
  *
- * La frase se parte sola en líneas: primero en la coma y luego antes de
- * "para discipular" / "to disciple". La última línea va en azul.
+ * La frase se parte sola: todo lo que va antes de "para discipular" /
+ * "to disciple" queda en blanco y esa última parte, en azul.
  */
-import RiverLine from '@/components/ui/RiverLine.astro';
 import type { Locale } from '@/i18n/routes';
 import { t } from '@/i18n/ui';
 
 interface Props {
   locale: Locale;
   motto: string;
-  /** Marca visual de esta aparición (el id evita repetir identificadores si se usa dos veces). */
+  /** Identificador del título (evita repetir ids si se usa más de una vez en la página). */
   id?: string;
 }
 
 const { locale, motto, id = 'purpose-title' } = Astro.props;
 const ui = t(locale).about;
 
-// Partimos en líneas: coma → y luego el "para discipular" / "to disciple".
-const [first, ...rest] = motto.split(/,\s*/);
-const tail = rest.join(', ');
-const m = tail.match(/^(.*?)\s+((?:para|to|pra)\s+(?:discipul|disciple).*)$/i);
-const lines = [first + (rest.length ? ',' : ''), ...(m ? [m[1], m[2]] : tail ? [tail] : [])].filter(Boolean);
+// Antes y después de "para discipular las naciones" (o su equivalente en inglés / portugués).
+const m = motto.match(/^(.*?[,;]?)\s+((?:para|to|pra)\s+(?:discipul|disciple).*)$/i);
+const head = m ? m[1] : motto;
+const tail = m ? m[2] : '';
 ---
 
-<section class="purpose surface-deep" aria-labelledby={id}>
-  <div class="container purpose__inner">
-    <p class="eyebrow eyebrow--line purpose__eyebrow" data-reveal>{ui.purpose}</p>
-    <h2 id={id} class="purpose__text">
-      {
-        lines.map((line, i) => (
-          <span class:list={['purpose__line', { 'purpose__line--last': i === lines.length - 1 && lines.length > 1 }]} data-reveal style={`--reveal-delay: ${i * 140}ms`}>
-            {line}
-          </span>
-        ))
-      }
-    </h2>
-  </div>
-  <div class="container purpose__river" aria-hidden="true">
-    <RiverLine tone="light" />
+<section class="purpose section surface-deep" aria-labelledby={id}>
+  <div class="container purpose__row">
+    <img class="purpose__crown" src="/brand/corona-blanco.svg" alt="" width="100" height="65" data-reveal="scale" />
+    <div class="purpose__body">
+      <p class="eyebrow eyebrow--line purpose__eyebrow" data-reveal>{ui.purpose}</p>
+      <h2 id={id} class="purpose__text" data-reveal style="--reveal-delay: 120ms">
+        <span class="purpose__head">{head}</span>
+        {tail && <span class="purpose__tail"> {tail}</span>}
+      </h2>
+    </div>
   </div>
 </section>
 
 <style>
+  /* "section" le da la ola de arriba como a las demás secciones; aquí el relleno es más corto. */
+  main > .purpose.section:not(:first-child):not(.no-wave),
+  .purpose.section {
+    padding-block: calc(var(--wave-h) + clamp(1.25rem, 3svh, 2rem)) clamp(2.5rem, 6svh, 3.75rem);
+  }
+
   .purpose {
     position: relative;
-    padding-block: clamp(4rem, 12svh, 8rem) clamp(2.5rem, 7svh, 4.5rem);
     background:
-      radial-gradient(ellipse at 90% 0%, rgb(0 173 239 / 0.2), transparent 55%),
-      radial-gradient(ellipse at 0% 100%, rgb(31 111 91 / 0.45), transparent 60%),
+      radial-gradient(ellipse at 85% 0%, rgb(0 173 239 / 0.22), transparent 55%),
+      radial-gradient(ellipse at 0% 100%, rgb(31 111 91 / 0.4), transparent 60%),
       var(--color-night-deep, var(--color-night));
     overflow: hidden;
   }
 
-  .purpose__inner {
+  .purpose__row {
     display: grid;
     gap: var(--space-5);
+    align-items: center;
+  }
+
+  .purpose__crown {
+    width: clamp(3.5rem, 8vw, 6rem);
+    height: auto;
+    opacity: 0.95;
+    filter: drop-shadow(0 0 1.25rem rgb(0 173 239 / 0.45));
   }
 
   .purpose__eyebrow {
@@ -70,28 +78,41 @@ const lines = [first + (rest.length ? ',' : ''), ...(m ? [m[1], m[2]] : tail ? [
   }
 
   .purpose__text {
-    display: grid;
-    gap: 0.05em;
+    margin-top: var(--space-3);
+    max-width: 30ch;
     font-family: var(--font-display);
-    font-size: clamp(2.5rem, 0.9rem + 5.3vw, 6rem);
+    font-size: clamp(1.9rem, 0.9rem + 3.4vw, 3.6rem);
     font-weight: 400;
-    line-height: 0.95;
+    line-height: 1;
     letter-spacing: var(--tracking-display);
     text-transform: uppercase;
     text-wrap: balance;
   }
 
-  .purpose__line {
-    display: block;
-  }
-
-  .purpose__line--last {
+  .purpose__tail {
     color: var(--color-river);
   }
 
-  .purpose__river {
-    margin-top: var(--space-7);
-    opacity: 0.8;
+  @media (min-width: 48rem) {
+    .purpose__row {
+      grid-template-columns: auto 1fr;
+      gap: var(--space-7);
+    }
+
+    /* Línea vertical que separa el símbolo de la frase. */
+    .purpose__body {
+      padding-left: var(--space-7);
+      border-left: 2px solid rgb(0 173 239 / 0.5);
+    }
+
+    .purpose__text {
+      max-width: 34ch;
+    }
   }
 
+  @media (min-width: 80rem) {
+    .purpose__text {
+      max-width: 40ch;
+    }
+  }
 </style>

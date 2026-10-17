@@ -294,6 +294,9 @@ function toPerson(d: Doc): PersonRaw {
     quote: lx(d.quote),
     bio: lx(d.bio),
     prayerRequest: lx(d.prayerRequest),
+    milestones: (d.milestones ?? [])
+      .filter((m: Doc) => m.title)
+      .map((m: Doc) => ({ label: m.label ?? null, title: m.title, text: lx(m.text) })),
     authorized: d.authorized === true,
   };
 }

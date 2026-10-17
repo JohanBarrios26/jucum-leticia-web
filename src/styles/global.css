@@ -499,6 +499,14 @@ main > :not(.section):not(.no-wave):has(+ .section:not(.no-wave)) {
   border-bottom: var(--wave-h) solid transparent;
 }
 
+/*
+ * Sin repetir el degradado en esa franja: si no, el borde de abajo mostraba una copia del degradado
+ * (una línea clara entre la portada y la sección siguiente). La franja toma el color de fondo liso.
+ */
+main > :not(.section):not(.no-wave):has(+ .section:not(.no-wave)) {
+  background-repeat: no-repeat;
+}
+
 /* ---------------------------------------------------------------------------
  * DETALLES DE PULIDO
  * ---------------------------------------------------------------------------

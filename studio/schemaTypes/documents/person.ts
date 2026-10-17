@@ -91,6 +91,26 @@ export const person = defineType({
     defineField({name: 'since', title: 'Sirviendo desde', type: 'string', group: 'main', description: 'Ej: "2018".'}),
     defineField({name: 'quote', title: 'Frase', type: 'localeText', group: 'story'}),
     defineField({name: 'bio', title: 'Su historia', type: 'localeText', group: 'story', description: 'Por qué llegó, por qué decidió servir, qué hace hoy.'}),
+    defineField({
+      name: 'milestones',
+      title: 'Su camino (momentos clave)',
+      type: 'array',
+      group: 'story',
+      description: 'Los momentos más importantes de su historia, en orden. Se muestran como una línea de tiempo, para que se lea de un vistazo.',
+      of: [
+        defineArrayMember({
+          type: 'object',
+          name: 'personMilestone',
+          title: 'Momento',
+          fields: [
+            defineField({name: 'label', title: 'Cuándo', type: 'string', description: 'Ej: "2015", "Hoy", "8 años".'}),
+            defineField({name: 'title', title: 'Título corto', type: 'localeString', validation: (rule) => rule.required()}),
+            defineField({name: 'text', title: 'Detalle', type: 'localeText', description: 'Una o dos frases.'}),
+          ],
+          preview: {select: {title: 'title.es', subtitle: 'label'}},
+        }),
+      ],
+    }),
     defineField({name: 'prayerRequest', title: 'Petición de oración', type: 'localeText', group: 'story'}),
     defineField({
       name: 'schools',

@@ -120,15 +120,13 @@ const historyBlock = {
 
       {
         about.verse && (
-          <div class="identity__extra">
-            {about.verse && (
-              <figure data-reveal style="--reveal-delay: 120ms">
-                <p class="eyebrow eyebrow--line identity__label">{ui.about.verse}</p>
-                <blockquote class="identity__verse">“{about.verse.text}”</blockquote>
-                <figcaption class="identity__ref">{about.verse.reference}</figcaption>
-              </figure>
-            )}
-          </div>
+          <figure class="verse" data-reveal>
+            <p class="eyebrow eyebrow--line verse__label">{ui.about.verse}</p>
+            <blockquote class="verse__text">
+              <span class="verse__mark" aria-hidden="true">“</span>{about.verse.text}<span class="verse__mark" aria-hidden="true">”</span>
+            </blockquote>
+            <figcaption class="verse__ref">{about.verse.reference}</figcaption>
+          </figure>
         )
       }
     </div>
@@ -308,37 +306,44 @@ const historyBlock = {
     color: var(--color-text-on-dark-muted);
   }
 
-  .identity__extra {
+  /* La Palabra: cita grande y centrada, para que no quede perdida bajo la misión y la visión. */
+  .verse {
     display: grid;
-    gap: var(--space-7);
-    margin-top: var(--space-8);
-    padding-top: var(--space-7);
+    justify-items: center;
+    gap: var(--space-5);
+    margin: var(--space-9, 5rem) auto 0;
+    max-width: 52rem;
+    padding-top: var(--space-8);
     border-top: 1px solid var(--color-border-on-dark);
+    text-align: center;
   }
 
-  @media (min-width: 64rem) {
-    .identity__extra {
-      grid-template-columns: 1fr 1fr;
-      gap: var(--space-8);
-    }
-  }
-
-  .identity__motto {
-    font-family: var(--font-display);
-    font-size: var(--text-h3);
-    line-height: 1.05;
-    text-transform: uppercase;
-  }
-
-  .identity__verse {
-    font-size: var(--text-lg, 1.25rem);
-    line-height: 1.5;
-  }
-
-  .identity__ref {
-    margin-top: var(--space-3);
+  .verse__label {
     color: var(--color-river);
+  }
+
+  .verse__text {
+    font-family: var(--font-display);
+    font-size: clamp(1.9rem, 1rem + 3.2vw, 3.5rem);
+    line-height: 1.12;
+    letter-spacing: var(--tracking-display);
+    text-transform: uppercase;
+    text-wrap: balance;
+  }
+
+  .verse__mark {
+    color: var(--color-river);
+    font-size: 1.4em;
+    line-height: 0;
+    vertical-align: -0.2em;
+  }
+
+  .verse__ref {
+    color: var(--color-river);
+    font-size: var(--text-lg, 1.125rem);
     font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
   }
 
   .about-intro {
