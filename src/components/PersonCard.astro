@@ -21,6 +21,9 @@ interface Props {
 const { locale, person: p } = Astro.props;
 const ui = t(locale).people;
 
+// Foto horizontal: se muestra completa sobre un fondo desenfocado de la misma foto (no se recorta).
+const wide = Boolean(p.photo?.width && p.photo?.height && p.photo.width / p.photo.height > 1.1);
+
 // Familias: "Carlos y Ana con sus hijos Samuel y Sofía".
 const adults = p.members.filter((m) => m.relation === 'adult').map((m) => m.name);
 const children = p.members.filter((m) => m.relation === 'child').map((m) => m.name);
@@ -33,8 +36,21 @@ const membersLine =
 ---
 
 <a class="person-card" href={personAlternates(p.slug)[locale]} data-event="person_card_click">
-  <div class="person-card__photo">
-    {p.photo ? <SmartImage image={p.photo} decorative sizes="(min-width: 64rem) 22rem, 90vw" widths={[480, 768]} ratio={1.25} /> : <ImagePlaceholder label={p.name.charAt(0)} />}
+  <div class:list={['person-card__photo', { 'person-card__photo--wide': wide }]}>
+    {
+      p.photo ? (
+        wide ? (
+          <>
+            <SmartImage image={p.photo} decorative class="person-card__bd" sizes="12rem" widths={[480]} ratio={1.25} />
+            <SmartImage image={p.photo} decorative class="person-card__fit" sizes="(min-width: 64rem) 22rem, 90vw" widths={[480, 768]} />
+          </>
+        ) : (
+          <SmartImage image={p.photo} decorative sizes="(min-width: 64rem) 22rem, 90vw" widths={[480, 768]} ratio={1.25} />
+        )
+      ) : (
+        <ImagePlaceholder label={p.name.charAt(0)} />
+      )
+    }
     {p.support.enabled && <span class="person-card__badge">{ui.supportBadge}</span>}
   </div>
   <h3 class="person-card__name">{p.name}</h3>
@@ -75,6 +91,31 @@ const membersLine =
     height: 100%;
     object-fit: cover;
     transition: transform 900ms var(--ease);
+  }
+
+  /* Foto horizontal: completa y centrada, con la misma foto desenfocada de fondo. */
+  .person-card__photo--wide {
+    display: grid;
+    place-items: center;
+    background: var(--color-night);
+  }
+
+  .person-card__photo :global(.person-card__bd) {
+    position: absolute;
+    inset: 0;
+    filter: blur(14px) brightness(0.75);
+    transform: scale(1.15);
+  }
+
+  .person-card__photo :global(.person-card__fit) {
+    position: relative;
+    height: auto;
+    max-height: 100%;
+    object-fit: contain;
+  }
+
+  .person-card:hover .person-card__photo--wide :global(.person-card__bd) {
+    transform: scale(1.15);
   }
 
   .person-card:hover .person-card__photo :global(img) {
