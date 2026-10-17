@@ -228,7 +228,7 @@ const historyBlock = {
       {
         people.length > 0 ? (
           <ul role="list" class="team">
-            {people.map((p, i) => (
+            {people.slice(0, 4).map((p, i) => (
               <li data-reveal style={`--reveal-delay: ${(i % 4) * 80}ms`}>
                 <PersonCard locale={locale} person={p} />
               </li>
