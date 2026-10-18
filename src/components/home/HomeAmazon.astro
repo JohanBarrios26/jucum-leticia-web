@@ -3,7 +3,7 @@
  * INICIO · TARJETA DESTACADA "VIVE EL AMAZONAS"
  * ----------------------------------------------------------------------------
  * Puerta de entrada a la página aparte /vive-el-amazonas/. Foto a todo ancho,
- * título gigante, tres datos clave y un botón. La foto, el título y la frase
+ * título gigante, tres datos clave y un botón. La foto, la frase grande (y el título pequeño)
  * salen del panel (Vive el Amazonas); si la página no existe, no se muestra.
  */
 import SmartImage from '@/components/ui/SmartImage.astro';
@@ -29,9 +29,8 @@ const ui = t(locale).amazon;
         </div>
       )}
       <div class="container vive__inner">
-        <p class="eyebrow eyebrow--line vive__eyebrow" data-reveal>{ui.eyebrow}</p>
-        <h2 id="vive-title" class="vive__title" data-reveal style="--reveal-delay: 80ms">{page.title}</h2>
-        {page.tagline && <p class="vive__tagline" data-reveal style="--reveal-delay: 160ms">{page.tagline}</p>}
+        <p class="eyebrow eyebrow--line vive__eyebrow" data-reveal>{page.title}</p>
+        <h2 id="vive-title" class="vive__title" data-reveal style="--reveal-delay: 80ms">{page.tagline || page.title}</h2>
         <ul role="list" class="vive__chips" data-reveal style="--reveal-delay: 220ms">
           {ui.teaserChips.map((c) => <li>{c}</li>)}
         </ul>
@@ -100,8 +99,10 @@ const ui = t(locale).amazon;
   }
 
   .vive__title {
-    font-size: clamp(2.8rem, 8vw, 6.5rem);
-    line-height: 0.9;
+    font-size: clamp(2.4rem, 6.4vw, 5.2rem);
+    line-height: 0.95;
+    max-width: 16ch;
+    text-wrap: balance;
     text-transform: uppercase;
     text-shadow: 0 0.5rem 2.5rem rgb(0 0 0 / 0.5);
   }
