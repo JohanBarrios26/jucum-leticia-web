@@ -128,6 +128,7 @@ const hasSteps = block.steps.length > 0;
   @media (min-width: 64rem) {
     .timeline__list {
       grid-template-columns: repeat(min(var(--count), 4), 1fr);
+      max-width: calc(var(--count) * 24rem);
     }
 
     .timeline__list::before {

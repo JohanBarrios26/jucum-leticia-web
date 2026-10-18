@@ -81,10 +81,17 @@ const images = await getPageImages(locale);
 </BaseLayout>
 
 <style>
+  /* Flex centrado: la última fila incompleta queda en el centro y no pegada a un lado. */
   .people-grid {
-    display: grid;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
     gap: var(--space-7) var(--space-5);
-    grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+  }
+
+  .people-grid > :global(*) {
+    flex: 1 1 15rem;
+    max-width: 19rem;
   }
 
   .people-pending {

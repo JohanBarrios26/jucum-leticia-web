@@ -27,7 +27,7 @@ const { block, titleId } = Astro.props;
         </h2>
         {block.intro && <p class="hl__intro">{block.intro}</p>}
       </div>
-      <ul role="list" class="hl__grid">
+      <ul role="list" class="hl__grid" style={`--n: ${block.items.length}`}>
         {block.items.map((item, i) => (
           <li class="hl__card" data-reveal style={`--reveal-delay: ${(i % 3) * 90}ms`}>
             <span class="hl__num" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
@@ -56,10 +56,37 @@ const { block, titleId } = Astro.props;
     font-size: var(--text-lg, 1.125rem);
   }
 
+  /*
+   * Las tarjetas se reparten parejo (6 → 3+3, 4 → 4, 5 → 3+2 con la última fila centrada):
+   * --cols sale de la cantidad (--n) y las filas incompletas quedan centradas, sin huecos a un lado.
+   */
   .hl__grid {
-    display: grid;
+    --cols: 1;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
     gap: var(--space-4);
-    grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+  }
+
+  .hl__grid > :global(.hl__card) {
+    flex: 0 0 calc((100% - (var(--cols) - 1) * var(--space-4)) / var(--cols));
+  }
+
+  @media (min-width: 36rem) {
+    .hl__grid {
+      --cols: 2;
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .hl__grid {
+      --cols: clamp(2, var(--n), 4);
+    }
+
+    /* 5 y 6 tarjetas: tres por fila (4+2 deja un hueco; 3+3 y 3+2 quedan equilibradas). */
+    .hl__grid:is([style*='--n: 5'], [style*='--n: 6'], [style*='--n: 9']) {
+      --cols: 3;
+    }
   }
 
   .hl__card {
