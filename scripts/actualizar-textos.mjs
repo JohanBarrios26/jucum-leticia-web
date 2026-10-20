@@ -244,7 +244,7 @@ async function main() {
   if (!aplicar) return console.log(`\n${pendientes} cambio(s) listos. Ejecuta con --aplicar para escribirlos en Sanity.`);
 
   await transaccion.commit();
-  console.log(`\n✔ ${pendientes} cambio(s) aplicados en Sanity. El sitio se reconstruye solo al publicar (webhook de Vercel).`);
+  console.log(`\n✔ ${pendientes} cambio(s) aplicados en Sanity. El sitio se actualiza cuando se reconstruya el despliegue (webhook de Sanity → Cloudflare).`);
 }
 
 main().catch((e) => {

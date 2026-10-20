@@ -138,7 +138,7 @@ async function main() {
   if (!aplicar) return console.log('\nListo. Ejecuta con --aplicar para escribirlo en Sanity.');
 
   await client.patch(ID).set(datos).commit();
-  console.log('✔ Perfil actualizado. El sitio se reconstruye al publicar (webhook de Vercel).');
+  console.log('✔ Perfil actualizado. El sitio se actualiza cuando se reconstruya el despliegue (webhook de Sanity → Cloudflare).');
 }
 
 main().catch((e) => {
