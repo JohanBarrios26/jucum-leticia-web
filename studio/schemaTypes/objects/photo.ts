@@ -20,7 +20,7 @@ export const photo = defineType({
       title: 'Descripción de la foto',
       type: 'localeString',
       description:
-        'Describe lo que se ve, como si se lo contaras a alguien por teléfono. Ej: "Jóvenes navegando en bote por el río al atardecer".',
+        'Describe lo que se ve, como si se lo contaras a alguien por teléfono. Ej: "Jóvenes navegando en transporte fluvial por el río al atardecer".',
       validation: (rule) => rule.required().error('La descripción es necesaria para la accesibilidad y Google.'),
     }),
     defineField({

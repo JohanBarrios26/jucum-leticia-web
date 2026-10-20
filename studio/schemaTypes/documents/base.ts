@@ -15,7 +15,7 @@ import {featuresField, motifField} from '../objects/features'
 
 export const accessModes = [
   {title: 'A pie', value: 'walk'},
-  {title: 'Por río (lancha / bote)', value: 'river'},
+  {title: 'Por río (lancha / transporte fluvial)', value: 'river'},
   {title: 'Por carretera', value: 'road'},
   {title: 'En avión', value: 'air'},
 ]
