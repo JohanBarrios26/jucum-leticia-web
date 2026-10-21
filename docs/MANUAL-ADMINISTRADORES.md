@@ -183,14 +183,14 @@ Es la dirección pública del sitio. Cloudflare (**Email Routing**) la reenvía 
 - Para cambiar a dónde llega: en Cloudflare, dominio **jucumleticia.org → Email → Email Routing → Routing rules**.
 - Para cambiar la dirección que se muestra en el sitio: **Configuración del sitio → Contacto → Correo**.
 
-Los mensajes que las personas envían desde **/contacto/** llegan por correo a **ywamleticia@gmail.com** (y se reenvían a jucumlc@gmail.com) con un asunto como:
+Los mensajes que las personas envían desde **/contacto/** llegan por correo a **leticiajucum@gmail.com**, la cuenta con la que se creó el formulario en Web3Forms. Si otra persona también debe recibirlos, en ese Gmail se crea un filtro que reenvíe los correos con el asunto «Nuevo mensaje desde el sitio web». El asunto tiene esta forma:
 
 > 🙋 Quiero venir — María Pérez · Nuevo mensaje desde el sitio web
 
 Dentro, los datos vienen ordenados y en español: motivo, nombre, correo, teléfono, **enlace directo para escribirle por WhatsApp**, país, ciudad, mensaje, idioma en que visitó el sitio, página desde donde escribió y fecha (hora de Colombia).
 
 - Para responder, simplemente **responde ese correo**: la respuesta le llega a la persona que escribió.
-- No cambies el filtro de Gmail que busca "Nuevo mensaje desde el sitio web": es el que reenvía los mensajes.
+- Si hay un filtro de Gmail que busca "Nuevo mensaje desde el sitio web" para reenviar los mensajes, no lo cambies.
 
 ---
 
