@@ -183,7 +183,7 @@ Es la dirección pública del sitio. Cloudflare (**Email Routing**) la reenvía 
 - Para cambiar a dónde llega: en Cloudflare, dominio **jucumleticia.org → Email → Email Routing → Routing rules**.
 - Para cambiar la dirección que se muestra en el sitio: **Configuración del sitio → Contacto → Correo**.
 
-Los mensajes que las personas envían desde **/contacto/** llegan por correo a **leticiajucum@gmail.com**, la cuenta con la que se creó el formulario en Web3Forms. Si otra persona también debe recibirlos, en ese Gmail se crea un filtro que reenvíe los correos con el asunto «Nuevo mensaje desde el sitio web». El asunto tiene esta forma:
+Los mensajes que las personas envían desde **/contacto/** llegan por correo al Gmail de JUCUM con el que se creó el formulario en Web3Forms (se ve entrando a web3forms.com con esa cuenta). Si otra persona también debe recibirlos, en ese Gmail se crea un filtro que reenvíe los correos con el asunto «Nuevo mensaje desde el sitio web». El asunto tiene esta forma:
 
 > 🙋 Quiero venir — María Pérez · Nuevo mensaje desde el sitio web
 

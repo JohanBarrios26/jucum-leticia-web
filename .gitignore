@@ -43,3 +43,6 @@ FOTOS JUCUM/
 
 # Servidores: fotos y descripciones con teléfonos y datos personales (nunca se suben a Git)
 SERVIDORES/
+
+# Scripts con datos de personas (se quedan solo en este equipo; la fuente real de los datos es Sanity)
+scripts/privado/

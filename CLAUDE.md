@@ -55,4 +55,5 @@ There is no test suite. Verify changes with `npm run check && npm run build && n
 - **Desktop scale:** the client found sections too big on laptops. Big headings in `tokens.css` are capped with `min(…, Nsvh)`, and card and hero heights are kept modest. Check new sections at 1366×768 and 1280×720.
 
 - Each school has `contacts`: the people in charge of that specific school, each with their own WhatsApp, email and phone. They render on the school page.
-- Contact-form recipients and CMS admin emails are recorded in the project memory. They must never appear in frontend code.
+- Contact-form recipients and CMS admin emails are recorded in the project memory. They must never appear in frontend code. The same goes for the docs: the repo is **public**, so do not write the form's destination email or any token there.
+- **Content lives in Sanity, not in the repo.** One-off scripts that load data about people (family profiles, WhatsApp numbers…) go in `scripts/privado/`, which is gitignored: they stay on the developer's machine and must not be committed. Never commit Sanity tokens; create an Editor token in sanity.io/manage, use it in `$env:SANITY_WRITE_TOKEN` for a single command and delete it afterwards.
