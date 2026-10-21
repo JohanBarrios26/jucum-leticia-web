@@ -276,7 +276,11 @@ function toPerson(d: Doc): PersonRaw {
     name: d.name,
     members: (d.members ?? [])
       .filter((m: Doc) => m.name)
-      .map((m: Doc) => ({ name: m.name, relation: m.relation === 'child' ? 'child' : 'adult' })),
+      .map((m: Doc) => ({
+        name: m.name,
+        relation: m.relation === 'child' ? 'child' : 'adult',
+        gender: m.relation === 'child' && (m.gender === 'girl' || m.gender === 'boy') ? m.gender : undefined,
+      })),
     country: lx(d.country),
     support: {
       enabled: d.support?.enabled === true,

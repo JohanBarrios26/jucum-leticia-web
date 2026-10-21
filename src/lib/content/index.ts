@@ -18,6 +18,7 @@ import type {
   Community,
   Base,
   BaseRaw,
+  FamilyMember,
   FeatureBlock,
   FeatureBlockRaw,
   GalleryItem,
@@ -546,6 +547,21 @@ export async function getBaseSlugs(): Promise<string[]> {
 export async function getBase(slug: string, locale: Locale): Promise<Maybe<Base>> {
   const b = (await source()).bases.find((x) => x.slug === slug && x.active);
   return b ? resolveBase(b, locale) : null;
+}
+
+/**
+ * Cómo llamar a los hijos de una familia según su género ("niña" / "niño" en el panel):
+ * todas niñas → "hijas"; todos niños → "hijos"; mezcla o sin dato → plural genérico
+ * ("hijos"); uno solo → "hija", "hijo" o, sin dato, el masculino. Devuelve la clave
+ * de `ui.people.children` y `ui.people.withChildren`.
+ */
+export function childrenKind(members: FamilyMember[]): 'mixed' | 'boys' | 'girls' | 'one' | 'oneBoy' | 'oneGirl' {
+  const kids = members.filter((m) => m.relation === 'child');
+  const known = kids.every((k) => k.gender);
+  const girls = known && kids.every((k) => k.gender === 'girl');
+  const boys = known && kids.every((k) => k.gender === 'boy');
+  if (kids.length === 1) return girls ? 'oneGirl' : boys ? 'oneBoy' : 'one';
+  return girls ? 'girls' : boys ? 'boys' : 'mixed';
 }
 
 /**

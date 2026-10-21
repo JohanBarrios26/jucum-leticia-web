@@ -466,6 +466,8 @@ export interface PersonSupportRaw {
 export interface FamilyMember {
   name: string;
   relation: 'adult' | 'child';
+  /** Solo hijos: "niña" o "niño". Sin dato, la página usa el plural genérico. */
+  gender?: 'girl' | 'boy';
 }
 
 export interface PersonRaw {

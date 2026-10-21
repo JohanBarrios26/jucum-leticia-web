@@ -11,7 +11,7 @@ import ImagePlaceholder from '@/components/ui/ImagePlaceholder.astro';
 import SmartImage from '@/components/ui/SmartImage.astro';
 import { personAlternates, type Locale } from '@/i18n/routes';
 import { t } from '@/i18n/ui';
-import { joinNames, type Person } from '@/lib/content';
+import { childrenKind, joinNames, type Person } from '@/lib/content';
 
 interface Props {
   locale: Locale;
@@ -24,12 +24,13 @@ const ui = t(locale).people;
 // Foto horizontal: se muestra completa sobre un fondo desenfocado de la misma foto (no se recorta).
 const wide = Boolean(p.photo?.width && p.photo?.height && p.photo.width / p.photo.height > 1.1);
 
-// Familias: "Carlos y Ana con sus hijos Samuel y Sofía".
+// Familias: "Carlos y Ana con sus hijos Samuel y Sofía" ("con sus hijas…" si son niñas).
 const adults = p.members.filter((m) => m.relation === 'adult').map((m) => m.name);
 const children = p.members.filter((m) => m.relation === 'child').map((m) => m.name);
+const kind = childrenKind(p.members);
 const membersLine =
   p.members.length > 0
-    ? [joinNames(adults, locale), children.length > 0 ? `${ui.withChildren} ${joinNames(children, locale)}` : '']
+    ? [joinNames(adults, locale), children.length > 0 ? `${ui.withChildren[kind]} ${joinNames(children, locale)}` : '']
         .filter(Boolean)
         .join(' ')
     : null;

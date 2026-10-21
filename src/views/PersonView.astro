@@ -19,7 +19,7 @@ import Timeline from '@/components/features/Timeline.astro';
 import SmartImage from '@/components/ui/SmartImage.astro';
 import { ministryAlternates, personAlternates, routes, type Locale } from '@/i18n/routes';
 import { t } from '@/i18n/ui';
-import { getMinistries, getPeople, getSiteSettings, joinNames, ogImageUrl, whatsappUrl, type Person } from '@/lib/content';
+import { childrenKind, getMinistries, getPeople, getSiteSettings, joinNames, ogImageUrl, whatsappUrl, type Person } from '@/lib/content';
 
 interface Props {
   locale: Locale;
@@ -106,7 +106,7 @@ const prayerAsCards = prayerPoints.length >= 3;
               )}
               {children.length > 0 && (
                 <li>
-                  <span class="profile__members-label">{ui.people.children}</span>
+                  <span class="profile__members-label">{ui.people.children[childrenKind(p.members)]}</span>
                   {joinNames(children, locale)}
                 </li>
               )}

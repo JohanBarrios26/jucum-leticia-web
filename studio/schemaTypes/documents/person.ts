@@ -67,6 +67,22 @@ export const person = defineType({
               initialValue: 'adult',
               validation: (rule) => rule.required(),
             }),
+            defineField({
+              name: 'gender',
+              title: 'Niña o niño',
+              type: 'string',
+              description:
+                'Solo para hijos. Sirve para que la página diga "hijas", "hijos", "hija" o "hijo" según corresponda. Si hay niñas y niños, dirá "hijos".',
+              options: {
+                list: [
+                  {title: 'Niña', value: 'girl'},
+                  {title: 'Niño', value: 'boy'},
+                ],
+                layout: 'radio',
+                direction: 'horizontal',
+              },
+              hidden: ({parent}) => parent?.relation !== 'child',
+            }),
           ],
           preview: {
             select: {title: 'name', relation: 'relation'},
