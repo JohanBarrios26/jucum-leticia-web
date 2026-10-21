@@ -13,6 +13,14 @@
 export const showPending = import.meta.env.PUBLIC_SHOW_PENDING !== 'false';
 
 /**
+ * Mostrar la sección "Historias" (testimonios en video) en el inicio.
+ * Está OCULTA por ahora porque todavía no hay historias publicadas; nada se borra.
+ * Para mostrarla de nuevo: define PUBLIC_SHOW_STORIES=true (en Cloudflare: Builds →
+ * Build variables) y reconstruye el sitio, o cambia el valor por defecto de abajo a true.
+ */
+export const showStories = import.meta.env.PUBLIC_SHOW_STORIES === 'true';
+
+/**
  * Clave pública de Web3Forms (servicio que envía el formulario de contacto al
  * correo de JUCUM). Es pública por diseño: NO revela el correo de destino.
  * Formulario "JUCUM Leticia" en web3forms.com. El correo de destino se

@@ -29,6 +29,7 @@ import HomeJoin from '@/components/home/HomeJoin.astro';
 import HomeShortTerm from '@/components/home/HomeShortTerm.astro';
 import HomeContact from '@/components/home/HomeContact.astro';
 import { routes, type Locale } from '@/i18n/routes';
+import { showStories } from '@/lib/config';
 import {
   getBases,
   getGallery,
@@ -87,7 +88,7 @@ const ede = schools.find((s) => s.slug === 'ede');
   <HomeReach locale={locale} communities={communities} ministry={ministries.find((m) => m.showMap)} />
   <HomeSchools locale={locale} schools={schools} />
   <HomeEde locale={locale} ede={ede} />
-  <HomeStories locale={locale} stories={stories} />
+  {showStories && <HomeStories locale={locale} stories={stories} />}
   <HomeGallery locale={locale} items={gallery} />
   <HomeJoin locale={locale} paths={joinPaths} />
   <HomeShortTerm locale={locale} shortTerm={home.shortTerm} settings={settings} />
