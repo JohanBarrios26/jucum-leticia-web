@@ -14,7 +14,7 @@ Todo se hace desde el **panel de administración**, una página web con usuario 
 | Sección | Qué se cambia ahí |
 |---|---|
 | **Configuración del sitio** | Nombre, frase principal, correo, teléfonos, WhatsApp, ubicación y redes sociales. Aparecen en todo el sitio. |
-| **Textos de las páginas** | La frase bajo el título de Ministerios, Escuelas, Sé parte y Contacto. |
+| **Textos de las páginas** | La frase de introducción y la foto de portada de Bases, Ministerios, Nuestro equipo, Escuelas, Sé parte y Contacto. En **Nuestro equipo**, la frase se muestra debajo de la portada, en una tarjeta destacada con un botón que baja a las familias. |
 | **Página de inicio** | Foto y textos de la portada, frase "Sobre JUCUM", actividades, sección de corto plazo y cómo se ve el sitio en Google. |
 | **Quiénes somos** | Introducción, misión, visión, valores e historia. |
 | **Bases** | Cada base (Leticia, JUCUM El Puente…): descripción, cómo llegar, qué se realiza allí, fotos y videos. |
@@ -24,6 +24,20 @@ Todo se hace desde el **panel de administración**, una página web con usuario 
 | **Personas** | El equipo que sirve en JUCUM Leticia (aparece en Quiénes somos y en su ministerio). |
 | **Galería** | Las fotos de la galería. |
 | **Historias** | Testimonios de personas. |
+
+### Quién puede editar y cómo invitar a más personas
+
+Cualquier persona con acceso al panel puede cambiar el sitio **sin tocar código**. No necesita ninguna clave técnica: entra con su propio correo de Google.
+
+1. Entra a **https://www.sanity.io/manage** con una cuenta de administrador y abre el proyecto **JUCUM Leticia**.
+2. Ve a **Members** y pulsa **Invite**.
+3. Escribe el correo de Google de la persona y elige su rol:
+   - **Editor:** puede cambiar y publicar contenido (el rol normal para quien edita).
+   - **Administrator:** además gestiona personas y ajustes (solo para los responsables).
+4. La persona recibe un correo, acepta y ya puede entrar a **https://jucum-leticia.sanity.studio**.
+5. Para quitar el acceso, en **Members** se retira a esa persona.
+
+> Los administradores del proyecto deben ser al menos dos personas de JUCUM, para que el sitio no dependa de una sola.
 
 ---
 
@@ -50,6 +64,7 @@ Así nunca queda un espacio en blanco. Como la ciudad está en la triple fronter
 ### Cambiar un teléfono, el correo o el WhatsApp
 **Configuración del sitio → pestaña Contacto.** Cambia el dato y presiona **Publicar**.
 - El WhatsApp va **solo con números**, con el código del país y sin "+": `573115332741`.
+- El correo público del sitio es **contacto@jucumleticia.org** (aparece en el pie de página, en Contacto y en las páginas legales). Ver la sección 5 para saber a dónde llega.
 
 ### Agregar un ministerio o una escuela
 1. Entra a **Ministerios** (o **Escuelas**) y presiona el botón **+** (arriba).
@@ -131,7 +146,7 @@ Muchos servidores sirven en familia: se hace **un solo perfil familiar**.
 En la página se verá: *"Carlos y Ana con sus hijos Samuel y Sofía"*.
 
 ### Activar el apoyo personal a un misionero
-Abre la persona → pestaña **Apoyo**:
+Hoy el botón **"Apoyar"** está activado en todos los perfiles. Para apagarlo en alguien, desmarca **"Mostrar botón Apoyar"**. Abre la persona → pestaña **Apoyo**:
 1. Activa **"Mostrar botón Apoyar"** (solo si la persona recibe apoyo y lo autoriza).
 2. Si tiene una página segura de donación propia (plataforma de JUCUM, PayPal…), pega el enlace. Si no, el botón abrirá WhatsApp de JUCUM con el mensaje "Quiero apoyar a [nombre]".
 3. Opcional: escribe **para qué es el apoyo** (ej. transporte por el río, materiales).
@@ -149,6 +164,8 @@ Menú **Quiénes somos** → pestaña **Directores fundadores**: foto de los dos
 > ⚠️ Nunca escribas números de cuenta bancaria en el panel. El sitio solo enlaza a páginas de donación seguras o a una conversación por WhatsApp.
 
 ### Historias del inicio (con video y rotación)
+> La sección **Historias** del inicio está **oculta** por ahora, porque todavía no hay historias publicadas. Nada se borró. Para mostrarla de nuevo, en Cloudflare añade la variable de compilación `PUBLIC_SHOW_STORIES` con el valor `true` (proyecto → Settings → Builds) y reconstruye el sitio; o pide ese cambio a quien administra la parte técnica.
+
 En **Historias** crea una por persona. Si es del equipo, elígela en **Persona del equipo**: el nombre, la foto y el rol se toman de su perfil (debe estar autorizada). Opcional: pega el enlace de YouTube en **Video**. En el inicio se ven 3 historias al azar y el botón **Ver otras historias** muestra otras 3 (hasta 12 historias entran en la rotación). Solo se publican las que tienen las tres autorizaciones y **Publicar** marcado.
 
 ### Publicar una historia o foto de personas
@@ -159,6 +176,12 @@ Por respeto y por ley, **solo publica con autorización**:
 ---
 
 ## 5. Mensajes del formulario de contacto
+
+### El correo del dominio: contacto@jucumleticia.org
+
+Es la dirección pública del sitio. Cloudflare (**Email Routing**) la reenvía a un Gmail de JUCUM, y ese Gmail tiene un filtro que reenvía una copia al segundo Gmail, así que llega a las dos personas. Es solo para **recibir**: si alguien responde desde Gmail, la persona verá la dirección de Gmail y no la del dominio.
+- Para cambiar a dónde llega: en Cloudflare, dominio **jucumleticia.org → Email → Email Routing → Routing rules**.
+- Para cambiar la dirección que se muestra en el sitio: **Configuración del sitio → Contacto → Correo**.
 
 Los mensajes que las personas envían desde **/contacto/** llegan por correo a **ywamleticia@gmail.com** (y se reenvían a jucumlc@gmail.com) con un asunto como:
 
@@ -181,14 +204,34 @@ Dentro, los datos vienen ordenados y en español: motivo, nombre, correo, teléf
 ## 7. ¿Algo no se ve en el sitio?
 
 1. ¿Presionaste **Publicar**? (Si el botón sigue verde, falta publicar).
-2. ¿Esperaste 3 minutos y recargaste la página?
+2. ¿Esperaste 3 minutos y recargaste la página con **Ctrl + F5**?
 3. ¿Está activado **"Mostrar en el sitio"** o las **autorizaciones**?
 
-Si sigue sin verse, contacta a la persona que administra la parte técnica del sitio.
+Si sigue sin verse, contacta a la persona que administra la parte técnica del sitio. Esa persona puede revisar dos cosas:
+- En **Cloudflare → proyecto del sitio → Deployments**, que haya aparecido un despliegue nuevo y esté en verde.
+- En **sanity.io/manage → API → Webhooks → Cloudflare: reconstruir sitio**, que el último intento (**Attempts**) no tenga error. Si no hubo despliegue, se puede reconstruir a mano con **Retry deployment**.
 
 
 ---
 
 ## 8. Páginas legales y datos personales
 
-El sitio incluye Política de privacidad, Términos y condiciones, Política de cookies y Donaciones y reembolsos (enlazadas en el pie de página, en español, inglés y portugués). Sus textos no se editan en el panel: están en el código (`src/i18n/legal.ts`). Son un borrador base: **un abogado en Colombia debe revisarlos** y hay que agregar la razón social y el NIT de la entidad antes de publicar con dominio propio. El sitio no usa cookies, por eso no muestra aviso de cookies. El formulario pide solo nombre, correo, mensaje (obligatorios) y teléfono y país (opcionales), con una casilla de autorización obligatoria.
+El sitio incluye Política de privacidad, Términos y condiciones, Política de cookies y Donaciones y reembolsos (enlazadas en el pie de página, en español, inglés y portugués). Sus textos no se editan en el panel: están en el código (`src/i18n/legal.ts`). Son un borrador base: **un abogado en Colombia debe revisarlos** y hay que agregar la razón social y el NIT de la entidad (el sitio ya está publicado con dominio propio, así que conviene hacerlo pronto). Mencionan que el sitio se aloja en **Cloudflare**. El sitio no usa cookies, por eso no muestra aviso de cookies. El formulario pide solo nombre, correo, mensaje (obligatorios) y teléfono y país (opcionales), con una casilla de autorización obligatoria.
+
+---
+
+## 9. Dónde está cada cosa (cuentas del sitio)
+
+Todas deben estar a nombre de JUCUM, con al menos **dos administradores**. No guardes contraseñas ni claves en este documento.
+
+| Qué | Dónde | Para qué sirve |
+|---|---|---|
+| **Sitio web** | https://jucumleticia.org | Es lo que ve el público. |
+| **Panel de contenido** | https://jucum-leticia.sanity.studio (invitaciones en sanity.io/manage → Members) | Aquí se edita todo sin tocar código. |
+| **Hosting, dominio y correo** | Cloudflare (cuenta de JUCUM) | Publica el sitio, renueva el dominio `jucumleticia.org` y reenvía `contacto@jucumleticia.org`. Activa la **renovación automática** del dominio. |
+| **Formulario de contacto** | Web3Forms (cuenta de JUCUM) | Envía por correo los mensajes de **/contacto/**. Plan gratuito: 250 mensajes al mes. |
+| **Estadísticas** | Umami Cloud | Cuenta las visitas sin cookies. |
+| **Google** | Search Console | Permite que Google muestre el sitio. Ya tiene enviado `sitemap-index.xml`. |
+| **Código** | GitHub (repositorio `jucum-leticia-web`) | Lo toca solo quien administra la parte técnica. Cada cambio en `main` publica el sitio. |
+
+Cuando alguien edita en el panel y pulsa **Publicar**, un aviso automático (webhook de Sanity) hace que Cloudflare reconstruya el sitio. Si en algún momento ese aviso se rompe, el sitio sigue funcionando, pero los cambios del panel no se verían hasta reconstruirlo a mano (ver sección 7).
