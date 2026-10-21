@@ -1,14 +1,13 @@
 # Encabezados HTTP de seguridad y caché (los leen Cloudflare y Netlify; en Vercel ver vercel.json).
 #
-# VISTA PREVIA: mientras no exista el dominio propio, Google no debe indexar la copia de prueba.
-# AL PUBLICAR CON EL DOMINIO DEFINITIVO: borrar la línea X-Robots-Tag de abajo.
+# Sitio publicado en jucumleticia.org: Google puede indexarlo (no hay X-Robots-Tag: noindex).
+# Si alguna vez hay que ocultar una copia de prueba, agrega "X-Robots-Tag: noindex, nofollow" debajo de "/*".
 #
 # Content-Security-Policy: solo permite lo que el sitio realmente usa:
 #   - fotos y audios de Sanity (cdn.sanity.io), miniaturas y reproductor de YouTube (sin cookies),
 #   - Umami (analítica sin cookies) y Web3Forms (formulario de contacto).
 # Si algún día se agrega otro servicio externo (mapa, chat, etc.), hay que sumarlo aquí o el navegador lo bloqueará.
 /*
-  X-Robots-Tag: noindex, nofollow
   X-Content-Type-Options: nosniff
   X-Frame-Options: DENY
   Referrer-Policy: strict-origin-when-cross-origin

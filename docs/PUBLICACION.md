@@ -1,7 +1,7 @@
 # Guía de publicación: de la vista previa al dominio de JUCUM
 
-Hoy el sitio vive como **vista previa** en `https://jucum-leticia-web.vercel.app` (con `noindex`: Google no lo muestra).
-Cuando el cliente apruebe y compre su dominio, esta es la lista de pasos para publicarlo definitivamente.
+El sitio se publica en **Cloudflare**, en la cuenta de JUCUM, con el dominio **jucumleticia.org**. La vista previa antigua de Vercel ya no se usa.
+Esta es la lista de pasos de la publicación definitiva; sirve también como guía si hay que repetirla en otra cuenta.
 
 > Principio de durabilidad: **todas las cuentas deben quedar a nombre de JUCUM** (correo institucional, p. ej. ywamleticia@gmail.com), con al menos **dos administradores**. Así el sitio no depende de una sola persona.
 
@@ -33,7 +33,7 @@ Cuando el cliente apruebe y compre su dominio, esta es la lista de pasos para pu
    > Mientras no haya dominio, el sitio usa la dirección de prueba `*.workers.dev` (está en `astro.config.mjs`). **Al comprar el dominio, define `SITE_URL` en Cloudflare** para que el canonical, el sitemap y el hreflang apunten al dominio real.
 
 5. **Custom domains** → agregar el dominio y `www`.
-6. El archivo `public/_headers` ya define los encabezados de seguridad y caché para Cloudflare . **Ojo:** mientras se usa la dirección de prueba (`*.pages.dev`) incluye `X-Robots-Tag: noindex`; **al publicar con el dominio definitivo hay que borrar esa línea** para que Google indexe el sitio.
+6. El archivo `public/_headers` define los encabezados de seguridad y caché para Cloudflare. Ya no incluye `X-Robots-Tag: noindex`, así que Google puede indexar el sitio. La dirección de prueba (`*.workers.dev`) queda con `canonical` apuntando al dominio; conviene desactivarla en Cloudflare cuando el dominio funcione.
 
 ## 3. Reconectar los servicios al nuevo dominio
 
