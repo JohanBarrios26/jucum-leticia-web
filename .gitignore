@@ -46,3 +46,5 @@ SERVIDORES/
 
 # Scripts con datos de personas (se quedan solo en este equipo; la fuente real de los datos es Sanity)
 scripts/privado/
+
+deploy.log
